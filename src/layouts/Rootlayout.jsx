@@ -1,22 +1,18 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import FooterComponent from "../components/Footer";
 
 const RootLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Top Navigation */}
-      <Navbar />
+   <div className="w-full bg-white m-0 p-0 space-y-0">
+  <Navbar />
+  <main className="w-full">
+    <Outlet />
+  </main>
+  <FooterComponent />
+</div>
 
-      {/* Main Content Area */}
-      <main className="flex-grow px-4 sm:px-8 md:px-12 lg:px-16 py-6">
-        <Outlet /> {/* 👈 Renders the current page */}
-      </main>
-
-      {/* Footer */}
-      <Footer />
-    </div>
   );
 };
 

@@ -1,70 +1,146 @@
-import React, { useState } from 'react';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import React, { useState } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom"; // ✅ import Link
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-  const NavItem = ({ children, hasDropdown = false }) => (
-    <div className="flex items-center space-x-1 cursor-pointer hover:text-red-500 transition-colors">
-      <span>{children}</span>
-      {hasDropdown && <ChevronDown className="w-4 h-4" />}
-    </div>
-  );
+  const navLinks = [
+    { label: "Banking", dropdown: ["Savings Accounts", "Corporate Accounts"] },
+    {
+      label: "Loans",
+      dropdown: ["MTLoans", "IPPIS Loans", "Car4Cash", "MTPlus Loans", "SME Loan"],
+    },
+    {
+      label: "Investment",
+      dropdown: ["Treasury Note", "Fixed Deposit", "Mudurabah"],
+    },
+    {
+      label: "Asset Finance",
+      dropdown: ["MT Green Solar", "Agric Finance", "Auto Finance"],
+    },
+    {
+      label: "Company",
+      dropdown: ["About", "Leadership", "Gallery", "Corporate & Social Responsibility (CSR)"],
+    },
+    { label: "Blog" },
+    { label: "Contact" },
+    { label: "Internet Banking", path: "/login" },
+  ];
+
+  const NavItem = ({ link, isMobile = false }) => {
+    const hasDropdown = !!link.dropdown;
+    const toggle = () =>
+      isMobile && hasDropdown
+        ? setOpenDropdown(openDropdown === link.label ? null : link.label)
+        : null;
+
+    // helper to convert a label to a path
+    const pathFor = (item) =>
+      `/${item.toLowerCase().replace(/\s*&\s*/g, "").replace(/\s+/g, "-")}`;
+
+    return (
+      <div className="relative group" onClick={toggle}>
+        <div className="flex items-center space-x-1 cursor-pointer hover:text-red-500 text-sm">
+          {hasDropdown ? (
+            <span>{link.label}</span>
+          ) : (
+            <Link
+              to={pathFor(link.label)}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          )}
+          {hasDropdown && <ChevronDown className="w-3 h-3" />}
+        </div>
+
+        {/* Desktop Dropdown */}
+        {hasDropdown && !isMobile && (
+          <div className="absolute left-0 mt-1 w-48 bg-white shadow-md rounded opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 z-20">
+            {link.dropdown.map((item) => (
+              <Link
+                key={item}
+                to={pathFor(item)}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-red-500 text-sm"
+              >
+                {item}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Mobile Dropdown */}
+        {hasDropdown && isMobile && openDropdown === link.label && (
+          <div className="mt-1 ml-3 flex flex-col space-y-1">
+            {link.dropdown.map((item) => (
+              <Link
+                key={item}
+                to={pathFor(item)}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-2 py-1 text-gray-600 hover:text-red-500 text-sm"
+              >
+                {item}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <nav className="relative z-10 flex items-center justify-between px-6 py-4 bg-white">
+    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-12 bg-white border-b border-gray-200 shadow-sm">
       {/* Logo */}
-      <div className="flex items-center">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-red-500 rounded"></div>
-          <div className="w-8 h-8 bg-red-400 rounded"></div>
-          <div className="w-8 h-8 bg-red-300 rounded"></div>
+      <Link to="/" className="flex items-center space-x-1">
+        <div className="w-5 h-5 bg-red-500 rounded"></div>
+        <div className="w-5 h-5 bg-red-400 rounded"></div>
+        <div className="w-5 h-5 bg-red-300 rounded"></div>
+        <div className="ml-2 leading-none">
+          <div className="text-sm font-bold text-gray-800">mutual</div>
+          <div className="text-sm font-bold text-red-500 -mt-0.5">Trust</div>
         </div>
-        <div className="ml-3">
-          <div className="text-xl font-bold text-gray-800">mutual</div>
-          <div className="text-xl font-bold text-red-500">Trust</div>
-          <div className="text-xs text-gray-600">MFBank</div>
-        </div>
-      </div>
+      </Link>
 
       {/* Desktop Links */}
-      <div className="hidden lg:flex items-center space-x-8 text-gray-700">
-        <NavItem hasDropdown>Banking</NavItem>
-        <NavItem hasDropdown>Loans</NavItem>
-        <NavItem hasDropdown>Investment</NavItem>
-        <NavItem hasDropdown>Asset Finance</NavItem>
-        <NavItem hasDropdown>Company</NavItem>
-        <NavItem>Blog</NavItem>
-        <NavItem>Contact</NavItem>
+      <div className="hidden lg:flex items-center space-x-4 text-gray-700">
+        {navLinks.map((link) => (
+          <NavItem key={link.label} link={link} />
+        ))}
       </div>
 
       {/* Internet Banking / Mobile Toggle */}
-      <div className="flex items-center space-x-4">
-        <button className="hidden lg:block bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-600 transition-colors">
+      <div className="flex items-center space-x-2">
+        <Link
+          to="/login"
+          className="hidden lg:block bg-red-500 text-white px-4 py-1 rounded-full text-xs font-semibold hover:bg-red-600"
+        >
           Internet Banking
-        </button>
+        </Link>
         <button
-          className="lg:hidden p-2"
+          className="lg:hidden p-1"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white shadow-lg lg:hidden">
-          <div className="flex flex-col space-y-4 p-6 text-gray-700">
-            <NavItem hasDropdown>Banking</NavItem>
-            <NavItem hasDropdown>Loans</NavItem>
-            <NavItem hasDropdown>Investment</NavItem>
-            <NavItem hasDropdown>Asset Finance</NavItem>
-            <NavItem hasDropdown>Company</NavItem>
-            <NavItem>Blog</NavItem>
-            <NavItem>Contact</NavItem>
-            <button className="bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-600 transition-colors self-start">
+        <div className="absolute top-full left-0 right-0 bg-white shadow-md lg:hidden">
+          <div className="flex flex-col space-y-3 p-4 text-gray-700 text-sm">
+            {navLinks.map((link) => (
+              <NavItem key={link.label} link={link} isMobile />
+            ))}
+            <Link
+              to="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="bg-red-500 text-white px-4 py-1 rounded-full text-xs font-semibold hover:bg-red-600 self-start"
+            >
               Internet Banking
-            </button>
+            </Link>
           </div>
         </div>
       )}
