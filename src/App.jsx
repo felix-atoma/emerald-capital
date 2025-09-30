@@ -15,6 +15,10 @@ import Mtplus from "./pages/MTPlus";
 import SMELoan from "./pages/SMELoan";
 import TreasuryNotesPage from "./pages/TreasuryNotesPage";  
 import FixedDepositPage from "./pages/FixedDepositPage";
+import MudarabahPage from "./pages/MudarabahPage";
+import MTGreenSolar from "./pages/MTGreenSolar";
+import Agric from "./pages/Agric";
+import  AutoFinance from "./pages/AutoFinance";
 
 function App() {
   return (
@@ -33,6 +37,10 @@ function App() {
           <Route path="sme-loan" element={<SMELoan />} />
           <Route path="treasury-note" element={<TreasuryNotesPage />} />
           <Route path="fixed-deposit" element={<FixedDepositPage/>} />
+          <Route path="mudurabah" element={<MudarabahPage/>} />
+          <Route path="mt-green-solar" element={<MTGreenSolar/>} />
+          <Route path="agric-finance" element={<Agric/>} />
+          <Route path="auto-finance" element={<AutoFinance/>} />
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
