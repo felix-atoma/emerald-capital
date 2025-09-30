@@ -14,6 +14,7 @@ import Car4CashPage from "./pages/Car4CashPage";
 import Mtplus from "./pages/MTPlus";
 import SMELoan from "./pages/SMELoan";
 import TreasuryNotesPage from "./pages/TreasuryNotesPage";  
+import FixedDepositPage from "./pages/FixedDepositPage";
 
 function App() {
   return (

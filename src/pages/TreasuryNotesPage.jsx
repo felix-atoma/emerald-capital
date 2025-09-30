@@ -6,7 +6,7 @@ import LoanCalculator from "../components/LoanCalculator";
 import BusinessCTABanner from "../components/BusinessCTABanner";
 import DownloadAppSection from "../components/DownloadAppSection";
 
-const LoanPage = () => {
+const TreasureNotesPage = () => {
   return (
     <div>
       <TreasuryNotesHero/>       {/* ✅ Fixed capitalization */}
@@ -19,4 +19,4 @@ const LoanPage = () => {
   );
 };
 
-export default LoanPage;
+export default TreasureNotesPage;

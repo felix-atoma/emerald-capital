@@ -6,7 +6,7 @@ import LoanCalculator from "../components/LoanCalculator";
 import BusinessCTABanner from "../components/BusinessCTABanner";
 import DownloadAppSection from "../components/DownloadAppSection";
 
-const LoanPage = () => {
+const Mtplus = () => {
   return (
     <div>
       <LoanHero />       {/* ✅ Fixed capitalization */}
@@ -19,4 +19,4 @@ const LoanPage = () => {
   );
 };
 
-export default LoanPage;
+export default Mtplus;

@@ -6,7 +6,7 @@ import FAQsSection from "../components/FAQsSection";
 import LoanCalculator from "../components/LoanCalculator";
 import BusinessCTABanner from "../components/BusinessCTABanner";
 
-const LoanPage = () => {
+const MTLoan = () => {
   return (
     <div>
       <HeroSectionMTL />
@@ -19,4 +19,4 @@ const LoanPage = () => {
   );
 };
 
-export default LoanPage;
+export default MTLoan;

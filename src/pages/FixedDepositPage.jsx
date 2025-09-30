@@ -1,16 +1,16 @@
 import React from "react";
-import IPLoanHero from "../components/IPLoanHero";
-import IPPISLoan from "../components/IPPISLoan";
+import FixedDepositHero from "../components/FixedDepositHero";
+import FixedDepositSection from "../components/FixedDepositSection";
 import DownloadAppSection from "../components/DownloadAppSection";
 import FAQsSection from "../components/FAQsSection";
 import LoanCalculator from "../components/LoanCalculator";
 import BusinessCTABanner from "../components/BusinessCTABanner";
 
-const IPloanPage = () => {
+const FixedDepositPage = () => {
   return (
     <div>
-      <IPLoanHero />
-      <IPPISLoan/>
+      <FixedDepositHero/>
+      <FixedDepositSection/>
         <DownloadAppSection />
         <FAQsSection />
         <LoanCalculator />
@@ -19,4 +19,4 @@ const IPloanPage = () => {
   );
 };
 
-export default IPloanPage;
+export default FixedDepositPage;
