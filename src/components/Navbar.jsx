@@ -42,7 +42,7 @@ const Navbar = () => {
 
     return (
       <div className="relative group" onClick={toggle}>
-        <div className="flex items-center space-x-1 cursor-pointer hover:text-red-500 text-sm">
+        <div className="flex items-center space-x-1 cursor-pointer hover:text-deepgreen-500 text-sm">
           {hasDropdown ? (
             <span>{link.label}</span>
           ) : (
@@ -64,7 +64,7 @@ const Navbar = () => {
                 key={item}
                 to={pathFor(item)}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-red-500 text-sm"
+                className="block px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-green-500 text-sm"
               >
                 {item}
               </Link>
