@@ -95,14 +95,13 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-12 bg-white border-b border-gray-200 shadow-sm">
       {/* Logo */}
       <Link to="/" className="flex items-center space-x-1">
-        <div className="w-5 h-5 bg-red-500 rounded"></div>
-        <div className="w-5 h-5 bg-red-400 rounded"></div>
-        <div className="w-5 h-5 bg-red-300 rounded"></div>
-        <div className="ml-2 leading-none">
-          <div className="text-sm font-bold text-gray-800">mutual</div>
-          <div className="text-sm font-bold text-red-500 -mt-0.5">Trust</div>
-        </div>
+          <img
+            src="./emerald-logo.png"
+            alt="Emerald Capital Logo"
+            className="h-10 w-auto m-20"
+          />
       </Link>
+
 
       {/* Desktop Links */}
       <div className="hidden lg:flex items-center space-x-4 text-gray-700">
