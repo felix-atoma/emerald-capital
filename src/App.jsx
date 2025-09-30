@@ -32,6 +32,7 @@ function App() {
           <Route path="mtplus-loans" element={<Mtplus />} />
           <Route path="sme-loan" element={<SMELoan />} />
           <Route path="treasury-note" element={<TreasuryNotesPage />} />
+          <Route path="fixed-deposit" element={<FixedDepositPage/>} />
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
