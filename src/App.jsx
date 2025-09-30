@@ -10,14 +10,15 @@ import ContactComponent from "./pages/Contact";
 import BlogPage from "./pages/BlogPost";
 import MTLoans from "./pages/MTLoans";
 import Ippisloan from "./pages/IPloanPage";
-// import all other pages here as you create them and then add them to the Route below
-
+import Car4CashPage from "./pages/Car4CashPage"; 
+import Mtplus from "./pages/MTPlus";
+import SMELoan from "./pages/SMELoan";
+import TreasuryNotesPage from "./pages/TreasuryNotesPage";  
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* ✅ Pages WITH Navbar & Footer */}
         <Route path="/" element={<RootLayout />}>
           <Route index element={<HomePage />} />
           <Route path="savings-accounts" element={<SavingsAccountPage />} />
@@ -26,15 +27,17 @@ function App() {
           <Route path="blog" element={<BlogPage />} />
           <Route path="mtloans" element={<MTLoans />} />
           <Route path="ippis-loans" element={<Ippisloan />} />
+          <Route path="car4cash" element={<Car4CashPage />} />
+          <Route path="mtplus-loans" element={<Mtplus />} />
+          <Route path="sme-loan" element={<SMELoan />} />
+          <Route path="treasury-note" element={<TreasuryNotesPage />} />
         </Route>
 
-        {/* 🚫 Pages WITHOUT Navbar & Footer */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </Router>
   );
 }
-import IPPISLoan from "./components/IPPISLoan";
 
 export default App;
