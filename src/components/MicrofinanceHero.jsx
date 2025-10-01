@@ -17,7 +17,8 @@ export default function MicrofinanceHero() {
             </h1>
 
             <p className="text-lg text-gray-700">
-              Get easy access to quick loan with no collateral. Settle your financial needs with ease and fast!
+              Get easy access to quick loan with no collateral. Settle your
+              financial needs with ease and fast!
             </p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -55,45 +56,13 @@ export default function MicrofinanceHero() {
           </div>
 
           {/* Right Content - Image Section */}
-          <div className="relative">
-            <div className="relative w-full aspect-square max-w-lg mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-200 via-orange-200 to-purple-300 rounded-full opacity-50"></div>
-
-              <div className="absolute inset-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-t-full overflow-hidden">
-                <div className="w-full h-full flex items-end justify-center">
-                  <div className="w-32 h-32 bg-gray-700 rounded-full mb-8"></div>
-                </div>
-              </div>
-
-              {/* Transaction Cards */}
-              <div className="absolute top-16 -left-4 bg-white rounded-2xl shadow-2xl p-4 w-64 transform -rotate-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Kwame Mensah</p>
-                    <p className="text-xs text-gray-500">Payment for Office</p>
-                  </div>
-                  <span className="ml-auto text-green-600 font-bold">₵80.00</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-600">⚡ GAIN</span>
-                </div>
-              </div>
-
-              <div className="absolute bottom-24 -right-4 bg-white rounded-2xl shadow-2xl p-4 w-64 transform rotate-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Ama Asante</p>
-                    <p className="text-xs font-bold text-gray-900">Bill Payment</p>
-                    <p className="text-xs text-gray-500">📍 Yaa Asantewaa</p>
-                  </div>
-                  <div className="ml-auto flex flex-col items-end">
-                    <span className="text-green-600 font-bold">₵120.00</span>
-                    <span className="text-xs text-gray-600 flex items-center gap-1">⚡ PAID</span>
-                  </div>
-                </div>
-              </div>
+          <div className="relative flex justify-center">
+            <div className="w-full max-w-lg">
+              <img
+                src="/hero.png" // ✅ place `hero.png` inside `public/`
+                alt="Microfinance illustration"
+                className="w-full h-auto object-contain"
+              />
             </div>
           </div>
         </div>
