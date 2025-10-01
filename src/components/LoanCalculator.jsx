@@ -116,7 +116,7 @@ export default function LoanCalculator() {
               {/* Illustration */}
               <div className="relative z-10 flex items-center justify-center">
                 <img
-                  src="https://images.unsplash.com/photo-1554224311-beee2c470c77?w=400&h=300&fit=crop"
+                  src="cartoon.png"
                   alt="Financial planning illustration"
                   className="rounded-2xl opacity-90"
                 />
