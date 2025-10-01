@@ -19,6 +19,9 @@ import MudarabahPage from "./pages/MudarabahPage";
 import MTGreenSolar from "./pages/MTGreenSolar";
 import Agric from "./pages/Agric";
 import  AutoFinance from "./pages/AutoFinance";
+import AboutPage from "./pages/About";
+import Leadership from "./pages/Leadership";
+import Gallary from "./pages/Gallary";
 
 function App() {
   return (
@@ -41,6 +44,9 @@ function App() {
           <Route path="mt-green-solar" element={<MTGreenSolar/>} />
           <Route path="agric-finance" element={<Agric/>} />
           <Route path="auto-finance" element={<AutoFinance/>} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="leadership" element={<Leadership/>} />
+          <Route path="gallery" element={<Gallary/>} />
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
