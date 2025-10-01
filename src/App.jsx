@@ -21,8 +21,8 @@ import Agric from "./pages/Agric";
 import  AutoFinance from "./pages/AutoFinance";
 import AboutPage from "./pages/About";
 import Leadership from "./pages/Leadership";
+import CSRPage from "./pages/CSRPage";
 import Gallary from "./pages/Gallary";
-
 function App() {
   return (
     <Router>
@@ -47,6 +47,7 @@ function App() {
           <Route path="about" element={<AboutPage />} />
           <Route path="leadership" element={<Leadership/>} />
           <Route path="gallery" element={<Gallary/>} />
+          <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage/>} />
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
