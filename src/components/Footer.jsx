@@ -63,21 +63,21 @@ const Footer = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-red-500 flex-shrink-0 mt-1" />
                 <p className="text-gray-300 text-sm">
-                  797 Adetokunbo Ademola Crescent, Wuse 2, Abuja 27, Mississippi Crescent, Maitama, Abuja.
+                  No. 56 Atongo Street, Bolgatanga, Northern Region - Ghana.
                 </p>
               </div>
               
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <a href="mailto:mails@mutualtrustmfb.com" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
-                  mails@mutualtrustmfb.com
+                <a href="mailto:info@emeraldcapital.com" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
+                  info@emeraldcapital.com
                 </a>
               </div>
               
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <a href="tel:07006882587878" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
-                  07006882587878
+                <a href="tel:+23324030303030" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
+                  0240 3030 3030
                 </a>
               </div>
             </div>
@@ -118,10 +118,10 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Loans</h3>
             <ul className="space-y-2">
-              <li><a href="mtloans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">MTLoans</a></li>
+              <li><a href="mtloans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECLoans</a></li>
               <li><a href="ippis-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">IPPIS Loan</a></li>
               <li><a href="car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Car4Cash</a></li>
-              <li><a href="mtplus-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">MTPlus Loan</a></li>
+              <li><a href="mtplus-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECPlus Loan</a></li>
               <li><a href="sme-loan" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loan</a></li>
             </ul>
           </div>

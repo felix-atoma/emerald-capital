@@ -10,7 +10,7 @@ const navLinks = [
   { label: "Banking", dropdown: ["Savings Accounts", "Corporate Accounts"] },
   {
     label: "Loans",
-    dropdown: ["MTLoans", "IPPIS Loans", "Car4Cash", "MTPlus Loans", "SME Loan"],
+    dropdown: ["ECLoans", "IPPIS Loans", "Car4Cash", "ECPlus Loans", "SME Loan"],
   },
   {
     label: "Investment",
