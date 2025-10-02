@@ -1,168 +1,158 @@
-import React, { useState } from 'react';
-import { MapPin, Mail, Phone, Twitter, Facebook, Instagram } from 'lucide-react';
+import React from 'react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
-const FooterComponent = () => {
-  const [email, setEmail] = useState('');
-
-  const handleSubscribe = () => {
-    console.log('Subscribing email:', email);
-    setEmail('');
-  };
-
+const Footer = () => {
   return (
-    <footer className="bg-black text-white relative overflow-hidden">
-      {/* Background tech pattern (unchanged) */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-16 left-20 w-1 h-1 bg-blue-400 rounded-full"></div>
-        <div className="absolute top-32 right-32 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-        <div className="absolute top-48 left-1/3 w-1 h-1 bg-blue-400 rounded-full"></div>
-        <div className="absolute bottom-32 right-20 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-        <div className="absolute bottom-48 left-16 w-1 h-1 bg-blue-400 rounded-full"></div>
-        <div className="absolute top-64 right-1/4 w-1 h-1 bg-blue-500 rounded-full"></div>
-        <div className="absolute bottom-16 left-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-      </div>
-
+    <footer className="relative bg-black text-white overflow-hidden">
+      {/* Circuit Board Background */}
+      <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+            {/* Horizontal lines */}
+            <line x1="0" y1="40" x2="60" y2="40" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="80" y1="40" x2="200" y2="40" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            <line x1="0" y1="120" x2="40" y2="120" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="60" y1="120" x2="140" y2="120" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="160" y1="120" x2="200" y2="120" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            <line x1="0" y1="160" x2="100" y2="160" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="120" y1="160" x2="200" y2="160" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            {/* Vertical lines */}
+            <line x1="50" y1="0" x2="50" y2="80" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="50" y1="100" x2="50" y2="200" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            <line x1="130" y1="0" x2="130" y2="60" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="130" y1="80" x2="130" y2="140" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            <line x1="180" y1="0" x2="180" y2="100" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="180" y1="120" x2="180" y2="200" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            {/* Diagonal lines */}
+            <line x1="0" y1="80" x2="30" y2="50" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            <line x1="150" y1="20" x2="180" y2="50" stroke="#1e40af" strokeWidth="1" opacity="0.5"/>
+            
+            {/* Circuit nodes/dots */}
+            <circle cx="50" cy="40" r="3" fill="#2563eb" opacity="0.8"/>
+            <circle cx="130" cy="120" r="3" fill="#2563eb" opacity="0.8"/>
+            <circle cx="180" cy="160" r="3" fill="#2563eb" opacity="0.8"/>
+            <circle cx="50" cy="160" r="3" fill="#2563eb" opacity="0.8"/>
+            <circle cx="180" cy="40" r="3" fill="#2563eb" opacity="0.8"/>
+            
+            {/* Larger connection points */}
+            <circle cx="70" cy="40" r="2" fill="#3b82f6" opacity="0.6"/>
+            <circle cx="150" cy="120" r="2" fill="#3b82f6" opacity="0.6"/>
+            <circle cx="110" cy="160" r="2" fill="#3b82f6" opacity="0.6"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#circuit)"/>
+      </svg>
+      
+      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <p className="text-gray-300 text-sm leading-relaxed">
+          <div className="md:col-span-1">
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
               We have a value system that is passionately hinged on our professionalism,
-            </p>
-            <p className="text-gray-300 text-sm leading-relaxed">
               ethics, integrity, core values, and superior customer service.
             </p>
-
-            {/* Address */}
-            <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center flex-shrink-0 mt-0.5">
-                <MapPin className="w-4 h-4 text-white" />
+            
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-red-500 flex-shrink-0 mt-1" />
+                <p className="text-gray-300 text-sm">
+                  797 Adetokunbo Ademola Crescent, Wuse 2, Abuja 27, Mississippi Crescent, Maitama, Abuja.
+                </p>
               </div>
-              <div className="text-gray-300 text-sm">
-                797 Adetokunbo Ademola Crescent, Wuse 2, Abuja<br/>
-                27, Mississippi Crescent, Maitama, Abuja.
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                <Mail className="w-4 h-4 text-white" />
-              </div>
-              <a
-                href="mailto:mails@mutualtrustmfb.com"
-                className="text-gray-300 text-sm hover:text-red-500 transition-colors"
-              >
-                mails@mutualtrustmfb.com
-              </a>
-            </div>
-
-            {/* Phone */}
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-red-500 rounded-sm flex items-center justify-center flex-shrink-0">
-                <Phone className="w-4 h-4 text-white" />
-              </div>
-              <a
-                href="tel:07068882587878"
-                className="text-gray-300 text-sm hover:text-red-500 transition-colors"
-              >
-                07068882587878
-              </a>
-            </div>
-
-            {/* Social Icons */}
-            <div className="flex space-x-3 pt-2">
-              {[
-                { icon: Twitter, href: "#" },
-                { icon: Facebook, href: "#" },
-                { icon: Instagram, href: "#" },
-              ].map(({ icon: Icon, href }, i) => (
-                <a
-                  key={i}
-                  href={href}
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
-                >
-                  <Icon className="w-5 h-5 text-gray-800" />
+              
+              <div className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <a href="mailto:mails@mutualtrustmfb.com" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
+                  mails@mutualtrustmfb.com
                 </a>
-              ))}
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Phone className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <a href="tel:07006882587878" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">
+                  07006882587878
+                </a>
+              </div>
+            </div>
+            
+            {/* Social Icons */}
+            <div className="flex gap-3 mt-6">
+              <a href="#" className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-blue-500 transition-colors group">
+                <svg className="w-5 h-5 fill-black group-hover:fill-white" viewBox="0 0 24 24">
+                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                </svg>
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-blue-500 transition-colors group">
+                <svg className="w-5 h-5 fill-black group-hover:fill-white" viewBox="0 0 24 24">
+                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                </svg>
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-blue-500 transition-colors group">
+                <svg className="w-5 h-5 fill-black group-hover:fill-white" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </a>
             </div>
           </div>
-
+          
           {/* Useful Links */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Useful Links</h3>
-            <ul className="space-y-3">
-              {['Home', 'About us', 'Blog', 'Contact', 'Privacy Policy'].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-gray-400 text-sm hover:text-red-500 transition-colors block"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-white font-semibold text-lg mb-4">Useful Links</h3>
+            <ul className="space-y-2">
+              <li><a href="/" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Home</a></li>
+              <li><a href="about" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">About us</a></li>
+              <li><a href="blog" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Blog</a></li>
+              <li><a href="contact" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Contact</a></li>
+              <li><a href="pprivacy-policy" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
-
+          
           {/* Loans */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Loans</h3>
-            <ul className="space-y-3">
-              {['MTLoans', 'IPPIS Loan', 'Car4Cash', 'MTPlus Loan', 'SME Loan'].map((loan) => (
-                <li key={loan}>
-                  <a
-                    href="#"
-                    className="text-gray-400 text-sm hover:text-red-500 transition-colors block"
-                  >
-                    {loan}
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-white font-semibold text-lg mb-4">Loans</h3>
+            <ul className="space-y-2">
+              <li><a href="mtloans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">MTLoans</a></li>
+              <li><a href="ippis-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">IPPIS Loan</a></li>
+              <li><a href="car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Car4Cash</a></li>
+              <li><a href="mtplus-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">MTPlus Loan</a></li>
+              <li><a href="sme-loan" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loan</a></li>
             </ul>
           </div>
-
+          
           {/* Newsletter */}
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Newsletter</h3>
-            <p className="text-gray-400 text-sm mb-4">
-              Be the first to know, subscribe to our newsletter
-            </p>
-            <div className="space-y-3">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+            <h3 className="text-white font-semibold text-lg mb-4">Newsletter</h3>
+            <p className="text-gray-300 text-sm mb-4">Be the first to know, subscribe to our newsletter</p>
+            <div className="flex">
+              <input 
+                type="email" 
+                placeholder="Enter your email" 
+                className="flex-1 px-4 py-2 bg-gray-800 text-white text-sm border border-gray-700 rounded-l focus:outline-none focus:border-blue-500"
               />
-              <button
-                onClick={handleSubscribe}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded transition-colors text-sm"
-              >
+              <button className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-r hover:bg-blue-700 transition-colors">
                 Subscribe
               </button>
             </div>
-            <p className="text-gray-500 text-xs mt-3">
-              By subscribing, you accepted our{' '}
-              <a href="#" className="text-gray-400 hover:text-red-500 underline transition-colors">
-                Policy
-              </a>
+            <p className="text-gray-400 text-xs mt-3 italic">
+              By subscribing, you accepted the our <a href="#" className="text-gray-300 hover:text-blue-400 transition-colors underline">Policy</a>
             </p>
           </div>
         </div>
-
-        {/* Footer Bottom */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 space-y-2 md:space-y-0 md:space-x-2">
-            <a
-              href="#"
-              className="hover:text-red-500 transition-colors underline"
-            >
-              Developed by Goldencity Media
-            </a>
-            <span className="hidden md:inline">|</span>
-            <span>© 2024 Copyrights. MutualTrust MFBank Ltd. All Rights Reserved</span>
+        
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+          <div className="text-gray-400">
+            Developed by <a href="#" className="text-white hover:text-blue-400 transition-colors underline">FeliD Media</a>
+          </div>
+          <div className="text-gray-400">
+            © 2025 Copyrights. <span className="text-white">Emerald Capital Ltd.</span> All Rights Reserved
           </div>
         </div>
       </div>
@@ -170,4 +160,4 @@ const FooterComponent = () => {
   );
 };
 
-export default FooterComponent;
+export default Footer;

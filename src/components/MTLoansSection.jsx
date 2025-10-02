@@ -11,22 +11,16 @@ const MTLoansSection = () => {
               {/* Orange Circle Background */}
               <div className="w-full aspect-square max-w-md mx-auto bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center p-12">
                 <div className="relative">
-                  <div className="bg-white rounded-3xl p-4 shadow-2xl transform -rotate-12">
-                    <div className="w-48 h-96 bg-gray-900 rounded-2xl overflow-hidden">
-                      {/* Phone Screen */}
-                      <div className="bg-white h-full p-4">
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="w-8 h-8 bg-red-600 rounded"></div>
-                          <div className="text-xs font-bold text-gray-800">MTBank</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-xs text-gray-600">Loan Application</div>
-                          <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                          <div className="h-2 bg-gray-200 rounded w-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                 <div className="bg-white rounded-3xl p-4 shadow-2xl transform -rotate-12">
+  <div className="w-48 h-96 rounded-2xl overflow-hidden">
+    <img
+      src="phone.png"   // ✅ put your image in /public folder OR import from /src/assets
+      alt="MTLoan App Preview"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
 
                   {/* Approval Badge */}
                   <div className="absolute -right-8 top-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-xl p-4 border-2 border-gray-100">
