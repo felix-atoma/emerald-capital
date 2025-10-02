@@ -11,7 +11,7 @@ import BlogPage from "./pages/BlogPost";
 import MTLoans from "./pages/MTLoans";
 import Ippisloan from "./pages/IPloanPage";
 import Car4CashPage from "./pages/Car4CashPage"; 
-import Mtplus from "./pages/MTPlus";
+import MTPlus from "./pages/MTPlus";
 import SMELoan from "./pages/SMELoan";
 import TreasuryNotesPage from "./pages/TreasuryNotesPage";  
 import FixedDepositPage from "./pages/FixedDepositPage";
@@ -41,7 +41,7 @@ function App() {
           <Route path="mtloans" element={<MTLoans />} />
           <Route path="ippis-loans" element={<Ippisloan />} />
           <Route path="car4cash" element={<Car4CashPage />} />
-          <Route path="mtplus-loans" element={<Mtplus />} />
+          <Route path="mtplus-loans" element={<MTPlus />} />
           <Route path="sme-loan" element={<SMELoan />} />
           <Route path="treasury-note" element={<TreasuryNotesPage />} />
           <Route path="fixed-deposit" element={<FixedDepositPage/>} />
