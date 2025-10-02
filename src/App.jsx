@@ -27,6 +27,7 @@ import Gallary from "./pages/Gallary";
 
 
 
+
 function App() {
   return (
     <Router>
