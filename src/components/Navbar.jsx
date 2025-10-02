@@ -6,28 +6,29 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
 
-  const navLinks = [
-    { label: "Banking", dropdown: ["Savings Accounts", "Corporate Accounts"] },
-    {
-      label: "Loans",
-      dropdown: ["MTLoans", "IPPIS Loans", "Car4Cash", "MTPlus Loans", "SME Loan"],
-    },
-    {
-      label: "Investment",
-      dropdown: ["Treasury Note", "Fixed Deposit", "Mudurabah"],
-    },
-    {
-      label: "Asset Finance",
-      dropdown: ["MT Green Solar", "Agric Finance", "Auto Finance"],
-    },
-    {
-      label: "Company",
-      dropdown: ["About", "Leadership", "Gallery", "Corporate & Social Responsibility (CSR)"],
-    },
-    { label: "Blog" },
-    { label: "Contact" },
-    { label: "Internet Banking", path: "/login" },
-  ];
+const navLinks = [
+  { label: "Banking", dropdown: ["Savings Accounts", "Corporate Accounts"] },
+  {
+    label: "Loans",
+    dropdown: ["MTLoans", "IPPIS Loans", "Car4Cash", "MTPlus Loans", "SME Loan"],
+  },
+  {
+    label: "Investment",
+    dropdown: ["Treasury Note", "Fixed Deposit", "Mudurabah"],
+  },
+  {
+    label: "Asset Finance",
+    dropdown: ["MT Green Solar", "Agric Finance", "Auto Finance"],
+  },
+  {
+    label: "Company",
+    dropdown: ["About", "Leadership", "Gallery", "Corporate & Social Responsibility (CSR)"],
+  },
+  { label: "Blog" },
+  { label: "Contact" },
+  // 🚨 Removed "Internet Banking" from here
+];
+
 
   const NavItem = ({ link, isMobile = false }) => {
     const hasDropdown = !!link.dropdown;
@@ -92,7 +93,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-12 bg-white border-b border-gray-200 shadow-sm">
+    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-20 bg-white border-b border-gray-200 shadow-sm">
       {/* Logo */}
       <Link to="/" className="flex items-center space-x-1">
           <img
@@ -114,7 +115,7 @@ const Navbar = () => {
       <div className="flex items-center space-x-2">
         <Link
           to="/login"
-          className="hidden lg:block bg-red-500 text-white px-4 py-1 rounded-full text-xs font-semibold hover:bg-red-600"
+          className="hidden lg:block bg-red-500 text-white px-5 py-3 rounded-full text-xs font-semibold hover:bg-red-600"
         >
           Internet Banking
         </Link>

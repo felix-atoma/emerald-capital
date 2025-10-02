@@ -1,152 +1,80 @@
-import React from 'react';
-import { ChevronRight, ArrowRight } from 'lucide-react';
+import React from "react";
 
-const PrivateSectorLoan = () => {
+export default function FeaturesSection() {
   return (
-    <div className="max-w-7xl mx-auto bg-white">
-      {/* Main Content Section */}
-      <div className="flex flex-col lg:flex-row gap-8 p-6">
-        {/* Left Section - Hero Image and Content */}
-        <div className="lg:w-2/3">
-          {/* Hero Image */}
-          <div className="relative mb-6">
-            <img 
-              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80" 
-              alt="Two women at a market with fresh vegetables" 
-              className="w-full h-64 lg:h-80 object-cover rounded-lg"
-            />
+    <div className="relative mt-0 w-full bg-slate-900 py-16 px-4 md:px-8 overflow-hidden">
+      {/* Background swirl/line design */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <svg
+          className="w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern
+              id="swirlPattern"
+              x="0"
+              y="0"
+              width="200"
+              height="200"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 100 0 C 150 50, 50 150, 100 200
+                   M 0 100 C 50 50, 150 150, 200 100"
+                fill="none"
+                stroke="white"
+                strokeWidth="0.5"
+                opacity="0.2"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#swirlPattern)" />
+        </svg>
+      </div>
+
+      {/* Foreground content */}
+      <div className="relative grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        {/* Feature 1 */}
+        <div className="flex gap-6 items-start">
+          <div className="flex-shrink-0 w-14 h-14 border-2 border-gray-600 rounded-2xl bg-gray-700/40 backdrop-blur-sm flex items-center justify-center">
+            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <line x1="12" y1="18" x2="12" y2="18" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
           </div>
-
-          {/* Content */}
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
-              Private Sector Loan
-            </h1>
-            
-            <p className="text-gray-600 mb-2">
-              Are you a private sector employee looking for fast and easy loans in Nigeria? Look no further!
-            </p>
-            
-            <p className="text-gray-600 mb-8">
-              Let's get rid of your financial worries today. Get a quick loan with no hassles.
-            </p>
-
-            {/* Requirements Section */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Requirements</h2>
-              
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">6 Months Bank Statement:</span>
-                    <span className="text-gray-600 ml-1">
-                      We will need the last six months account statement of your business.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">Collateral Documents:</span>
-                    <span className="text-gray-600 ml-1">
-                      Original collateral documents are also needed.
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800">Valid Identification:</span>
-                    <span className="text-gray-600 ml-1">
-                      We will need your passport and any valid means of identification for KYC purposes.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Get Started Button */}
-            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-4 rounded-full flex items-center gap-2 transition-colors">
-              Get Started Now
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            <h3 className="text-lg font-bold text-white mb-1">Excellent Banking</h3>
+            <p className="text-gray-300 text-sm">Save Smart, Spend Wisely. Take Control of Your finances</p>
           </div>
         </div>
 
-        {/* Right Section - Service Categories and CTA */}
-        <div className="lg:w-1/3 space-y-6">
-          {/* Service Category */}
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Service Category</h3>
-            
-            <div className="space-y-3">
-              <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
-                <span className="text-gray-700">10 Hours Prompt Loan</span>
-                <ChevronRight className="w-4 h-4 text-red-500" />
-              </div>
-              
-              <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
-                <span className="text-gray-700">Mutual Plus Loan</span>
-                <ChevronRight className="w-4 h-4 text-red-500" />
-              </div>
-              
-              <div className="flex items-center justify-between py-2 border-b border-gray-200 last:border-b-0">
-                <span className="text-gray-700">MT loans</span>
-                <ChevronRight className="w-4 h-4 text-red-500" />
-              </div>
-              
-              <div className="flex items-center justify-between py-2">
-                <span className="text-gray-700">SME Loans</span>
-                <ChevronRight className="w-4 h-4 text-red-500" />
-              </div>
-            </div>
+        {/* Feature 2 */}
+        <div className="flex gap-6 items-start">
+          <div className="flex-shrink-0 w-14 h-14 border-2 border-gray-600 rounded-2xl bg-gray-700/40 backdrop-blur-sm flex items-center justify-center">
+            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M17 3a2.83 2.83 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </div>
+          <div>
+            <h3 className="text-lg font-bold text-white mb-1">Flexible Loan</h3>
+            <p className="text-gray-300 text-sm">We provide fast access to funds for urgent financial needs.</p>
+          </div>
+        </div>
 
-          {/* Call to Action */}
-          <div className="bg-gray-50 p-6 rounded-lg text-center">
-            <p className="text-red-500 font-semibold mb-2">Call To Action</p>
-            
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              Make An Custom Request
-            </h3>
-
-            {/* Phone mockup */}
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <div className="w-32 h-64 bg-black rounded-3xl p-1">
-                  <div className="w-full h-full bg-white rounded-3xl relative overflow-hidden">
-                    {/* Phone notch */}
-                    <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-3 bg-black rounded-full"></div>
-                    
-                    {/* Phone content */}
-                    <div className="pt-8 px-4 h-full flex items-center justify-center">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <div className="w-4 h-4 bg-white rounded"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button className="bg-white border border-gray-200 hover:border-gray-300 text-gray-800 font-semibold px-6 py-3 rounded-lg flex items-center gap-2 mx-auto transition-colors">
-              Get A Quote
-              <ArrowRight className="w-4 h-4" />
-            </button>
+        {/* Feature 3 */}
+        <div className="flex gap-6 items-start">
+          <div className="flex-shrink-0 w-14 h-14 border-2 border-gray-600 rounded-2xl bg-gray-700/40 backdrop-blur-sm flex items-center justify-center">
+            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-white mb-1">Fast & Friendly Support</h3>
+            <p className="text-gray-300 text-sm">We provide 24 hours support for all customer.</p>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default PrivateSectorLoan;
+}
