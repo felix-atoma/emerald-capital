@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight, Mail } from "lucide-react";
+import { Link } from "react-router-dom"; // ✅ Import Link
 
 export default function MicrofinanceHero() {
   return (
@@ -22,12 +23,16 @@ export default function MicrofinanceHero() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <button className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-full flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+              {/* ✅ Apply for Loan button now links to /loan-form */}
+              <Link
+                to="form"
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-full flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
                 Apply For Loan
                 <div className="bg-white rounded-full p-1">
                   <ArrowRight className="w-5 h-5 text-red-600" />
                 </div>
-              </button>
+              </Link>
 
               <div className="flex flex-col">
                 <span className="text-gray-400 text-sm mb-1">Support Email</span>

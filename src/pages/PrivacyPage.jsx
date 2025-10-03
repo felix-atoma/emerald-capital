@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PrivacyPolicy = () => {
+const PrivacyPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto bg-white shadow-sm rounded-lg p-8 md:p-12">
@@ -105,4 +105,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default PrivacyPage;

@@ -23,6 +23,8 @@ import AboutPage from "./pages/About";
 import Leadership from "./pages/Leadership";
 import CSRPage from "./pages/CSRPage";
 import Gallary from "./pages/Gallary";
+import Form  from './pages/Form';
+import PrivacyPage from "./pages/PrivacyPage";
 
 
 
@@ -53,6 +55,8 @@ function App() {
           <Route path="leadership" element={<Leadership/>} />
           <Route path="gallery" element={<Gallary/>} />
           <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage/>} />
+          <Route path="form" element={<Form/>} />
+          <Route path="privacy-page" element={<PrivacyPage/>} />
          
 
         </Route>

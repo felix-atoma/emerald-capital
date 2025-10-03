@@ -1,4 +1,5 @@
  import React, { useState, useEffect, useRef } from "react";
+ import { Link } from "react-router-dom"; 
 
 const FinancialProductsSite = () => {
   const [isNavFixed, setIsNavFixed] = useState(false);
@@ -201,9 +202,11 @@ const FinancialProductsSite = () => {
                 loans. Pay your rent, school fees, medical expenses and other
                 financial needs at a go.
               </p>
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-                Apply For IPPIS Loan
-              </button>
+              <Link to="form">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+    Apply For IPPIS Loan
+  </button>
+</Link>
             </div>
           </div>
         </div>
@@ -234,10 +237,12 @@ const FinancialProductsSite = () => {
                 offices. Get a quality and affordable solar energy system with
                 flexible repayments ranging from 1 to 12 months
               </p>
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-                Apply For MTGreen
-                <span>→</span>
-              </button>
+              <Link to="form">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+    Apply For MTGreen
+    <span>→</span>
+  </button>
+</Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative w-full h-96 rounded-lg overflow-hidden shadow-xl">
@@ -317,9 +322,11 @@ const FinancialProductsSite = () => {
                   <span className="text-gray-700">Easy Application</span>
                 </div>
               </div>
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-                Apply For MTloans
-              </button>
+             <Link to="form">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+    Apply For MTloans
+  </button>
+</Link>
             </div>
           </div>
         </div>
@@ -347,9 +354,11 @@ const FinancialProductsSite = () => {
                 where we come in. Get easy access to funds of up to N100 million
                 to take your business to the next level.
               </p>
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-                Apply For SME Loan
-              </button>
+              <Link to="form">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+    Apply For SME Loan
+  </button>
+</Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
@@ -393,7 +402,7 @@ const FinancialProductsSite = () => {
         <div className="absolute top-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
           <p className="text-sm font-semibold">
             2024 Benz ={" "}
-            <span className="text-green-600">N100,000,000</span>
+            <span className="text-green-600">GHS 100,000,000</span>
           </p>
         </div>
       </div>
@@ -412,10 +421,12 @@ const FinancialProductsSite = () => {
           Do you have a car and you need quick funds? Explore the value of your
           car and get the funds that you need.
         </p>
-        <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-          Apply For Car4Cash
-          <span>→</span>
-        </button>
+       <Link to="form">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+    Apply For Car4Cash
+    <span>→</span>
+  </button>
+</Link>
       </div>
     </div>
   </div>
@@ -443,10 +454,12 @@ const FinancialProductsSite = () => {
                 Grow your wealth with us and enjoy guaranteed return on
                 investments. Security guaranteed with easy liquidation.
               </p>
-              <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-                Invest With Us
-                <span>→</span>
-              </button>
+              <Link to="/contact">
+  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+    Invest With Us
+    <span>→</span>
+  </button>
+</Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative flex justify-center">
