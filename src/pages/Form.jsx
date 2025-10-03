@@ -157,12 +157,12 @@ export default function GhanaLoanForm() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                MT
+                EC
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-blue-600">Mutual Trust</h1>
+                <h1 className="text-2xl font-bold text-blue-600">EMERALD CAPITAL</h1>
                 <p className="text-sm font-semibold text-gray-700">MICROFINANCE BANK LTD</p>
-                <p className="text-xs text-gray-600">Accra, Ghana</p>
+                <p className="text-xs text-gray-600">Bolgatanga, Ghana</p>
                 <p className="text-xs text-gray-600">+233 24 123 4567</p>
                 <p className="text-xs text-gray-600">info@mutualtrustgh.com</p>
               </div>

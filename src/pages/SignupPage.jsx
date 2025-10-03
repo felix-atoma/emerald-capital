@@ -7,10 +7,7 @@ const SignupPage = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [formData, setFormData] = useState({
-    bvn: '',
-    dob: '',
-    idType: '',
-    idNumber: '',
+    ghanaCardNumber: '',
     fullName: '',
     phone: '',
     email: '',
@@ -23,10 +20,9 @@ const SignupPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const steps = [
-    { number: 1, label: 'Verify BVN', component: 'bvn' },
-    { number: 2, label: 'Verify Identity', component: 'identity' },
-    { number: 3, label: 'Confirm Information', component: 'confirm' },
-    { number: 4, label: 'Create Credentials', component: 'credentials' }
+    { number: 1, label: 'Verify Ghana Card', component: 'identity' },
+    { number: 2, label: 'Confirm Information', component: 'confirm' },
+    { number: 3, label: 'Create Credentials', component: 'credentials' }
   ];
 
   const handleInputChange = (field, value) => {
@@ -43,25 +39,10 @@ const SignupPage = () => {
     }
   };
 
-  const validateBVN = () => {
-    const newErrors = {};
-    if (formData.bvn.length !== 11 || !/^\d+$/.test(formData.bvn)) {
-      newErrors.bvn = 'BVN must be 11 digits';
-    }
-    if (!formData.dob) {
-      newErrors.dob = 'Please select your date of birth';
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const validateIdentity = () => {
     const newErrors = {};
-    if (!formData.idType) {
-      newErrors.idType = 'Please select an ID type';
-    }
-    if (formData.idNumber.length < 5) {
-      newErrors.idNumber = 'Please enter a valid ID number';
+    if (!formData.ghanaCardNumber || formData.ghanaCardNumber.length < 10) {
+      newErrors.ghanaCardNumber = 'Please enter a valid Ghana Card number';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,15 +86,12 @@ const SignupPage = () => {
 
     switch (currentStep) {
       case 0:
-        isValid = validateBVN();
-        break;
-      case 1:
         isValid = validateIdentity();
         break;
-      case 2:
+      case 1:
         isValid = validateConfirmation();
         break;
-      case 3:
+      case 2:
         isValid = validateCredentials();
         break;
       default:
@@ -147,10 +125,7 @@ const SignupPage = () => {
       setCurrentPage('signup');
       setCurrentStep(0);
       setFormData({
-        bvn: '',
-        dob: '',
-        idType: '',
-        idNumber: '',
+        ghanaCardNumber: '',
         fullName: '',
         phone: '',
         email: '',
@@ -250,7 +225,7 @@ const SignupPage = () => {
             <div className="mb-6">
               <h3 className="text-lg text-gray-800 mb-3">Information We Collect</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                We collect personal information including but not limited to your name, contact details, BVN, 
+                We collect personal information including but not limited to your name, contact details, Ghana Card, 
                 identification documents, and financial information necessary for account creation and management.
               </p>
             </div>
@@ -305,74 +280,27 @@ const SignupPage = () => {
     </div>
   );
 
-  const BVNStep = () => (
+  const IdentityStep = () => (
     <div>
-      <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Bank Verification Number</h1>
-      <p className="text-gray-500 text-base mb-8">Lets verify who you are</p>
+      <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Verify Ghana Card</h1>
+      <p className="text-gray-500 text-base mb-8">Enter your Ghana Card details</p>
 
       <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">BVN 11 Digits</label>
+        <label className="block text-gray-700 text-sm font-medium mb-2">Ghana Card Number</label>
         <input
           type="text"
-          value={formData.bvn}
-          onChange={e => handleInputChange('bvn', e.target.value)}
+          value={formData.ghanaCardNumber}
+          onChange={e => handleInputChange('ghanaCardNumber', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
-          placeholder="Enter your BVN"
-          maxLength={11}
+          placeholder="GHA-XXXXXXXXX-X"
         />
-        {errors.bvn && <div className="text-red-600 text-sm mt-1">{errors.bvn}</div>}
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Date of Birth</label>
-        <input
-          type="date"
-          value={formData.dob}
-          onChange={e => handleInputChange('dob', e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
-        />
-        {errors.dob && <div className="text-red-600 text-sm mt-1">{errors.dob}</div>}
+        {errors.ghanaCardNumber && <div className="text-red-600 text-sm mt-1">{errors.ghanaCardNumber}</div>}
       </div>
 
       <div className="bg-gradient-to-br from-blue-800 to-purple-600 text-white p-5 rounded-xl mb-6">
-        <h4 className="text-base mb-3">Here's why we need your BVN</h4>
-        <p className="text-sm opacity-90 leading-relaxed">We need to verify you are who you say you are</p>
-        <p className="text-sm opacity-90 leading-relaxed">We need to ensure we can profile accordingly</p>
-      </div>
-    </div>
-  );
-
-  const IdentityStep = () => (
-    <div>
-      <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Verify Identity</h1>
-      <p className="text-gray-500 text-base mb-8">Upload a valid government-issued ID</p>
-
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">ID Type</label>
-        <select
-          value={formData.idType}
-          onChange={e => handleInputChange('idType', e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
-        >
-          <option value="">Select ID Type</option>
-          <option value="national_id">National ID Card</option>
-          <option value="passport">International Passport</option>
-          <option value="drivers_license">Driver's License</option>
-          <option value="voters_card">Voter's Card</option>
-        </select>
-        {errors.idType && <div className="text-red-600 text-sm mt-1">{errors.idType}</div>}
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">ID Number</label>
-        <input
-          type="text"
-          value={formData.idNumber}
-          onChange={e => handleInputChange('idNumber', e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
-          placeholder="Enter ID number"
-        />
-        {errors.idNumber && <div className="text-red-600 text-sm mt-1">{errors.idNumber}</div>}
+        <h4 className="text-base mb-3">Why we need your Ghana Card</h4>
+        <p className="text-sm opacity-90 leading-relaxed">Ghana Card is the official national identification</p>
+        <p className="text-sm opacity-90 leading-relaxed">We use it to verify your identity and comply with regulations</p>
       </div>
     </div>
   );
@@ -484,15 +412,13 @@ const SignupPage = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <BVNStep />;
-      case 1:
         return <IdentityStep />;
-      case 2:
+      case 1:
         return <ConfirmStep />;
-      case 3:
+      case 2:
         return <CredentialsStep />;
       default:
-        return <BVNStep />;
+        return <IdentityStep />;
     }
   };
 

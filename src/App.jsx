@@ -55,12 +55,12 @@ function App() {
           <Route path="leadership" element={<Leadership/>} />
           <Route path="gallery" element={<Gallary/>} />
           <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage/>} />
-          <Route path="form" element={<Form/>} />
+          
           <Route path="privacy-page" element={<PrivacyPage/>} />
          
 
         </Route>
-
+        <Route path="form" element={<Form/>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
