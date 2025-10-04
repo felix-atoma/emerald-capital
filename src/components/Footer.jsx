@@ -1,7 +1,70 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { newsletterAPI } from '../services/api';
+import toast from "react-hot-toast";
+
+toast.success("Form submitted successfully!");
+toast.error("Something went wrong!");
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [subscriptionStatus, setSubscriptionStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setSubscriptionStatus('Please enter your email address');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setSubscriptionStatus('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubscriptionStatus('');
+
+    try {
+      const response = await newsletterAPI.subscribe({ email });
+      
+      if (response.data.success) {
+        setSubscriptionStatus('Successfully subscribed to our newsletter!');
+        setEmail('');
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+          setSubscriptionStatus('');
+        }, 5000);
+      }
+    } catch (error) {
+      // Handle different error cases
+      if (error.response?.status === 400) {
+        if (error.response?.data?.message?.includes('already subscribed')) {
+          setSubscriptionStatus('This email is already subscribed to our newsletter.');
+        } else {
+          setSubscriptionStatus(error.response?.data?.message || 'Invalid email address.');
+        }
+      } else {
+        setSubscriptionStatus('Subscription failed. Please try again later.');
+      }
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubscriptionStatus('');
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   return (
     <footer className="relative bg-black text-white overflow-hidden">
       {/* Circuit Board Background */}
@@ -107,10 +170,10 @@ const Footer = () => {
             <h3 className="text-white font-semibold text-lg mb-4">Useful Links</h3>
             <ul className="space-y-2">
               <li><a href="/" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Home</a></li>
-              <li><a href="about" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">About us</a></li>
-              <li><a href="blog" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Blog</a></li>
-              <li><a href="contact" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Contact</a></li>
-              <li><a href="privacy-page" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+              <li><a href="/about" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">About us</a></li>
+              <li><a href="/blog" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Blog</a></li>
+              <li><a href="/contact" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Contact</a></li>
+              <li><a href="/privacy" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
           
@@ -118,11 +181,11 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Loans</h3>
             <ul className="space-y-2">
-              <li><a href="mtloans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECLoans</a></li>
-              <li><a href="ippis-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">IPPIS Loan</a></li>
-              <li><a href="car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Car4Cash</a></li>
-              <li><a href="mtplus-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECPlus Loan</a></li>
-              <li><a href="sme-loan" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loan</a></li>
+              <li><a href="/loans/ec-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECLoans</a></li>
+              <li><a href="/loans/ippis" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">IPPIS Loan</a></li>
+              <li><a href="/loans/car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Car4Cash</a></li>
+              <li><a href="/loans/ec-plus" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECPlus Loan</a></li>
+              <li><a href="/loans/sme" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loan</a></li>
             </ul>
           </div>
           
@@ -130,18 +193,43 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Newsletter</h3>
             <p className="text-gray-300 text-sm mb-4">Be the first to know, subscribe to our newsletter</p>
-            <div className="flex">
+            
+            <form onSubmit={handleNewsletterSubmit} className="flex">
               <input 
                 type="email" 
                 placeholder="Enter your email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 px-4 py-2 bg-gray-800 text-white text-sm border border-gray-700 rounded-l focus:outline-none focus:border-blue-500"
+                required
+                disabled={isSubmitting}
               />
-              <button className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-r hover:bg-blue-700 transition-colors">
-                Subscribe
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-6 py-2 text-white text-sm font-medium rounded-r transition-colors ${
+                  isSubmitting 
+                    ? 'bg-gray-600 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </div>
+            </form>
+
+            {/* Status Messages */}
+            {subscriptionStatus && (
+              <div className={`mt-3 text-xs ${
+                subscriptionStatus.includes('Successfully') || subscriptionStatus.includes('already subscribed')
+                  ? 'text-green-400' 
+                  : 'text-red-400'
+              }`}>
+                {subscriptionStatus}
+              </div>
+            )}
+
             <p className="text-gray-400 text-xs mt-3 italic">
-              By subscribing, you accepted the our <a href="#" className="text-gray-300 hover:text-blue-400 transition-colors underline">Policy</a>
+              By subscribing, you accept our <a href="/privacy" className="text-gray-300 hover:text-blue-400 transition-colors underline">Privacy Policy</a>
             </p>
           </div>
         </div>

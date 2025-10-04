@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { Headphones, X, Check } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext'
+import toast from "react-hot-toast";
+toast.success("Form submitted successfully!");
+toast.error("Something went wrong!");
 
-const SignupPage = () => {
+const SignupPage = ({ onNavigate }) => {
+  const { register } = useAuth();
   const [currentPage, setCurrentPage] = useState('signup');
   const [currentStep, setCurrentStep] = useState(0);
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -30,7 +35,6 @@ const SignupPage = () => {
       ...prev,
       [field]: value
     }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -115,42 +119,48 @@ const SignupPage = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      alert('Account created successfully! Welcome to Mutual Trust MFBank.');
-      // Reset form
-      setCurrentPage('signup');
-      setCurrentStep(0);
-      setFormData({
-        ghanaCardNumber: '',
-        fullName: '',
-        phone: '',
-        email: '',
-        address: '',
-        username: '',
-        password: '',
-        confirmPassword: ''
+    setErrors({});
+
+    const userData = {
+      ghanaCardNumber: formData.ghanaCardNumber,
+      fullName: formData.fullName,
+      phone: formData.phone,
+      email: formData.email,
+      address: formData.address,
+      username: formData.username,
+      password: formData.password
+    };
+
+    const result = await register(userData);
+
+    if (result.success) {
+      alert('Account created successfully! Welcome to Emerald Capital.');
+      if (onNavigate) {
+        onNavigate('/dashboard');
+      }
+    } else {
+      setErrors({
+        general: result.message || 'Registration failed. Please try again.'
       });
-    }, 2000);
+      setIsSubmitting(false);
+    }
   };
 
   const handleCustomerService = () => {
     alert('Customer service chat would open here.');
   };
 
-  const Logo = () => (
-    <div className="flex items-center mb-10">
+  const Logo = ({ className = '' }) => (
+    <div className={`flex items-center ${className}`}>
       <div className="w-10 h-8 bg-red-600 mr-3 relative rounded-sm">
         <div className="absolute top-1 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
         <div className="absolute top-3.5 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
       </div>
       <div className="text-gray-800 text-lg font-bold leading-tight">
-        mutual<br />
-        <span className="text-red-600">trust</span>{' '}
-        <span className="text-blue-600 font-normal">MFBank</span>
+        Emerald<br />
+        <span className="text-blue-600 font-normal">Capital</span>
       </div>
     </div>
   );
@@ -191,15 +201,13 @@ const SignupPage = () => {
       onClick={() => setShowTermsModal(false)}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto relative"
+        className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto relative m-4"
         onClick={e => e.stopPropagation()}
       >
         <div className="p-10">
           <div className="flex items-center mb-8 relative">
-            <div className="w-12 h-10 bg-gradient-to-br from-blue-600 to-red-600 rounded-full flex items-center justify-center mr-4">
-              <span className="text-white text-xl">🔒</span>
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-800">Terms & Conditions</h2>
+            <Logo />
+            <h2 className="text-2xl font-semibold text-gray-800 ml-4">Terms & Conditions</h2>
             <button
               className="absolute right-0 top-0 text-gray-500 text-2xl bg-none border-none cursor-pointer"
               onClick={() => setShowTermsModal(false)}
@@ -209,24 +217,23 @@ const SignupPage = () => {
           </div>
 
           <div className="mb-8">
-            <Logo />
-            
             <div className="mb-6">
               <h3 className="text-lg text-gray-800 mb-3">
                 <span className="text-red-600">Privacy</span> Policy
               </h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                At Mutual Trust Microfinance Bank Limited (hereinafter referred to as Mutual Trust MFBank Limited), 
-                one of our main priorities is the privacy of our visitors. This Privacy Policy document contains 
-                types of information that is collected and recorded by Mutual Trust MFBank Limited and how we use it.
+                At Mutual Trust Microfinance Bank Limited, one of our main priorities is the privacy 
+                of our visitors. This Privacy Policy document contains types of information that is 
+                collected and recorded and how we use it.
               </p>
             </div>
 
             <div className="mb-6">
               <h3 className="text-lg text-gray-800 mb-3">Information We Collect</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                We collect personal information including but not limited to your name, contact details, Ghana Card, 
-                identification documents, and financial information necessary for account creation and management.
+                We collect personal information including but not limited to your name, contact details, 
+                Ghana Card, identification documents, and financial information necessary for account 
+                creation and management.
               </p>
             </div>
 
@@ -254,7 +261,7 @@ const SignupPage = () => {
                 onChange={e => setAgreeTerms(e.target.checked)}
                 className="w-5 h-5 text-red-600 mt-0.5"
               />
-              <label htmlFor="agreeTerms" className="text-gray-700 text-sm">
+              <label htmlFor="agreeTerms" className="text-gray-700 text-sm cursor-pointer">
                 I Agree to the Terms & Conditions and Privacy Policy
               </label>
             </div>
@@ -365,6 +372,12 @@ const SignupPage = () => {
       <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Create Credentials</h1>
       <p className="text-gray-500 text-base mb-8">Set up your login details</p>
 
+      {errors.general && (
+        <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-5">
+          {errors.general}
+        </div>
+      )}
+
       <div className="mb-5">
         <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
         <input
@@ -403,7 +416,7 @@ const SignupPage = () => {
 
       {isSubmitting && (
         <div className="text-green-600 text-sm mb-5">
-          ✓ Account created successfully! Redirecting to dashboard...
+          ✓ Creating your account...
         </div>
       )}
     </div>
@@ -424,11 +437,10 @@ const SignupPage = () => {
 
   return (
     <div className="h-screen bg-white flex overflow-hidden">
-      {/* Left Section */}
       <div className="flex-1 p-14 flex flex-col justify-center max-w-lg overflow-y-auto">
         {currentPage === 'signup' ? (
           <div>
-            <Logo />
+            <Logo className="mb-10" />
             
             <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Do you have an Account with Us?</h1>
             <p className="text-gray-500 text-base mb-10"></p>
@@ -448,17 +460,17 @@ const SignupPage = () => {
             </button>
 
             <div className="text-center text-gray-700 text-sm mt-5">
-              <a 
-                href="/login" 
-                className="text-red-600 no-underline font-medium hover:underline"
+              <button 
+                onClick={() => onNavigate && onNavigate('/login')}
+                className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer"
               >
                 Go Back to Login
-              </a>
+              </button>
             </div>
           </div>
         ) : (
           <div>
-            <Logo />
+            <Logo className="mb-10" />
             <ProgressSteps />
             {renderStepContent()}
             
@@ -466,6 +478,7 @@ const SignupPage = () => {
               <button
                 className="flex-1 py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all hover:border-gray-400"
                 onClick={handleBack}
+                disabled={isSubmitting}
               >
                 ← Back
               </button>
@@ -486,7 +499,6 @@ const SignupPage = () => {
         )}
       </div>
 
-      {/* Right Section */}
       <div className="flex-1 bg-gray-100 flex items-center justify-center relative border-l border-gray-200 overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&h=1000&fit=crop"

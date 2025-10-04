@@ -1,7 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Star, X } from 'lucide-react';
+import { Camera, Upload, Star, X, LogOut, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
+toast.success("Form submitted successfully!");
+toast.error("Something went wrong!");
 
 export default function GhanaLoanForm() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     sex: '',
     firstName: '',
@@ -12,7 +20,7 @@ export default function GhanaLoanForm() {
     otherPhone: '',
     ghanaCardNumber: '',
     ghanaCardNumberConfirm: '',
-    email: '',
+    email: user?.email || '', // Pre-fill from authenticated user
     homeAddress: '',
     region: '',
     nextOfKin: [
@@ -35,7 +43,8 @@ export default function GhanaLoanForm() {
     accountOfficerEmail: '',
     accountOfficerName: '',
     feedback: '',
-    agreementConfirmed: false
+    agreementConfirmed: false,
+    userId: user?.id // Include user ID for tracking
   });
 
   const [files, setFiles] = useState({
@@ -49,6 +58,7 @@ export default function GhanaLoanForm() {
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [signatureEmpty, setSignatureEmpty] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const canvasRef = useRef(null);
 
   const ghanaRegions = [
@@ -142,11 +152,67 @@ export default function GhanaLoanForm() {
     setSignatureEmpty(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    console.log('Files:', files);
-    alert('Form submitted successfully! Check console for details.');
+    setIsSubmitting(true);
+
+    try {
+      // Convert signature canvas to blob
+      const canvas = canvasRef.current;
+      const signatureBlob = await new Promise(resolve => canvas.toBlob(resolve));
+
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      
+      // Append all form fields
+      Object.keys(formData).forEach(key => {
+        if (key === 'nextOfKin' || key === 'employmentType') {
+          formDataToSend.append(key, JSON.stringify(formData[key]));
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      // Append files
+      if (files.passportPhoto) formDataToSend.append('passportPhoto', files.passportPhoto);
+      if (files.ghanaCard) formDataToSend.append('ghanaCard', files.ghanaCard);
+      if (signatureBlob) formDataToSend.append('signature', signatureBlob, 'signature.png');
+      
+      files.lastMonthPayslip.forEach((file, index) => {
+        formDataToSend.append(`lastMonthPayslip_${index}`, file);
+      });
+      
+      files.bankStatement.forEach((file, index) => {
+        formDataToSend.append(`bankStatement_${index}`, file);
+      });
+
+      // Submit to your backend API
+      const response = await fetch('/api/loan-application', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user.token}` // Include auth token
+        },
+        body: formDataToSend
+      });
+
+      if (!response.ok) throw new Error('Submission failed');
+
+      const result = await response.json();
+      
+      alert('Loan application submitted successfully! Reference: ' + result.referenceNumber);
+      navigate('/'); // Redirect to homepage or dashboard
+      
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('Failed to submit application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

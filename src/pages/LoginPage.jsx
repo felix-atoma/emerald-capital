@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Headphones, Eye, EyeOff, Image } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext'
+import toast from "react-hot-toast";
+toast.success("Form submitted successfully!");
+toast.error("Something went wrong!");
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -17,7 +25,6 @@ const LoginPage = () => {
       ...prev,
       [field]: value
     }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -29,12 +36,10 @@ const LoginPage = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    // Username validation
     if (formData.username.trim().length < 3) {
       newErrors.username = 'Username must be at least 3 characters';
     }
 
-    // Password validation
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
@@ -43,34 +48,36 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       setIsSubmitting(true);
       setSuccessMessage('');
+      setErrors({});
 
-      // Simulate login process
-      setTimeout(() => {
+      const result = await login({
+        username: formData.username,
+        password: formData.password
+      });
+
+      if (result.success) {
         setSuccessMessage('Login successful! Redirecting...');
-        
         setTimeout(() => {
-          alert('Login successful! You would now be redirected to your dashboard.');
-          setIsSubmitting(false);
-          // Reset form
-          setFormData({
-            username: '',
-            password: '',
-            rememberMe: false
-          });
+          navigate('/dashboard');
         }, 1500);
-      }, 2000);
+      } else {
+        setErrors({
+          general: result.message || 'Login failed. Please check your credentials.'
+        });
+        setIsSubmitting(false);
+      }
     }
   };
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
-    alert('Password reset functionality would be implemented here. Please contact customer service.');
+    navigate('/forgot-password');
   };
 
   const handleCustomerService = () => {
@@ -84,8 +91,7 @@ const LoginPage = () => {
         <div className="absolute top-3.5 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
       </div>
       <div className="text-gray-800 text-lg font-bold">
-        Emarald<br />
-        <span className="text-red-600">trust</span>{' '}
+        Emerald<br />
         <span className="text-blue-600 font-normal">Capital</span>
       </div>
     </div>
@@ -93,7 +99,6 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
-      {/* Login Section */}
       <div className="flex-1 p-14 flex flex-col justify-center max-w-lg">
         <Logo />
         
@@ -101,6 +106,12 @@ const LoginPage = () => {
         <p className="text-gray-500 text-base mb-10">Welcome back! Please enter your details.</p>
 
         <form onSubmit={handleSubmit} className="mb-8">
+          {errors.general && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-5">
+              {errors.general}
+            </div>
+          )}
+
           <div className="mb-5">
             <input
               type="text"
@@ -109,6 +120,7 @@ const LoginPage = () => {
               className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
               placeholder="Username or Account Number"
               required
+              disabled={isSubmitting}
             />
             {errors.username && (
               <div className="text-red-600 text-sm mt-1">{errors.username}</div>
@@ -123,6 +135,7 @@ const LoginPage = () => {
               className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 pr-12"
               placeholder="••••••••"
               required
+              disabled={isSubmitting}
             />
             <button
               type="button"
@@ -143,6 +156,7 @@ const LoginPage = () => {
                 checked={formData.rememberMe}
                 onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
                 className="w-4 h-4 text-red-600"
+                disabled={isSubmitting}
               />
               Remember for 30 days
             </label>
@@ -177,12 +191,15 @@ const LoginPage = () => {
         <a
           href="/signup"
           className="text-center text-gray-700 no-underline text-sm font-medium hover:text-red-600 block"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('/signup');
+          }}
         >
           Set Up Internet Banking
         </a>
       </div>
 
-      {/* Image Section */}
       <div className="flex-1 bg-gray-100 flex items-center justify-center relative border-l border-gray-200">
         <div className="w-full h-full bg-gray-200 border-2 border-dashed border-gray-400 rounded-none flex flex-col items-center justify-center text-gray-500 text-lg text-center">
           <Image size={64} className="opacity-50 mb-4" />

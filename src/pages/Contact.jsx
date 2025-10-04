@@ -1,32 +1,74 @@
 import React, { useState } from 'react';
-import { Phone, Mail, MapPin, Send } from 'lucide-react';
+import { Mail, Send } from 'lucide-react';
+import { contactAPI } from '../services/api';
+import toast, { Toaster } from 'react-hot-toast';
 
-export default function ContactComponent() {
+const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     website: '',
     message: '',
-    agreed: false
+    agreed: false,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you! We will contact you within 24 hours.');
+
+    if (!formData.agreed) {
+      toast.error('Please agree to the terms and conditions');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const contactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || '',
+        website: formData.website || '',
+        message: formData.message,
+        agreedToTerms: formData.agreed,
+      };
+
+      await contactAPI.submitMessage(contactData);
+
+      toast.success('Message sent successfully ✅');
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        website: '',
+        message: '',
+        agreed: false,
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || 'Failed to send message ❌'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      {/* Toast Renderer */}
+      <Toaster position="top-center" reverseOrder={false} />
+
       <div className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">
@@ -34,7 +76,8 @@ export default function ContactComponent() {
             <span className="text-red-600">Touch</span>
           </h1>
           <p className="text-gray-600">
-            We will contact you again within 24 hours after receiving your request.
+            We will contact you again within 24 hours after receiving your
+            request.
           </p>
         </div>
 
@@ -47,21 +90,31 @@ export default function ContactComponent() {
           </div>
         </div>
 
+        {/* Contact Info */}
         <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold mb-2">Email:</h3>
-              <a href="mailto:mails@mutualtrustmfb.com" className="text-gray-700 hover:text-red-600 transition">
+              <a
+                href="mailto:mails@mutualtrustmfb.com"
+                className="text-gray-700 hover:text-red-600 transition"
+              >
                 mails@mutualtrustmfb.com
               </a>
             </div>
 
             <div>
               <h3 className="text-xl font-semibold mb-2">For Whistle Blowing:</h3>
-              <a href="mailto:whistleict@mutualtrustmfbank.com" className="text-gray-700 hover:text-red-600 transition block">
+              <a
+                href="mailto:whistleict@mutualtrustmfbank.com"
+                className="text-gray-700 hover:text-red-600 transition block"
+              >
                 whistleict@mutualtrustmfbank.com
               </a>
-              <a href="mailto:whistleicu@mutualtrustmfbank.com" className="text-gray-700 hover:text-red-600 transition block">
+              <a
+                href="mailto:whistleicu@mutualtrustmfbank.com"
+                className="text-gray-700 hover:text-red-600 transition block"
+              >
                 whistleicu@mutualtrustmfbank.com
               </a>
             </div>
@@ -78,15 +131,18 @@ export default function ContactComponent() {
             <div>
               <h3 className="text-xl font-semibold mb-2">Address:</h3>
               <p className="text-gray-700 mb-2">
-                <span className="font-medium">Address 1:</span> 797 Adetokunbo Ademola Crescent, Wuse 2, Abuja.
+                <span className="font-medium">Address 1:</span> 797 Adetokunbo
+                Ademola Crescent, Wuse 2, Abuja.
               </p>
               <p className="text-gray-700">
-                <span className="font-medium">Address 2:</span> 27, Mississippi Crescent, Maitama, Abuja.
+                <span className="font-medium">Address 2:</span> 27, Mississippi
+                Crescent, Maitama, Abuja.
               </p>
             </div>
           </div>
         </div>
 
+        {/* Contact Form */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 relative overflow-hidden">
             <div className="absolute right-8 top-8 opacity-90">
@@ -102,7 +158,7 @@ export default function ContactComponent() {
               The field is required mark as *
             </p>
 
-            <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <input
                   type="text"
@@ -110,6 +166,7 @@ export default function ContactComponent() {
                   placeholder="Name"
                   value={formData.name}
                   onChange={handleChange}
+                  required
                   className="w-full px-6 py-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
                 <input
@@ -118,6 +175,7 @@ export default function ContactComponent() {
                   placeholder="Email Address *"
                   value={formData.email}
                   onChange={handleChange}
+                  required
                   className="w-full px-6 py-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
               </div>
@@ -126,7 +184,7 @@ export default function ContactComponent() {
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="Phone Number (option)"
+                  placeholder="Phone Number (optional)"
                   value={formData.phone}
                   onChange={handleChange}
                   className="w-full px-6 py-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
@@ -134,7 +192,7 @@ export default function ContactComponent() {
                 <input
                   type="url"
                   name="website"
-                  placeholder="Your Website (option)"
+                  placeholder="Your Website (optional)"
                   value={formData.website}
                   onChange={handleChange}
                   className="w-full px-6 py-4 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
@@ -147,6 +205,7 @@ export default function ContactComponent() {
                 value={formData.message}
                 onChange={handleChange}
                 rows="6"
+                required
                 className="w-full px-6 py-4 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
               ></textarea>
 
@@ -159,7 +218,7 @@ export default function ContactComponent() {
                   className="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500"
                 />
                 <label className="text-gray-700">
-                  By submitting, I'm agreed to the{' '}
+                  By submitting, I agree to the{' '}
                   <span className="text-blue-600 cursor-pointer hover:underline">
                     Terms & Conditions
                   </span>
@@ -168,18 +227,24 @@ export default function ContactComponent() {
 
               <div className="text-center">
                 <button
-                  onClick={handleSubmit}
-                  className="bg-red-600 hover:bg-red-700 text-white font-semibold px-12 py-4 rounded-full transition transform hover:scale-105 shadow-lg inline-flex items-center gap-2"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`${
+                    isSubmitting
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-red-600 hover:bg-red-700'
+                  } text-white font-semibold px-12 py-4 rounded-full transition transform hover:scale-105 shadow-lg inline-flex items-center gap-2`}
                 >
-                  Send Your Request
-                  <Send className="w-5 h-5" />
+                  {isSubmitting ? 'Sending...' : 'Send Your Request'}
+                  {!isSubmitting && <Send className="w-5 h-5" />}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
 
+      {/* Map */}
       <div className="w-full h-[500px] bg-gray-200">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.6087936894845!2d-0.2179487!3d5.6219641!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9c7ebaeabe93%3A0x754f29c82b7d10b7!2sNew%20Town%2C%20Accra%2C%20Ghana!5e0!3m2!1sen!2s!4v1234567890123"
@@ -194,4 +259,6 @@ export default function ContactComponent() {
       </div>
     </div>
   );
-}
+};
+
+export default Contact;
