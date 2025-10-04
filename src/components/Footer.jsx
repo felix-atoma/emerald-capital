@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 import { newsletterAPI } from '../services/api';
 import toast from "react-hot-toast";
 
-toast.success("Form submitted successfully!");
+toast.success("Email submitted successfully!");
 toast.error("Something went wrong!");
 
 const Footer = () => {
