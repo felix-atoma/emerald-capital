@@ -100,7 +100,7 @@ export default function LoanCalculator() {
               <div className="mt-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Monthly Payment:</p>
                 <p className="text-3xl font-bold text-blue-600">
-                  ${monthlyPayment}
+                  GH₵{monthlyPayment}
                 </p>
               </div>
             )}
