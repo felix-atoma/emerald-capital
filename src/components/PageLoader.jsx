@@ -22,6 +22,7 @@ const PageLoader = () => {
   // Don't render anything if not loading
   if (!loading) return null;
 
+  // Uses the same LoadingSpinner component with your logo
   return <LoadingSpinner />;
 };
 

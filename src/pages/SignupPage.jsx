@@ -1,9 +1,54 @@
 import React, { useState } from 'react';
 import { Headphones, X, Check } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../contexts/AuthContext';
 import toast from "react-hot-toast";
-toast.success("Form submitted successfully!");
-toast.error("Something went wrong!");
+
+// Loading Spinner Component
+const SignupLoadingSpinner = () => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+        <div className="relative w-32 h-32 mx-auto mb-4">
+          {/* Your Logo in the center */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img 
+              src="/path-to-your-logo.png" 
+              alt="Logo" 
+              className="w-20 h-20 object-contain"
+            />
+          </div>
+          
+          {/* Spinning gradient ring around logo */}
+          <div className="absolute inset-0">
+            <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="signupSpinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#008B8B', stopOpacity: 1 }} />
+                  <stop offset="33%" style={{ stopColor: '#40E0D0', stopOpacity: 1 }} />
+                  <stop offset="66%" style={{ stopColor: '#2EB88A', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#C8D900', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="none"
+                stroke="url(#signupSpinnerGradient)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray="220"
+                strokeDashoffset="50"
+              />
+            </svg>
+          </div>
+        </div>
+        <p className="text-gray-700 text-lg font-semibold">Creating your account...</p>
+        <p className="text-gray-500 text-sm mt-2">Please wait a moment</p>
+      </div>
+    </div>
+  );
+};
 
 const SignupPage = ({ onNavigate }) => {
   const { register } = useAuth();
@@ -123,33 +168,44 @@ const SignupPage = ({ onNavigate }) => {
     setIsSubmitting(true);
     setErrors({});
 
-    const userData = {
-      ghanaCardNumber: formData.ghanaCardNumber,
-      fullName: formData.fullName,
-      phone: formData.phone,
-      email: formData.email,
-      address: formData.address,
-      username: formData.username,
-      password: formData.password
-    };
+    try {
+      const userData = {
+        ghanaCardNumber: formData.ghanaCardNumber,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        username: formData.username,
+        password: formData.password
+      };
 
-    const result = await register(userData);
+      const result = await register(userData);
 
-    if (result.success) {
-      alert('Account created successfully! Welcome to Emerald Capital.');
-      if (onNavigate) {
-        onNavigate('/dashboard');
+      if (result.success) {
+        toast.success('Account created successfully! Welcome to Emerald Capital.');
+        setTimeout(() => {
+          if (onNavigate) {
+            onNavigate('/dashboard');
+          }
+        }, 1500);
+      } else {
+        toast.error(result.message || 'Registration failed. Please try again.');
+        setErrors({
+          general: result.message || 'Registration failed. Please try again.'
+        });
+        setIsSubmitting(false);
       }
-    } else {
+    } catch (error) {
+      toast.error('An error occurred. Please try again.');
       setErrors({
-        general: result.message || 'Registration failed. Please try again.'
+        general: 'An error occurred. Please try again.'
       });
       setIsSubmitting(false);
     }
   };
 
   const handleCustomerService = () => {
-    alert('Customer service chat would open here.');
+    toast.info('Customer service chat coming soon!');
   };
 
   const Logo = ({ className = '' }) => (
@@ -300,6 +356,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('ghanaCardNumber', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="GHA-XXXXXXXXX-X"
+          disabled={isSubmitting}
         />
         {errors.ghanaCardNumber && <div className="text-red-600 text-sm mt-1">{errors.ghanaCardNumber}</div>}
       </div>
@@ -325,6 +382,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('fullName', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Enter your full name"
+          disabled={isSubmitting}
         />
         {errors.fullName && <div className="text-red-600 text-sm mt-1">{errors.fullName}</div>}
       </div>
@@ -337,6 +395,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('phone', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Enter phone number"
+          disabled={isSubmitting}
         />
         {errors.phone && <div className="text-red-600 text-sm mt-1">{errors.phone}</div>}
       </div>
@@ -349,6 +408,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('email', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Enter email address"
+          disabled={isSubmitting}
         />
         {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
       </div>
@@ -361,6 +421,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('address', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Enter your address"
+          disabled={isSubmitting}
         />
         {errors.address && <div className="text-red-600 text-sm mt-1">{errors.address}</div>}
       </div>
@@ -386,6 +447,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('username', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Choose a username"
+          disabled={isSubmitting}
         />
         {errors.username && <div className="text-red-600 text-sm mt-1">{errors.username}</div>}
       </div>
@@ -398,6 +460,7 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('password', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Create a password"
+          disabled={isSubmitting}
         />
         {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
       </div>
@@ -410,15 +473,10 @@ const SignupPage = ({ onNavigate }) => {
           onChange={e => handleInputChange('confirmPassword', e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100"
           placeholder="Confirm your password"
+          disabled={isSubmitting}
         />
         {errors.confirmPassword && <div className="text-red-600 text-sm mt-1">{errors.confirmPassword}</div>}
       </div>
-
-      {isSubmitting && (
-        <div className="text-green-600 text-sm mb-5">
-          ✓ Creating your account...
-        </div>
-      )}
     </div>
   );
 
@@ -436,85 +494,90 @@ const SignupPage = ({ onNavigate }) => {
   };
 
   return (
-    <div className="h-screen bg-white flex overflow-hidden">
-      <div className="flex-1 p-14 flex flex-col justify-center max-w-lg overflow-y-auto">
-        {currentPage === 'signup' ? (
-          <div>
-            <Logo className="mb-10" />
-            
-            <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Do you have an Account with Us?</h1>
-            <p className="text-gray-500 text-base mb-10"></p>
+    <>
+      {/* Show loading spinner when submitting */}
+      {isSubmitting && <SignupLoadingSpinner />}
+      
+      <div className="h-screen bg-white flex overflow-hidden">
+        <div className="flex-1 p-14 flex flex-col justify-center max-w-lg overflow-y-auto">
+          {currentPage === 'signup' ? (
+            <div>
+              <Logo className="mb-10" />
+              
+              <h1 className="text-3xl text-gray-800 mb-2 font-semibold">Do you have an Account with Us?</h1>
+              <p className="text-gray-500 text-base mb-10"></p>
 
-            <button
-              className="w-full py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg mb-4 transition-all hover:border-red-600 hover:text-red-600"
-              onClick={() => setShowTermsModal(true)}
-            >
-              Yes, I already Have an Account
-            </button>
-            
-            <button
-              className="w-full py-4 bg-red-600 text-white rounded-xl font-semibold text-lg mb-4 transition-all hover:bg-red-700 hover:transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-300"
-              onClick={() => setShowTermsModal(true)}
-            >
-              No, I'm ready to Onboard
-            </button>
-
-            <div className="text-center text-gray-700 text-sm mt-5">
-              <button 
-                onClick={() => onNavigate && onNavigate('/login')}
-                className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer"
-              >
-                Go Back to Login
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <Logo className="mb-10" />
-            <ProgressSteps />
-            {renderStepContent()}
-            
-            <div className="flex gap-4 mt-8">
               <button
-                className="flex-1 py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all hover:border-gray-400"
-                onClick={handleBack}
-                disabled={isSubmitting}
+                className="w-full py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg mb-4 transition-all hover:border-red-600 hover:text-red-600"
+                onClick={() => setShowTermsModal(true)}
               >
-                ← Back
+                Yes, I already Have an Account
               </button>
+              
               <button
-                className={`flex-[2] py-4 rounded-xl font-semibold text-lg transition-all ${
-                  isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-red-600 text-white hover:bg-red-700 hover:transform hover:-translate-y-0.5'
-                }`}
-                onClick={handleProceed}
-                disabled={isSubmitting}
+                className="w-full py-4 bg-red-600 text-white rounded-xl font-semibold text-lg mb-4 transition-all hover:bg-red-700 hover:transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-300"
+                onClick={() => setShowTermsModal(true)}
               >
-                {isSubmitting ? 'Creating Account...' : 
-                 currentStep === steps.length - 1 ? 'Create Account' : 'Proceed'}
+                No, I'm ready to Onboard
               </button>
-            </div>
-          </div>
-        )}
-      </div>
 
-      <div className="flex-1 bg-gray-100 flex items-center justify-center relative border-l border-gray-200 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&h=1000&fit=crop"
-          alt="Happy customer"
-          className="w-full h-full object-cover"
-        />
-        <div
-          className="absolute bottom-8 right-8 w-14 h-14 bg-red-600 rounded-full flex items-center justify-center text-white text-xl shadow-2xl shadow-red-300 cursor-pointer transition-transform hover:scale-110"
-          onClick={handleCustomerService}
-        >
-          <Headphones size={24} />
+              <div className="text-center text-gray-700 text-sm mt-5">
+                <button 
+                  onClick={() => onNavigate && onNavigate('/login')}
+                  className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer"
+                >
+                  Go Back to Login
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <Logo className="mb-10" />
+              <ProgressSteps />
+              {renderStepContent()}
+              
+              <div className="flex gap-4 mt-8">
+                <button
+                  className="flex-1 py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all hover:border-gray-400"
+                  onClick={handleBack}
+                  disabled={isSubmitting}
+                >
+                  ← Back
+                </button>
+                <button
+                  className={`flex-[2] py-4 rounded-xl font-semibold text-lg transition-all ${
+                    isSubmitting
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-red-600 text-white hover:bg-red-700 hover:transform hover:-translate-y-0.5'
+                  }`}
+                  onClick={handleProceed}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Creating Account...' : 
+                   currentStep === steps.length - 1 ? 'Create Account' : 'Proceed'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
-      <TermsModal />
-    </div>
+        <div className="flex-1 bg-gray-100 flex items-center justify-center relative border-l border-gray-200 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&h=1000&fit=crop"
+            alt="Happy customer"
+            className="w-full h-full object-cover"
+          />
+          <div
+            className="absolute bottom-8 right-8 w-14 h-14 bg-red-600 rounded-full flex items-center justify-center text-white text-xl shadow-2xl shadow-red-300 cursor-pointer transition-transform hover:scale-110"
+            onClick={handleCustomerService}
+          >
+            <Headphones size={24} />
+          </div>
+        </div>
+
+        <TermsModal />
+      </div>
+    </>
   );
 };
 

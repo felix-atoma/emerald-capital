@@ -1,10 +1,55 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Star, X, LogOut, User } from 'lucide-react';
+import { Camera, Upload, Star, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
-toast.success("Form submitted successfully!");
-toast.error("Something went wrong!");
+
+// Loading Spinner Component
+const SubmitLoadingSpinner = () => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+        <div className="relative w-32 h-32 mx-auto mb-4">
+          {/* Your Logo in the center */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img 
+              src="emerald.png" 
+              alt="Logo" 
+              className="w-20 h-20 object-contain"
+            />
+          </div>
+          
+          {/* Spinning gradient ring around logo */}
+          <div className="absolute inset-0">
+            <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#008B8B', stopOpacity: 1 }} />
+                  <stop offset="33%" style={{ stopColor: '#40E0D0', stopOpacity: 1 }} />
+                  <stop offset="66%" style={{ stopColor: '#2EB88A', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#C8D900', stopOpacity: 1 }} />
+                </linearGradient>
+              </defs>
+              <circle
+                cx="50"
+                cy="50"
+                r="45"
+                fill="none"
+                stroke="url(#spinnerGradient)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray="220"
+                strokeDashoffset="50"
+              />
+            </svg>
+          </div>
+        </div>
+        <p className="text-gray-700 text-lg font-semibold">Submitting your application...</p>
+        <p className="text-gray-500 text-sm mt-2">Please wait, this may take a moment</p>
+      </div>
+    </div>
+  );
+};
 
 export default function GhanaLoanForm() {
   const { user, logout } = useAuth();
@@ -20,7 +65,7 @@ export default function GhanaLoanForm() {
     otherPhone: '',
     ghanaCardNumber: '',
     ghanaCardNumberConfirm: '',
-    email: user?.email || '', // Pre-fill from authenticated user
+    email: user?.email || '',
     homeAddress: '',
     region: '',
     nextOfKin: [
@@ -44,7 +89,7 @@ export default function GhanaLoanForm() {
     accountOfficerName: '',
     feedback: '',
     agreementConfirmed: false,
-    userId: user?.id // Include user ID for tracking
+    userId: user?.id
   });
 
   const [files, setFiles] = useState({
@@ -195,7 +240,7 @@ export default function GhanaLoanForm() {
       const response = await fetch('/api/loan-application', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${user.token}` // Include auth token
+          'Authorization': `Bearer ${user.token}`
         },
         body: formDataToSend
       });
@@ -204,257 +249,87 @@ export default function GhanaLoanForm() {
 
       const result = await response.json();
       
-      alert('Loan application submitted successfully! Reference: ' + result.referenceNumber);
-      navigate('/'); // Redirect to homepage or dashboard
+      // Show success toast
+      toast.success(`Application submitted successfully! Reference: ${result.referenceNumber}`);
+      
+      // Navigate after a short delay
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
       
     } catch (error) {
       console.error('Submission error:', error);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Failed to submit application. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-white p-8 border-b-4 border-gray-100">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                EC
+    <>
+      {/* Show loading spinner when submitting */}
+      {isSubmitting && <SubmitLoadingSpinner />}
+      
+      <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-white p-8 border-b-4 border-gray-100">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                  EC
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-blue-600">EMERALD CAPITAL</h1>
+                  <p className="text-sm font-semibold text-gray-700">MICROFINANCE BANK LTD</p>
+                  <p className="text-xs text-gray-600">Bolgatanga, Ghana</p>
+                  <p className="text-xs text-gray-600">+233 24 123 4567</p>
+                  <p className="text-xs text-gray-600">info@mutualtrustgh.com</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-blue-600">EMERALD CAPITAL</h1>
-                <p className="text-sm font-semibold text-gray-700">MICROFINANCE BANK LTD</p>
-                <p className="text-xs text-gray-600">Bolgatanga, Ghana</p>
-                <p className="text-xs text-gray-600">+233 24 123 4567</p>
-                <p className="text-xs text-gray-600">info@mutualtrustgh.com</p>
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-800">LOAN APPLICATION</h2>
+                <p className="text-gray-600">& Agreement Form</p>
               </div>
-            </div>
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800">LOAN APPLICATION</h2>
-              <p className="text-gray-600">& Agreement Form</p>
             </div>
           </div>
-        </div>
 
-        {/* Progress Steps */}
-        <div className="bg-gray-50 py-6 px-8">
-          <div className="flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-              <span className="font-medium text-green-600">Application Form</span>
-            </div>
-            <div className="w-24 h-0.5 bg-gray-300"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-white font-bold">2</div>
-              <span className="font-medium text-gray-400">Bank Details</span>
+          {/* Progress Steps */}
+          <div className="bg-gray-50 py-6 px-8">
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                <span className="font-medium text-green-600">Application Form</span>
+              </div>
+              <div className="w-24 h-0.5 bg-gray-300"></div>
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                <span className="font-medium text-gray-400">Bank Details</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          {/* Personal Data */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Personal Data</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sex <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="sex"
-                  value={formData.sex}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                >
-                  <option value="">Select</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
-                <input
-                  type="text"
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 0244123456"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Other Phone Number</label>
-              <input
-                type="tel"
-                name="otherPhone"
-                value={formData.otherPhone}
-                onChange={handleInputChange}
-                placeholder="Alternative contact number"
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ghana Card Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="ghanaCardNumber"
-                  value={formData.ghanaCardNumber}
-                  onChange={handleInputChange}
-                  placeholder="GHA-XXXXXXXXX-X"
-                  maxLength="15"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirm Ghana Card Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="ghanaCardNumberConfirm"
-                  value={formData.ghanaCardNumberConfirm}
-                  onChange={handleInputChange}
-                  placeholder="GHA-XXXXXXXXX-X"
-                  maxLength="15"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Home Address <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="homeAddress"
-                value={formData.homeAddress}
-                onChange={handleInputChange}
-                rows="3"
-                placeholder="House number, street name, area"
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                required
-              ></textarea>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Region</label>
-              <select
-                name="region"
-                value={formData.region}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-              >
-                <option value="">Select Region</option>
-                {ghanaRegions.map(region => (
-                  <option key={region} value={region}>{region}</option>
-                ))}
-              </select>
-            </div>
-          </section>
-
-          {/* Next of Kin */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Next of Kin</h3>
-            
-            {formData.nextOfKin.map((kin, index) => (
-              <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+            {/* Personal Data */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Personal Data</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Relationship <span className="text-red-500">*</span>
+                    Sex <span className="text-red-500">*</span>
                   </label>
                   <select
-                    value={kin.relationship}
-                    onChange={(e) => handleNextOfKinChange(index, 'relationship', e.target.value)}
+                    name="sex"
+                    value={formData.sex}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     required
                   >
                     <option value="">Select</option>
-                    <option value="spouse">Spouse</option>
-                    <option value="parent">Parent</option>
-                    <option value="child">Child</option>
-                    <option value="sibling">Sibling</option>
-                    <option value="other">Other</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
                   </select>
                 </div>
                 <div>
@@ -463,8 +338,9 @@ export default function GhanaLoanForm() {
                   </label>
                   <input
                     type="text"
-                    value={kin.firstName}
-                    onChange={(e) => handleNextOfKinChange(index, 'firstName', e.target.value)}
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     required
                   />
@@ -475,472 +351,654 @@ export default function GhanaLoanForm() {
                   </label>
                   <input
                     type="text"
-                    value={kin.lastName}
-                    onChange={(e) => handleNextOfKinChange(index, 'lastName', e.target.value)}
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+                  <input
+                    type="text"
+                    name="middleName"
+                    value={formData.middleName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date of Birth <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 0244123456"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     required
                   />
                 </div>
               </div>
-            ))}
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Next of Kin Phone <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="tel"
-                name="nextOfKinPhone"
-                value={formData.nextOfKinPhone}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                required
-              />
-            </div>
-          </section>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Other Phone Number</label>
+                <input
+                  type="tel"
+                  name="otherPhone"
+                  value={formData.otherPhone}
+                  onChange={handleInputChange}
+                  placeholder="Alternative contact number"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                />
+              </div>
 
-          {/* Employment Details */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Employment Details</h3>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Employment Type <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {employmentTypes.map(type => (
-                  <label key={type.id} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="employmentType"
-                      value={type.id}
-                      checked={formData.employmentType.includes(type.id)}
-                      onChange={handleInputChange}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{type.label}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ghana Card Number <span className="text-red-500">*</span>
                   </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Employer <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="employer"
-                value={formData.employer}
-                onChange={handleInputChange}
-                placeholder="Name of organization/ministry"
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Staff Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="staffNumber"
-                  value={formData.staffNumber}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Employment <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="employmentDate"
-                  value={formData.employmentDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Grade Level <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="gradeLevel"
-                  value={formData.gradeLevel}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Month Net Pay (GHS) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="lastMonthPay"
-                  value={formData.lastMonthPay}
-                  onChange={handleInputChange}
-                  placeholder="0.00"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">As shown on your payslip</p>
-              </div>
-            </div>
-          </section>
-
-          {/* Loan Details */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Loan Details</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tenor (Months) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="tenor"
-                  value={formData.tenor}
-                  onChange={handleInputChange}
-                  max="24"
-                  placeholder="Max 24 months"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Loan Amount (GHS) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="loanAmountRequested"
-                  value={formData.loanAmountRequested}
-                  onChange={handleInputChange}
-                  min="1000"
-                  max="50000"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Purpose of Loan</label>
-              <div className="space-y-2">
-                {['Education', 'Family/Feeding', 'Healthcare', 'Housing', 'Business', 'Other'].map(purpose => (
-                  <label key={purpose} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="loanPurpose"
-                      value={purpose.toLowerCase()}
-                      checked={formData.loanPurpose === purpose.toLowerCase()}
-                      onChange={handleInputChange}
-                      className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{purpose}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Are you an Existing Customer? <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-6">
-                <label className="flex items-center gap-2 cursor-pointer">
                   <input
-                    type="radio"
-                    name="existingCustomer"
-                    value="yes"
-                    checked={formData.existingCustomer === 'yes'}
+                    type="text"
+                    name="ghanaCardNumber"
+                    value={formData.ghanaCardNumber}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    placeholder="GHA-XXXXXXXXX-X"
+                    maxLength="15"
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     required
                   />
-                  <span className="text-sm text-gray-700">Yes</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirm Ghana Card Number <span className="text-red-500">*</span>
+                  </label>
                   <input
-                    type="radio"
-                    name="existingCustomer"
-                    value="no"
-                    checked={formData.existingCustomer === 'no'}
+                    type="text"
+                    name="ghanaCardNumberConfirm"
+                    value={formData.ghanaCardNumberConfirm}
                     onChange={handleInputChange}
-                    className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                    placeholder="GHA-XXXXXXXXX-X"
+                    maxLength="15"
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     required
                   />
-                  <span className="text-sm text-gray-700">No</span>
-                </label>
-              </div>
-            </div>
-          </section>
-
-          {/* Attachments */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Attachments</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Passport Photograph <span className="text-red-500">*</span>
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(e, 'passportPhoto')}
-                    className="hidden"
-                    id="passportPhoto"
-                    required
-                  />
-                  <label htmlFor="passportPhoto" className="cursor-pointer">
-                    <Camera className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Click to upload or take photo</p>
-                    {files.passportPhoto && <p className="text-xs text-green-600 mt-2">{files.passportPhoto.name}</p>}
-                  </label>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Ghana Card (Front & Back) <span className="text-red-500">*</span>
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={(e) => handleFileChange(e, 'ghanaCard')}
-                    className="hidden"
-                    id="ghanaCard"
-                    required
-                  />
-                  <label htmlFor="ghanaCard" className="cursor-pointer">
-                    <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Upload Ghana Card (both sides)</p>
-                    {files.ghanaCard && <p className="text-xs text-green-600 mt-2">{files.ghanaCard.name}</p>}
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Month Payslip <span className="text-red-500">*</span>
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    multiple
-                    onChange={(e) => handleFileChange(e, 'lastMonthPayslip')}
-                    className="hidden"
-                    id="lastMonthPayslip"
-                    required
-                  />
-                  <label htmlFor="lastMonthPayslip" className="cursor-pointer">
-                    <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Upload payslip(s)</p>
-                    {files.lastMonthPayslip.length > 0 && (
-                      <p className="text-xs text-green-600 mt-2">
-                        {files.lastMonthPayslip.length} file(s) selected
-                      </p>
-                    )}
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bank Statement (Last 3 months) <span className="text-red-500">*</span>
-                </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    multiple
-                    onChange={(e) => handleFileChange(e, 'bankStatement')}
-                    className="hidden"
-                    id="bankStatement"
-                    required
-                  />
-                  <label htmlFor="bankStatement" className="cursor-pointer">
-                    <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Upload bank statement(s)</p>
-                    {files.bankStatement.length > 0 && (
-                      <p className="text-xs text-green-600 mt-2">
-                        {files.bankStatement.length} file(s) selected
-                      </p>
-                    )}
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Signature <span className="text-red-500">*</span>
-                </label>
-                <div className="border-2 border-gray-300 rounded-lg p-4">
-                  <canvas
-                    ref={canvasRef}
-                    width={600}
-                    height={150}
-                    className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                  />
-                  <button
-                    type="button"
-                    onClick={clearSignature}
-                    className="mt-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Clear Signature
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Account Officer */}
-          <section>
-            <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Account Officer Details</h3>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Rating <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map(rating => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, officerRating: rating }))}
-                    className="focus:outline-none"
-                  >
-                    <Star
-                      className={`w-8 h-8 ${
-                        rating <= formData.officerRating
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Officer Code <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="accountOfficerCode"
-                  value={formData.accountOfficerCode}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Officer Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="accountOfficerName"
-                  value={formData.accountOfficerName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Officer Email <span className="text-red-500">*</span>
-                </label>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  name="accountOfficerEmail"
-                  value={formData.accountOfficerEmail}
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Home Address <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="homeAddress"
+                  value={formData.homeAddress}
+                  onChange={handleInputChange}
+                  rows="3"
+                  placeholder="House number, street name, area"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                  required
+                ></textarea>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                <select
+                  name="region"
+                  value={formData.region}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                >
+                  <option value="">Select Region</option>
+                  {ghanaRegions.map(region => (
+                    <option key={region} value={region}>{region}</option>
+                  ))}
+                </select>
+              </div>
+            </section>
+
+            {/* Next of Kin */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Next of Kin</h3>
+              
+              {formData.nextOfKin.map((kin, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Relationship <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={kin.relationship}
+                      onChange={(e) => handleNextOfKinChange(index, 'relationship', e.target.value)}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                      required
+                    >
+                      <option value="">Select</option>
+                      <option value="spouse">Spouse</option>
+                      <option value="parent">Parent</option>
+                      <option value="child">Child</option>
+                      <option value="sibling">Sibling</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={kin.firstName}
+                      onChange={(e) => handleNextOfKinChange(index, 'firstName', e.target.value)}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={kin.lastName}
+                      onChange={(e) => handleNextOfKinChange(index, 'lastName', e.target.value)}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                      required
+                    />
+                  </div>
+                </div>
+              ))}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Next of Kin Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="nextOfKinPhone"
+                  value={formData.nextOfKinPhone}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                   required
                 />
               </div>
-            </div>
+            </section>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Feedback/Comments</label>
-              <textarea
-                name="feedback"
-                value={formData.feedback}
-                onChange={handleInputChange}
-                rows="4"
-                placeholder="Additional comments or feedback"
-                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-              ></textarea>
-            </div>
-          </section>
-
-          {/* Agreement */}
-          <section>
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">Terms & Conditions</h3>
-              <div className="text-sm text-gray-700 space-y-2 mb-4 max-h-40 overflow-y-auto">
-                <p>By submitting this application, I confirm that:</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>All information provided is true and accurate to the best of my knowledge</li>
-                  <li>I authorize Mutual Trust Microfinance Bank Ltd to verify the information provided</li>
-                  <li>I understand that providing false information may result in rejection of this application</li>
-                  <li>I have read and agree to the loan terms and conditions</li>
-                  <li>I authorize deductions from my salary for loan repayment</li>
-                  <li>I understand the interest rates and repayment schedule</li>
-                </ul>
+            {/* Employment Details */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Employment Details</h3>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Employment Type <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {employmentTypes.map(type => (
+                    <label key={type.id} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="employmentType"
+                        value={type.id}
+                        checked={formData.employmentType.includes(type.id)}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{type.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
-              <label className="flex items-start gap-3 cursor-pointer">
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Employer <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="checkbox"
-                  name="agreementConfirmed"
-                  checked={formData.agreementConfirmed}
-                  onChange={(e) => setFormData(prev => ({ ...prev, agreementConfirmed: e.target.checked }))}
-                  className="w-5 h-5 mt-0.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  name="employer"
+                  value={formData.employer}
+                  onChange={handleInputChange}
+                  placeholder="Name of organization/ministry"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                   required
                 />
-                <span className="text-sm font-medium text-gray-700">
-                  I have read and agree to the terms and conditions <span className="text-red-500">*</span>
-                </span>
-              </label>
-            </div>
-          </section>
+              </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center pt-6">
-            <button
-              type="submit"
-              className="px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-            >
-              Submit Application
-            </button>
-          </div>
-        </form>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Staff Number <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="staffNumber"
+                    value={formData.staffNumber}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date of Employment <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="employmentDate"
+                    value={formData.employmentDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Grade Level <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="gradeLevel"
+                    value={formData.gradeLevel}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Month Net Pay (GHS) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="lastMonthPay"
+                    value={formData.lastMonthPay}
+                    onChange={handleInputChange}
+                    placeholder="0.00"
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">As shown on your payslip</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Loan Details */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Loan Details</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tenor (Months) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="tenor"
+                    value={formData.tenor}
+                    onChange={handleInputChange}
+                    max="24"
+                    placeholder="Max 24 months"
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Loan Amount (GHS) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="loanAmountRequested"
+                    value={formData.loanAmountRequested}
+                    onChange={handleInputChange}
+                    min="1000"
+                    max="50000"
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Purpose of Loan</label>
+                <div className="space-y-2">
+                  {['Education', 'Family/Feeding', 'Healthcare', 'Housing', 'Business', 'Other'].map(purpose => (
+                    <label key={purpose} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="loanPurpose"
+                        value={purpose.toLowerCase()}
+                        checked={formData.loanPurpose === purpose.toLowerCase()}
+                        onChange={handleInputChange}
+                        className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{purpose}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Are you an Existing Customer? <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="existingCustomer"
+                      value="yes"
+                      checked={formData.existingCustomer === 'yes'}
+                      onChange={handleInputChange}
+                      className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <span className="text-sm text-gray-700">Yes</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="existingCustomer"
+                      value="no"
+                      checked={formData.existingCustomer === 'no'}
+                      onChange={handleInputChange}
+                      className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <span className="text-sm text-gray-700">No</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            {/* Attachments */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Attachments</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Passport Photograph <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(e, 'passportPhoto')}
+                      className="hidden"
+                      id="passportPhoto"
+                      required
+                    />
+                    <label htmlFor="passportPhoto" className="cursor-pointer">
+                      <Camera className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600">Click to upload or take photo</p>
+                      {files.passportPhoto && <p className="text-xs text-green-600 mt-2">{files.passportPhoto.name}</p>}
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ghana Card (Front & Back) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => handleFileChange(e, 'ghanaCard')}
+                      className="hidden"
+                      id="ghanaCard"
+                      required
+                    />
+                    <label htmlFor="ghanaCard" className="cursor-pointer">
+                      <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600">Upload Ghana Card (both sides)</p>
+                      {files.ghanaCard && <p className="text-xs text-green-600 mt-2">{files.ghanaCard.name}</p>}
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Month Payslip <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      multiple
+                      onChange={(e) => handleFileChange(e, 'lastMonthPayslip')}
+                      className="hidden"
+                      id="lastMonthPayslip"
+                      required
+                    />
+                    <label htmlFor="lastMonthPayslip" className="cursor-pointer">
+                      <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600">Upload payslip(s)</p>
+                      {files.lastMonthPayslip.length > 0 && (
+                        <p className="text-xs text-green-600 mt-2">
+                          {files.lastMonthPayslip.length} file(s) selected
+                        </p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Bank Statement (Last 3 months) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      multiple
+                      onChange={(e) => handleFileChange(e, 'bankStatement')}
+                      className="hidden"
+                      id="bankStatement"
+                      required
+                    />
+                    <label htmlFor="bankStatement" className="cursor-pointer">
+                      <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600">Upload bank statement(s)</p>
+                      {files.bankStatement.length > 0 && (
+                        <p className="text-xs text-green-600 mt-2">
+                          {files.bankStatement.length} file(s) selected
+                        </p>
+                      )}
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Signature <span className="text-red-500">*</span>
+                  </label>
+                  <div className="border-2 border-gray-300 rounded-lg p-4">
+                    <canvas
+                      ref={canvasRef}
+                      width={600}
+                      height={150}
+                      className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
+                      onMouseDown={startDrawing}
+                      onMouseMove={draw}
+                      onMouseUp={stopDrawing}
+                      onMouseLeave={stopDrawing}
+                    />
+                    <button
+                      type="button"
+                      onClick={clearSignature}
+                      className="mt-2 px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition flex items-center gap-2"
+                    >
+                      <X className="w-4 h-4" />
+                      Clear Signature
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Account Officer */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Account Officer Details</h3>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Rating <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map(rating => (
+                    <button
+                      key={rating}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, officerRating: rating }))}
+                      className="focus:outline-none"
+                    >
+                      <Star
+                        className={`w-8 h-8 ${
+                          rating <= formData.officerRating
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Officer Code <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="accountOfficerCode"
+                    value={formData.accountOfficerCode}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Officer Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="accountOfficerName"
+                    value={formData.accountOfficerName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Officer Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="accountOfficerEmail"
+                    value={formData.accountOfficerEmail}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Feedback/Comments</label>
+                <textarea
+                  name="feedback"
+                  value={formData.feedback}
+                  onChange={handleInputChange}
+                  rows="4"
+                  placeholder="Additional comments or feedback"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                ></textarea>
+              </div>
+            </section>
+
+            {/* Agreement */}
+            <section>
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Terms & Conditions</h3>
+                <div className="text-sm text-gray-700 space-y-2 mb-4 max-h-40 overflow-y-auto">
+                  <p>By submitting this application, I confirm that:</p>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>All information provided is true and accurate to the best of my knowledge</li>
+                    <li>I authorize Mutual Trust Microfinance Bank Ltd to verify the information provided</li>
+                    <li>I understand that providing false information may result in rejection of this application</li>
+                    <li>I have read and agree to the loan terms and conditions</li>
+                    <li>I authorize deductions from my salary for loan repayment</li>
+                    <li>I understand the interest rates and repayment schedule</li>
+                  </ul>
+                </div>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="agreementConfirmed"
+                    checked={formData.agreementConfirmed}
+                    onChange={(e) => setFormData(prev => ({ ...prev, agreementConfirmed: e.target.checked }))}
+                    className="w-5 h-5 mt-0.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    I have read and agree to the terms and conditions <span className="text-red-500">*</span>
+                  </span>
+                </label>
+              </div>
+            </section>
+
+            {/* Submit Button */}
+            <div className="flex justify-center pt-6">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Application'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
