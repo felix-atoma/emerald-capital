@@ -29,15 +29,15 @@ export default function HowItStarted({ imageUrl = "/path-to-your-image.jpg" }) {
 
               <div className="space-y-6 text-gray-700 text-base md:text-lg leading-relaxed">
                 <p>
-                  Mutual Trust mfBank Limited is a re-capitalized financial institution with an unwavering focus on empowering households and serving the economic needs of communities at the base of the pyramid. Our mission is we relentlessly seek to exceed customers' expectations through a highly motivated workforce and cutting-edge technology by driving financial inclusion and economic stability through responsible lending and tailored financial solutions.
+                  Emerald Capital is a re-capitalized financial institution with an unwavering focus on empowering households and serving the economic needs of communities at the base of the pyramid. Our mission is we relentlessly seek to exceed customers' expectations through a highly motivated workforce and cutting-edge technology by driving financial inclusion and economic stability through responsible lending and tailored financial solutions.
                 </p>
 
                 <p>
-                  Today, we proudly serve hundreds of thousands of customers, underpinned by a commitment to exceptional customer service, sustainable growth, and delivering superior value to our stakeholders. Our lending model is strategically designed to support civil servants and entrepreneurs seeking to build small businesses and cottage industries. With financing solutions across the agricultural value chain, structured loans, and business support, we are dedicated to promoting small and medium-sized enterprises (SMEs) across Nigeria.
+                  Today, we proudly serve hundreds of thousands of customers, underpinned by a commitment to exceptional customer service, sustainable growth, and delivering superior value to our stakeholders. Our lending model is strategically designed to support civil servants and entrepreneurs seeking to build small businesses and cottage industries. With financing solutions across the agricultural value chain, structured loans, and business support, we are dedicated to promoting small and medium-sized enterprises (SMEs) across Ghana.
                 </p>
 
                 <p>
-                  Backed by our shareholders and industry-leading fund placement products, Mutual Trust mfBank Limited is a trusted partner for economic empowerment, ensuring positive impact and long-term success for our clients and communities alike.
+                  Backed by our shareholders and industry-leading fund placement products, Emerald Capital is a trusted partner for economic empowerment, ensuring positive impact and long-term success for our clients and communities alike.
                 </p>
               </div>
             </div>

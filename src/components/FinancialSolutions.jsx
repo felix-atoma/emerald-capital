@@ -5,9 +5,9 @@ export default function FinancialSolutions({ imageUrl = "/path-to-your-image.jpg
   const [activeTab, setActiveTab] = useState('vision');
 
   const tabContent = {
-    vision: "To be the best and leading Microfinance bank in any market we serve.",
+    vision: "To be the best and leading Micro finance bank in any market we serve.",
     mission: "We are committed to empowering individuals and businesses through innovative banking solutions, providing exceptional customer service and driving financial inclusion across Ghana.",
-    values: "Integrity, Excellence, Innovation, Customer Focus, and Community Development are the core values that guide everything we do at Ghana Trust Bank."
+    values: "Integrity, Excellence, Innovation, Customer Focus, and Community Development are the core values that guide everything we do at Emerald Captial."
   };
 
   return (
@@ -92,10 +92,10 @@ export default function FinancialSolutions({ imageUrl = "/path-to-your-image.jpg
                 <div>
                   <p className="text-gray-600 text-sm mb-1">Support Email</p>
                   <a 
-                    href="mailto:mails@mutualtrustmfb.com" 
+                    href="mailto:info@emeraldcapital.com.com" 
                     className="text-gray-900 font-semibold text-lg hover:text-purple-600 transition-colors"
                   >
-                    mails@mutualtrustmfb.com
+                    info@emeraldcapital.com
                   </a>
                 </div>
               </div>

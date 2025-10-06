@@ -17,7 +17,7 @@ export default function BankingHero() {
           </h1>
           
           <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-            At Ghana Trust Bank Limited, we are committed to empowering individuals and businesses through 
+            At Emerald Capital, we are committed to empowering individuals and businesses through 
             innovative banking solutions. Our customer-centric approach and robust financial products help you grow 
             and achieve your financial goals. With a focus on excellence, integrity, and innovation, we strive to deliver 
             the best banking experience in Ghana.

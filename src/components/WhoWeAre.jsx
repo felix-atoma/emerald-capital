@@ -44,7 +44,7 @@ export default function WhoWeAre() {
         </h2>
         
         <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-          Mutual Trust MFBank Limited is a dynamic financial institution that 
+          Emerald Capital is a dynamic financial institution that 
           specializes in providing tailored banking services for individuals and 
           businesses. We believe in building long-lasting relationships with our 
           customers, offering personalized solutions that empower and transform 
