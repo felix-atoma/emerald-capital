@@ -125,37 +125,31 @@ const FinancialProductsSite = () => {
               onClick={() => scrollToSection("ippis")}
               className="text-gray-700 hover:text-purple-600 font-medium transition"
             >
-              IPPIS Loan
+              SME Loan
             </button>
             <button
               onClick={() => scrollToSection("mtgreen")}
               className="text-gray-700 hover:text-purple-600 font-medium transition"
             >
-              MTGreen
+              Business Loan
             </button>
             <button
               onClick={() => scrollToSection("mtloan")}
               className="text-gray-700 hover:text-purple-600 font-medium transition"
             >
-              MTloan
+              Personal Loan
             </button>
             <button
               onClick={() => scrollToSection("sme")}
               className="text-gray-700 hover:text-purple-600 font-medium transition"
             >
-              SME Loan
+              Funeral Loan
             </button>
             <button
               onClick={() => scrollToSection("car4cash")}
               className="text-gray-700 hover:text-purple-600 font-medium transition"
             >
-              Car4Cash
-            </button>
-            <button
-              onClick={() => scrollToSection("investment")}
-              className="text-gray-700 hover:text-purple-600 font-medium transition"
-            >
-              Investment
+              Educational Loan
             </button>
           </div>
         </div>
@@ -182,13 +176,13 @@ const FinancialProductsSite = () => {
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg">
                 <p className="text-sm font-semibold">Loan Disbursement</p>
-                <p className="text-xl font-bold">N1,000,000</p>
+                <p className="text-xl font-bold">GHS 1,000,000</p>
                 <p className="text-green-600 font-bold">PAID</p>
               </div>
             </div>
             <div className="md:w-1/2">
               <p className="text-sm font-semibold text-gray-600 mb-2">
-                IPPIS Loan
+                SME Loan
               </p>
               <h2 className="text-5xl font-bold mb-6">
                 <span className="text-gray-700">Prompt Cash Loans for</span>
@@ -198,13 +192,13 @@ const FinancialProductsSite = () => {
                 </span>
               </h2>
               <p className="text-gray-600 text-lg mb-8">
-                Put your financial worries to rest with our fast and easy IPPIS
+                Put your financial worries to rest with our fast and easy SME
                 loans. Pay your rent, school fees, medical expenses and other
                 financial needs at a go.
               </p>
               <Link to="form">
   <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For IPPIS Loan
+    Apply For SME Loan
   </button>
 </Link>
             </div>
@@ -221,7 +215,7 @@ const FinancialProductsSite = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <p className="text-sm font-semibold text-gray-600 mb-2">
-                MTGreen:
+                Business Loan:
               </p>
               <h2 className="text-5xl font-bold mb-6">
                 <span className="text-gray-700">
@@ -239,7 +233,7 @@ const FinancialProductsSite = () => {
               </p>
               <Link to="form">
   <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-    Apply For MTGreen
+    Apply For Business Loan
     <span>→</span>
   </button>
 </Link>
@@ -287,12 +281,12 @@ const FinancialProductsSite = () => {
                 <p className="text-xs font-semibold">
                   Loan Approved (00:05:10)
                 </p>
-                <p className="text-lg font-bold">N 2,000,000</p>
+                <p className="text-lg font-bold">GHS 2,000,000</p>
               </div>
             </div>
             <div className="md:w-1/2">
               <p className="text-sm font-semibold text-gray-600 mb-2">
-                MTloan:
+                Personal Loan:
               </p>
               <h2 className="text-5xl font-bold mb-6">
                 <span className="text-gray-700">Get your loan approved in</span>
@@ -302,7 +296,7 @@ const FinancialProductsSite = () => {
                 </span>
               </h2>
               <p className="text-gray-600 text-lg mb-8">
-                Enjoy quick access of up to N1 million naira in just 10 minutes
+                Enjoy quick access of up to GHS 1 million in just 10 minutes
                 or less! Settle your financial needs with no hassle. No
                 collateral is required.
               </p>
@@ -324,7 +318,7 @@ const FinancialProductsSite = () => {
               </div>
              <Link to="form">
   <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For MTloans
+    Apply For Personal Loans
   </button>
 </Link>
             </div>
@@ -341,7 +335,7 @@ const FinancialProductsSite = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <p className="text-sm font-semibold text-gray-600 mb-2">
-                SME Loan:
+                Funeral Loan:
               </p>
               <h2 className="text-5xl font-bold mb-6">
                 <span className="text-gray-700">Beta Business, </span>
@@ -351,12 +345,12 @@ const FinancialProductsSite = () => {
               </h2>
               <p className="text-gray-600 text-lg mb-8">
                 Your business deserves the right amount of funds and that's
-                where we come in. Get easy access to funds of up to N100 million
+                where we come in. Get easy access to funds of up to GHS 100 million
                 to take your business to the next level.
               </p>
               <Link to="form">
   <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For SME Loan
+    Apply For Funeral Loan
   </button>
 </Link>
             </div>
@@ -370,7 +364,7 @@ const FinancialProductsSite = () => {
 </div>
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
-                <p className="text-sm font-semibold">SME Loan</p>
+                <p className="text-sm font-semibold">Funeral Loan</p>
                 <p className="text-lg font-bold text-green-600 flex items-center gap-2">
                   Approved <span>✓</span>
                 </p>
@@ -409,7 +403,7 @@ const FinancialProductsSite = () => {
 
       {/* Right side: Text */}
       <div className="md:w-1/2">
-        <p className="text-sm font-semibold text-gray-600 mb-2">Car4Cash:</p>
+        <p className="text-sm font-semibold text-gray-600 mb-2">Education Loan:</p>
         <h2 className="text-5xl font-bold mb-6">
           <span className="text-gray-700">Your Car can be</span>
           <br />
@@ -423,7 +417,7 @@ const FinancialProductsSite = () => {
         </p>
        <Link to="form">
   <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-    Apply For Car4Cash
+    Apply For Education Loan
     <span>→</span>
   </button>
 </Link>
