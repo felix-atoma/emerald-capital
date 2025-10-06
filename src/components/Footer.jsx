@@ -181,11 +181,11 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold text-lg mb-4">Loans</h3>
             <ul className="space-y-2">
-              <li><a href="/loans/ec-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECLoans</a></li>
-              <li><a href="/loans/ippis" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">IPPIS Loan</a></li>
-              <li><a href="/loans/car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Car4Cash</a></li>
-              <li><a href="/loans/ec-plus" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">ECPlus Loan</a></li>
-              <li><a href="/loans/sme" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loan</a></li>
+              <li><a href="/loans/ec-loans" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">SME Loans</a></li>
+              <li><a href="/loans/ippis" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Business Loan</a></li>
+              <li><a href="/loans/car4cash" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Personal Loan</a></li>
+              <li><a href="/loans/ec-plus" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Funeral Loan</a></li>
+              <li><a href="/loans/sme" className="text-gray-300 text-sm hover:text-blue-400 transition-colors">Education Loan</a></li>
             </ul>
           </div>
           

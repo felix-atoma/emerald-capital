@@ -7,22 +7,23 @@ const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
 const navLinks = [
-  { label: "Banking", dropdown: ["Savings Accounts", "Corporate Accounts"] },
+  { label: "Banking", 
+    dropdown: ["Susu Account", "Savings Account"] },
   {
     label: "Loans",
-    dropdown: ["ECLoans", "IPPIS Loans", "Car4Cash", "ECPlus Loans", "SME Loan"],
+    dropdown: ["SME Loan", "Business Loan", "Personal Loan", "Funeral Loans", "Education Loan"],
   },
   {
     label: "Investment",
-    dropdown: ["Treasury Note", "Fixed Deposit", "Mudurabah"],
+    dropdown: ["Fixed Deposit"],
   },
   {
-    label: "Asset Finance",
-    dropdown: ["MT Green Solar", "Agric Finance", "Auto Finance"],
+    label: "Project Financing",
+    dropdown: ["Emerald Business", "Emerald Pay"],
   },
   {
     label: "Company",
-    dropdown: ["About", "Leadership", "Gallery", "Corporate & Social Responsibility (CSR)"],
+    dropdown: ["About"],
   },
   { label: "Blog" },
   { label: "Contact" },
