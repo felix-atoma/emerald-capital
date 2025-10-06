@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Shield } from 'lucide-react';
 import { newsletterAPI } from '../services/api';
 import toast from "react-hot-toast";
+import { Link } from 'react-router-dom';
 
 toast.success("Email submitted successfully!");
 toast.error("Something went wrong!");
@@ -239,8 +240,20 @@ const Footer = () => {
           <div className="text-gray-400">
             Developed by <a href="#" className="text-white hover:text-blue-400 transition-colors underline">FeliD Media</a>
           </div>
-          <div className="text-gray-400">
-            © 2025 Copyrights. <span className="text-white">Emerald Capital Ltd.</span> All Rights Reserved
+          
+          {/* Admin Access Link - Added here */}
+          <div className="flex items-center gap-6">
+            <Link 
+              to="/admin/login" 
+              className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors text-sm"
+            >
+              <Shield className="w-4 h-4" />
+              <span>Staff Access</span>
+            </Link>
+            
+            <div className="text-gray-400">
+              © 2025 Copyrights. <span className="text-white">Emerald Capital Ltd.</span> All Rights Reserved
+            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, Eye, EyeOff, Image } from 'lucide-react';
+import { Headphones, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from "react-hot-toast";
 
@@ -251,10 +251,12 @@ const LoginPage = () => {
         </div>
 
         <div className="flex-1 bg-gray-100 flex items-center justify-center relative border-l border-gray-200">
-          <div className="w-full h-full bg-gray-200 border-2 border-dashed border-gray-400 rounded-none flex flex-col items-center justify-center text-gray-500 text-lg text-center">
-            <Image size={64} className="opacity-50 mb-4" />
-            <p>Photo Placeholder</p>
-            <p className="text-sm mt-2">Image would be displayed here</p>
+          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+            <img 
+              src="" 
+              alt="Login visual" 
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div

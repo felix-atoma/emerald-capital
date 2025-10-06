@@ -1,16 +1,16 @@
 // src/App.js
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
-import LoadingSpinner from "./components/LoadingSpinner"; // ✅ Import LoadingSpinner
-import PageLoader from "./components/PageLoader"; // ✅ Import PageLoader
+import LoadingSpinner from "./components/LoadingSpinner";
+import PageLoader from "./components/PageLoader";
 
 // Lazy load all your pages for better performance
 const RootLayout = lazy(() => import("./layouts/Rootlayout"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const SavingsAccountPage = lazy(() => import("./pages/SavingsAccountPage"));
-const CorporateAccountPage = lazy(() => import("./pages/CorporateAccountPage"));
+const SusuAccount = lazy(() => import("./pages/SusuAccount"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const SignupPage = lazy(() => import("./pages/SignupPage"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -33,20 +33,23 @@ const Gallary = lazy(() => import("./pages/Gallary"));
 const Form = lazy(() => import("./pages/Form"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 
+// 🔐 Admin pages (lazy loaded)
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"));
+
 function App() {
   return (
     <AuthProvider>
       <Router>
-        {/* ✅ Suspense wraps everything - shows spinner during initial/lazy loads */}
         <Suspense fallback={<LoadingSpinner />}>
-          {/* ✅ PageLoader shows spinner during route transitions */}
           <PageLoader />
           
           <Routes>
+            {/* PUBLIC ROUTES - Anyone can access */}
             <Route path="/" element={<RootLayout />}>
               <Route index element={<HomePage />} />
-              <Route path="savings-accounts" element={<SavingsAccountPage />} />
-              <Route path="corporate-accounts" element={<CorporateAccountPage />} />
+              <Route path="savings-account" element={<SavingsAccountPage />} />
+              <Route path="susu-account" element={<SusuAccount />} />
               <Route path="contact" element={<Contact />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="mtloans" element={<MTLoans />} />
@@ -66,17 +69,42 @@ function App() {
               <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
               <Route path="privacy-page" element={<PrivacyPage />} />
             </Route>
+            
             <Route path="form" element={<Form />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+
+            {/* 🔐 ADMIN ROUTES - Protected */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+            <Route 
+              path="/admin/messages" 
+              element={
+                <ProtectedRoute>
+                  <AdminMessages />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
 
-          {/* ✅ Toast Provider */}
           <Toaster position="top-right" reverseOrder={false} />
         </Suspense>
       </Router>
     </AuthProvider>
   );
+}
+
+// 🔐 Protected Route Component - Blocks unauthorized access
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('adminAuthToken');
+  const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+  
+  // Check both token AND user role
+  if (!token || (adminUser.role !== 'admin' && adminUser.role !== 'officer')) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  return children;
 }
 
 export default App;
