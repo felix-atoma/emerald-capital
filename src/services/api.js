@@ -83,8 +83,9 @@ export const authAPI = {
 };
 
 // Admin Auth API (uses direct calls without token for login)
+// ✅ FIXED: Changed from /auth/login to /admin/login
 export const adminAuthAPI = {
-  login: (credentials) => axios.post(`${API_BASE_URL}/auth/login`, credentials),
+  login: (credentials) => axios.post(`${API_BASE_URL}/admin/login`, credentials),
 };
 
 // Loan API

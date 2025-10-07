@@ -4,6 +4,64 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
 
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      hasError: false, 
+      error: null,
+      errorInfo: null 
+    };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+    this.setState({
+      error: error,
+      errorInfo: errorInfo
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <h2 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
+            <p className="text-gray-600 mb-4">
+              We encountered an error while loading the application form.
+            </p>
+            <div className="space-y-2">
+              <button 
+                onClick={() => window.location.reload()}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              >
+                Reload Page
+              </button>
+              <button 
+                onClick={() => this.setState({ hasError: false, error: null, errorInfo: null })}
+                className="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Loading Spinner Component
 const SubmitLoadingSpinner = () => {
   return (
@@ -51,11 +109,26 @@ const SubmitLoadingSpinner = () => {
   );
 };
 
-export default function GhanaLoanForm() {
+// Auth Loading Component
+const AuthLoadingSpinner = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-700">Loading application form...</p>
+      </div>
+    </div>
+  );
+};
+
+const GhanaLoanForm = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  // Add loading state for auth
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const getInitialFormData = () => ({
     sex: '',
     firstName: '',
     lastName: '',
@@ -89,9 +162,10 @@ export default function GhanaLoanForm() {
     accountOfficerName: '',
     feedback: '',
     agreementConfirmed: false,
-    userId: user?.id
+    userId: user?.id || ''
   });
 
+  const [formData, setFormData] = useState(getInitialFormData);
   const [files, setFiles] = useState({
     passportPhoto: null,
     ghanaCard: null,
@@ -124,6 +198,23 @@ export default function GhanaLoanForm() {
     { id: 'other', label: 'Other' }
   ];
 
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setAuthLoading(false);
+  }, [user, navigate]);
+
+  // Reset form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData(getInitialFormData());
+    }
+  }, [user]);
+
+  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -131,6 +222,7 @@ export default function GhanaLoanForm() {
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }, []);
 
@@ -159,31 +251,57 @@ export default function GhanaLoanForm() {
   };
 
   const handleFileChange = (e, fieldName) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
-      setFiles(prev => ({ ...prev, [fieldName]: selectedFiles }));
-    } else {
-      setFiles(prev => ({ ...prev, [fieldName]: selectedFiles[0] }));
+    try {
+      const selectedFiles = Array.from(e.target.files);
+      if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
+        setFiles(prev => ({ ...prev, [fieldName]: selectedFiles }));
+      } else {
+        setFiles(prev => ({ ...prev, [fieldName]: selectedFiles[0] }));
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast.error('Error uploading file. Please try again.');
     }
   };
 
+  // Improved drawing functions with error handling
   const startDrawing = (e) => {
-    setIsDrawing(true);
-    setSignatureEmpty(false);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    try {
+      if (!canvasRef.current) return;
+      
+      setIsDrawing(true);
+      setSignatureEmpty(false);
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      
+      ctx.beginPath();
+      ctx.moveTo(
+        e.clientX - rect.left,
+        e.clientY - rect.top
+      );
+    } catch (error) {
+      console.error('Drawing error:', error);
+      toast.error('Error with signature pad. Please refresh the page.');
+    }
   };
 
   const draw = (e) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
+    try {
+      if (!isDrawing || !canvasRef.current) return;
+      
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      
+      ctx.lineTo(
+        e.clientX - rect.left,
+        e.clientY - rect.top
+      );
+      ctx.stroke();
+    } catch (error) {
+      console.error('Drawing error:', error);
+    }
   };
 
   const stopDrawing = () => {
@@ -191,10 +309,16 @@ export default function GhanaLoanForm() {
   };
 
   const clearSignature = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setSignatureEmpty(true);
+    try {
+      if (!canvasRef.current) return;
+      
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setSignatureEmpty(true);
+    } catch (error) {
+      console.error('Clear signature error:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -202,14 +326,69 @@ export default function GhanaLoanForm() {
     navigate('/login');
   };
 
+  // Form validation
+  const validateForm = () => {
+    const requiredFields = [
+      'sex', 'firstName', 'lastName', 'dateOfBirth', 'phone',
+      'ghanaCardNumber', 'homeAddress', 'employer', 'staffNumber',
+      'employmentDate', 'gradeLevel', 'lastMonthPay', 'tenor',
+      'loanAmountRequested', 'existingCustomer'
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        return false;
+      }
+    }
+
+    if (formData.ghanaCardNumber !== formData.ghanaCardNumberConfirm) {
+      toast.error('Ghana Card numbers do not match');
+      return false;
+    }
+
+    if (!formData.agreementConfirmed) {
+      toast.error('Please agree to the terms and conditions');
+      return false;
+    }
+
+    if (signatureEmpty) {
+      toast.error('Please provide your signature');
+      return false;
+    }
+
+    if (!files.passportPhoto || !files.ghanaCard || files.lastMonthPayslip.length === 0 || files.bankStatement.length === 0) {
+      toast.error('Please upload all required documents');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       // Convert signature canvas to blob
       const canvas = canvasRef.current;
-      const signatureBlob = await new Promise(resolve => canvas.toBlob(resolve));
+      if (!canvas) {
+        throw new Error('Signature canvas not available');
+      }
+
+      const signatureBlob = await new Promise(resolve => {
+        canvas.toBlob(resolve, 'image/png');
+      });
+
+      if (!signatureBlob) {
+        throw new Error('Failed to create signature image');
+      }
 
       // Create FormData for file upload
       const formDataToSend = new FormData();
@@ -219,7 +398,7 @@ export default function GhanaLoanForm() {
         if (key === 'nextOfKin' || key === 'employmentType') {
           formDataToSend.append(key, JSON.stringify(formData[key]));
         } else {
-          formDataToSend.append(key, formData[key]);
+          formDataToSend.append(key, formData[key] || '');
         }
       });
 
@@ -240,12 +419,15 @@ export default function GhanaLoanForm() {
       const response = await fetch('/api/loan-application', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${user.token}`
+          'Authorization': `Bearer ${user?.token}`
         },
         body: formDataToSend
       });
 
-      if (!response.ok) throw new Error('Submission failed');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Submission failed: ${response.status}`);
+      }
 
       const result = await response.json();
       
@@ -259,11 +441,16 @@ export default function GhanaLoanForm() {
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error('Failed to submit application. Please try again.');
+      toast.error(error.message || 'Failed to submit application. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return <AuthLoadingSpinner />;
+  }
 
   return (
     <>
@@ -847,16 +1034,32 @@ export default function GhanaLoanForm() {
                     Signature <span className="text-red-500">*</span>
                   </label>
                   <div className="border-2 border-gray-300 rounded-lg p-4">
-                    <canvas
-                      ref={canvasRef}
-                      width={600}
-                      height={150}
-                      className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                    />
+                    <div className="relative">
+                      <canvas
+                        ref={canvasRef}
+                        width={600}
+                        height={150}
+                        className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          startDrawing(e.touches[0]);
+                        }}
+                        onTouchMove={(e) => {
+                          e.preventDefault();
+                          draw(e.touches[0]);
+                        }}
+                        onTouchEnd={stopDrawing}
+                      />
+                      {signatureEmpty && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <p className="text-gray-400">Draw your signature here</p>
+                        </div>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={clearSignature}
@@ -1000,5 +1203,14 @@ export default function GhanaLoanForm() {
         </div>
       </div>
     </>
+  );
+};
+
+// Export with Error Boundary
+export default function GhanaLoanFormWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <GhanaLoanForm />
+    </ErrorBoundary>
   );
 }

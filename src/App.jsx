@@ -2,9 +2,9 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Toaster } from "react-hot-toast";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PageLoader from "./components/PageLoader";
+import ToastContainer from "./components/CustomToast";
 
 // Lazy load all your pages for better performance
 const RootLayout = lazy(() => import("./layouts/Rootlayout"));
@@ -43,6 +43,7 @@ function App() {
       <Router>
         <Suspense fallback={<LoadingSpinner />}>
           <PageLoader />
+          <ToastContainer />
           
           <Routes>
             {/* PUBLIC ROUTES - Anyone can access */}
@@ -86,8 +87,6 @@ function App() {
               } 
             />
           </Routes>
-
-          <Toaster position="top-right" reverseOrder={false} />
         </Suspense>
       </Router>
     </AuthProvider>

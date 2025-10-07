@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Shield } from 'lucide-react';
 import { newsletterAPI } from '../services/api';
-import toast from "react-hot-toast";
+import { useToast } from '../components/CustomToast';
 import { Link } from 'react-router-dom';
-
-toast.success("Email submitted successfully!");
-toast.error("Something went wrong!");
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
     
     if (!email) {
       setSubscriptionStatus('Please enter your email address');
+      toast.error('Please enter your email address', 3000);
       return;
     }
 
     if (!validateEmail(email)) {
       setSubscriptionStatus('Please enter a valid email address');
+      toast.error('Please enter a valid email address', 3000);
       return;
     }
 
@@ -34,6 +34,7 @@ const Footer = () => {
       if (response.data.success) {
         setSubscriptionStatus('Successfully subscribed to our newsletter!');
         setEmail('');
+        toast.success('Successfully subscribed to our newsletter!', 4000);
         
         // Clear success message after 5 seconds
         setTimeout(() => {
@@ -42,15 +43,18 @@ const Footer = () => {
       }
     } catch (error) {
       // Handle different error cases
+      let errorMessage = 'Subscription failed. Please try again later.';
+      
       if (error.response?.status === 400) {
         if (error.response?.data?.message?.includes('already subscribed')) {
-          setSubscriptionStatus('This email is already subscribed to our newsletter.');
+          errorMessage = 'This email is already subscribed to our newsletter.';
         } else {
-          setSubscriptionStatus(error.response?.data?.message || 'Invalid email address.');
+          errorMessage = error.response?.data?.message || 'Invalid email address.';
         }
-      } else {
-        setSubscriptionStatus('Subscription failed. Please try again later.');
       }
+      
+      setSubscriptionStatus(errorMessage);
+      toast.error(errorMessage, 4000);
       
       // Clear error message after 5 seconds
       setTimeout(() => {
@@ -201,14 +205,14 @@ const Footer = () => {
                 placeholder="Enter your email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-2 bg-gray-800 text-white text-sm border border-gray-700 rounded-l focus:outline-none focus:border-blue-500"
+                className="flex-1 px-4 py-2 bg-gray-800 text-white text-sm border border-gray-700 rounded-l focus:outline-none focus:border-blue-500 transition-colors"
                 required
                 disabled={isSubmitting}
               />
               <button 
                 type="submit"
                 disabled={isSubmitting}
-                className={`px-6 py-2 text-white text-sm font-medium rounded-r transition-colors ${
+                className={`px-6 py-2 text-white text-sm font-medium rounded-r transition-colors duration-200 ${
                   isSubmitting 
                     ? 'bg-gray-600 cursor-not-allowed' 
                     : 'bg-blue-600 hover:bg-blue-700'
