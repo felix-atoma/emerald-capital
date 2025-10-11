@@ -25,8 +25,18 @@ const AdminLogin = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!username.trim() || !password.trim()) {
+    // Trim inputs
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+    
+    console.log('🎯 FINAL CREDENTIALS BEING SENT:', {
+      username: trimmedUsername,
+      password: '***' + trimmedPassword.slice(-3),
+      usernameLength: trimmedUsername.length,
+      passwordLength: trimmedPassword.length
+    });
+
+    if (!trimmedUsername || !trimmedPassword) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -34,136 +44,143 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      console.log('🔑 Attempting admin login with username:', username);
+      console.log('🔑 Making API call to /api/admin/login...');
       
       const response = await adminAuthAPI.login({ 
-        username: username.trim(), 
-        password: password 
+        username: trimmedUsername, 
+        password: trimmedPassword 
       });
       
+      console.log('✅ API Call Successful!');
       console.log('📦 Full response:', response);
       console.log('📊 Response data:', response.data);
 
-      // Handle response structure: { success: true, message: '...', data: { tokens: { ... }, user: { ... } } }
+      // Handle the exact backend response structure
       if (response.data && response.data.success) {
-        const { data: responseData } = response.data;
+        const responseData = response.data.data;
         
-        console.log('🔍 Nested data:', responseData);
+        console.log('🔍 Response structure analysis:', {
+          hasUser: !!responseData?.user,
+          hasTokens: !!responseData?.tokens,
+          hasAccessToken: !!responseData?.tokens?.access,
+          userKeys: responseData?.user ? Object.keys(responseData.user) : [],
+          tokenKeys: responseData?.tokens ? Object.keys(responseData.tokens) : []
+        });
 
-        if (responseData) {
-          // Extract token and user data - FIXED LOGIC
-          let authToken = null;
-          let userData = null;
+        // Extract data from backend response structure: { success: true, data: { user: {}, tokens: { access: '' } } }
+        const authToken = responseData?.tokens?.access;
+        const userData = responseData?.user;
 
-          console.log('🔑 Available tokens keys:', Object.keys(responseData.tokens || {}));
-          console.log('👤 Available user keys:', Object.keys(responseData.user || {}));
+        console.log('🔑 Token extraction:', authToken ? `✅ Found (${authToken.substring(0, 20)}...)` : '❌ Not found');
+        console.log('👤 User data extraction:', userData ? '✅ Found' : '❌ Not found');
 
-          // Check all possible token locations
-          if (responseData.tokens) {
-            // Try different token property names
-            authToken = responseData.tokens.access || 
-                       responseData.tokens.accessToken || 
-                       responseData.tokens.token ||
-                       responseData.tokens.authToken;
-          }
+        if (authToken && userData) {
+          console.log('🎉 Login successful! Saving data...');
           
-          // Get user data
-          userData = responseData.user;
-
-          console.log('🔑 Extracted token:', authToken ? '✅ Found: ' + authToken.substring(0, 20) + '...' : '❌ Not found');
-          console.log('👤 Extracted user data:', userData);
-
-          if (authToken && userData) {
-            console.log('✅ Login successful, saving tokens...');
-            
-            // Save admin token and user data
-            localStorage.setItem('adminAuthToken', authToken);
-            localStorage.setItem('adminUser', JSON.stringify(userData));
-            
-            console.log('👤 Admin user data saved:', userData);
-            console.log('🔑 Auth token saved');
-            
-            toast.success(`Welcome back, ${userData.username || userData.name || 'Admin'}!`);
-            
-            // Redirect to admin dashboard
-            setTimeout(() => {
-              navigate('/admin/dashboard');
-            }, 1500);
-          } else {
-            // If we have the data but extraction failed, log the exact structure
-            console.error('❌ Token extraction failed. Full tokens object:', responseData.tokens);
-            console.error('❌ User data:', responseData.user);
-            toast.error('Login failed: Could not extract authentication data');
-          }
+          // Save to localStorage
+          localStorage.setItem('adminAuthToken', authToken);
+          localStorage.setItem('adminUser', JSON.stringify(userData));
+          
+          console.log('💾 Data saved to localStorage');
+          console.log('👤 Admin user info:', {
+            username: userData.username,
+            role: userData.role,
+            firstName: userData.firstName,
+            lastName: userData.lastName
+          });
+          
+          toast.success(`Welcome back, ${userData.firstName || userData.username || 'Admin'}!`);
+          
+          // Redirect to admin dashboard
+          setTimeout(() => {
+            navigate('/admin/dashboard');
+          }, 1500);
         } else {
-          console.error('❌ No data nested in response');
-          toast.error('Login failed: No user data received');
+          console.error('❌ Failed to extract auth data');
+          console.error('📊 Full response data for debugging:', responseData);
+          toast.error('Login failed: Could not process authentication data');
         }
       } else {
-        console.error('❌ Unsuccessful response or invalid structure');
-        toast.error('Login failed: Invalid credentials or server error');
+        console.error('❌ Invalid response structure');
+        toast.error('Login failed: Invalid server response');
       }
     } catch (err) {
-      console.error('❌ Login error:', err);
+      console.error('💥 LOGIN ERROR:', err);
       
-      // Detailed error logging
+      // Detailed error analysis
       if (err.response) {
-        console.error('📊 Error response status:', err.response.status);
-        console.error('📊 Error response data:', err.response.data);
+        console.error('📊 Server responded with error:');
+        console.error('  Status:', err.response.status);
+        console.error('  Status Text:', err.response.statusText);
+        console.error('  Data:', err.response.data);
+        
+        if (err.response.status === 401) {
+          toast.error('Invalid username or password');
+        } else if (err.response.status === 404) {
+          toast.error('Admin login endpoint not found');
+        } else if (err.response.status === 500) {
+          toast.error('Server error. Please try again later.');
+        } else {
+          toast.error(err.response.data?.message || `Error: ${err.response.status}`);
+        }
       } else if (err.request) {
         console.error('📡 No response received:', err.request);
-      } else {
-        console.error('⚡ Request setup error:', err.message);
-      }
-      
-      // User-friendly error messages
-      if (err.response?.status === 401) {
-        toast.error('Invalid username or password');
-      } else if (err.response?.status === 404) {
-        toast.error('Admin account not found');
-      } else if (err.response?.status === 500) {
-        toast.error('Server error. Please try again later.');
-      } else if (err.code === 'NETWORK_ERROR' || err.code === 'ECONNREFUSED') {
         toast.error('Cannot connect to server. Please check your connection.');
       } else {
-        toast.error(err.response?.data?.message || 'Login failed. Please try again.');
+        console.error('⚡ Request setup error:', err.message);
+        toast.error('Login failed: ' + err.message);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Debug function to check the exact response structure
-  const debugResponse = async () => {
+  // Test the exact endpoint
+  const testEndpoint = async () => {
+    console.log('🧪 Testing /api/admin/login endpoint directly...');
+    
+    const credentials = {
+      username: 'admin',
+      password: 'admin123'
+    };
+
     try {
-      console.log('🐛 Debug: Checking exact response structure...');
-      const response = await adminAuthAPI.login({ 
-        username: 'admin', 
-        password: 'admin123' 
+      const response = await fetch('https://emerald-capital-backend.onrender.com/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials)
       });
       
-      console.log('🐛 DEBUG - Full response structure:', JSON.stringify(response.data, null, 2));
+      console.log('📊 Direct fetch response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
       
-      if (response.data.data) {
-        console.log('🐛 DEBUG - Tokens structure:', JSON.stringify(response.data.data.tokens, null, 2));
-        console.log('🐛 DEBUG - User structure:', JSON.stringify(response.data.data.user, null, 2));
-        console.log('🐛 DEBUG - Tokens keys:', Object.keys(response.data.data.tokens || {}));
+      const data = await response.json();
+      console.log('📦 Response data:', data);
+      
+      if (response.ok) {
+        toast.success('✅ Endpoint is working! Check console for details.');
+      } else {
+        toast.error(`❌ Endpoint error: ${data.message}`);
       }
     } catch (error) {
-      console.error('🐛 DEBUG - Error:', error);
+      console.error('❌ Endpoint test error:', error);
+      toast.error('❌ Cannot connect to endpoint');
     }
   };
 
-  // Test connection function
+  // Test server connection
   const testConnection = async () => {
     try {
-      console.log('🧪 Testing server connection...');
+      console.log('🌐 Testing server connection...');
       const response = await fetch('https://emerald-capital-backend.onrender.com/api/health');
       const data = await response.json();
-      console.log('🌐 Server health check:', data);
+      console.log('✅ Server health:', data);
       toast.success('Server connection successful!');
     } catch (error) {
-      console.error('🌐 Server connection test failed:', error);
+      console.error('❌ Server connection failed:', error);
       toast.error('Cannot connect to server');
     }
   };
@@ -179,7 +196,7 @@ const AdminLogin = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h1>
           <p className="text-gray-600">Emerald Capital Dashboard</p>
           
-          {/* Debug & Connection Test Buttons */}
+          {/* Debug buttons */}
           <div className="mt-4 flex gap-2 justify-center">
             <button
               onClick={testConnection}
@@ -189,11 +206,11 @@ const AdminLogin = () => {
               Test Connection
             </button>
             <button
-              onClick={debugResponse}
-              className="text-xs text-gray-600 hover:text-gray-800 underline"
+              onClick={testEndpoint}
+              className="text-xs text-green-600 hover:text-green-800 underline"
               type="button"
             >
-              Debug Response
+              Test Login Endpoint
             </button>
           </div>
         </div>
