@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Headphones, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -52,6 +52,33 @@ const LoginLoadingSpinner = () => {
   );
 };
 
+// Memoized Input Component to prevent re-renders
+const MemoizedInput = React.memo(({ 
+  type, 
+  value, 
+  onChange, 
+  placeholder, 
+  disabled, 
+  error, 
+  autoComplete,
+  className = '',
+  ...props 
+}) => (
+  <div>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={`w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none ${className}`}
+      placeholder={placeholder}
+      disabled={disabled}
+      autoComplete={autoComplete}
+      {...props}
+    />
+    {error && <div className="text-red-600 text-sm mt-1">{error}</div>}
+  </div>
+));
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
@@ -80,7 +107,8 @@ const LoginPage = () => {
     }
   }, [user, navigate]);
 
-  const handleInputChange = (field, value) => {
+  // Use useCallback to prevent recreation of function on every render
+  const handleInputChange = useCallback((field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -91,7 +119,20 @@ const LoginPage = () => {
         [field]: ''
       }));
     }
-  };
+  }, [errors]);
+
+  // Create stable change handlers
+  const handleUsernameChange = useCallback((e) => {
+    handleInputChange('username', e.target.value);
+  }, [handleInputChange]);
+
+  const handlePasswordChange = useCallback((e) => {
+    handleInputChange('password', e.target.value);
+  }, [handleInputChange]);
+
+  const handleRememberMeChange = useCallback((e) => {
+    handleInputChange('rememberMe', e.target.checked);
+  }, [handleInputChange]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -154,20 +195,23 @@ const LoginPage = () => {
     }
   };
 
-  const handleForgotPassword = (e) => {
+  const handleForgotPassword = useCallback((e) => {
     e.preventDefault();
     toast.info('Password reset feature coming soon!', 3000);
-    // navigate('/forgot-password');
-  };
+  }, [toast]);
 
-  const handleCustomerService = () => {
+  const handleCustomerService = useCallback(() => {
     toast.info('Connecting you to customer service...', 3000);
-  };
+  }, [toast]);
 
-  const handleSignupRedirect = (e) => {
+  const handleSignupRedirect = useCallback((e) => {
     e.preventDefault();
     navigate('/signup');
-  };
+  }, [navigate]);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
 
   const Logo = () => (
     <div className="flex items-center mb-10">
@@ -201,43 +245,38 @@ const LoginPage = () => {
             )}
 
             <div className="mb-4 lg:mb-5">
-              <input
+              <MemoizedInput
                 type="text"
                 value={formData.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
-                className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                onChange={handleUsernameChange}
                 placeholder="Username or Account Number"
-                required
                 disabled={isSubmitting}
+                error={errors.username}
                 autoComplete="username"
+                key="username-input"
               />
-              {errors.username && (
-                <div className="text-red-600 text-sm mt-1">{errors.username}</div>
-              )}
             </div>
 
             <div className="mb-4 lg:mb-5 relative">
-              <input
+              <MemoizedInput
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 pr-12 outline-none"
+                onChange={handlePasswordChange}
                 placeholder="••••••••"
-                required
                 disabled={isSubmitting}
+                error={errors.password}
                 autoComplete="current-password"
+                className="pr-12"
+                key="password-input"
               />
               <button
                 type="button"
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 bg-transparent border-none cursor-pointer p-1 hover:text-gray-700 transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={togglePasswordVisibility}
                 disabled={isSubmitting}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
-              {errors.password && (
-                <div className="text-red-600 text-sm mt-1">{errors.password}</div>
-              )}
             </div>
 
             <div className="flex justify-between items-center mb-6 lg:mb-8">
@@ -245,7 +284,7 @@ const LoginPage = () => {
                 <input
                   type="checkbox"
                   checked={formData.rememberMe}
-                  onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+                  onChange={handleRememberMeChange}
                   className="w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500"
                   disabled={isSubmitting}
                 />
@@ -326,4 +365,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default React.memo(LoginPage);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Headphones, X, Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -61,55 +61,152 @@ const SignupPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Use useRef for form data to prevent unnecessary re-renders
+  const formDataRef = useRef({
     ghanaCardNumber: '',
-    fullName: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    sex: '',
+    dateOfBirth: '',
     phone: '',
+    otherPhone: '',
     email: '',
-    address: '',
+    homeAddress: '',
+    region: '',
+    nextOfKinFirstName: '',
+    nextOfKinLastName: '',
+    nextOfKinPhone: '',
+    nextOfKinRelationship: '',
+    employmentType: '',
+    employer: '',
+    staffNumber: '',
+    employmentDate: '',
+    gradeLevel: '',
+    lastMonthPay: '',
     username: '',
     password: '',
     confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
-  // Prevent multiple submissions and handle component mount
+  const [errors, setErrors] = useState({});
+  const [formVersion, setFormVersion] = useState(0);
+
+  // Updated Ghana regions to match backend expected format
+  const ghanaRegions = useMemo(() => [
+    'Greater Accra',
+    'Ashanti',
+    'Western',
+    'Eastern',
+    'Central',
+    'Northern',
+    'Upper East',
+    'Upper West',
+    'Volta',
+    'Bono',
+    'Bono East',
+    'Ahafo',
+    'Savannah',
+    'North East',
+    'Oti',
+    'Western North'
+  ], []);
+
+  // Employment types
+  const employmentTypes = useMemo(() => [
+    'Government',
+    'Private',
+    'Self-Employed',
+    'Unemployed',
+    'Student',
+    'Retired'
+  ], []);
+
+  // Next of Kin relationship types
+  const relationshipTypes = useMemo(() => [
+    'spouse',
+    'parent', 
+    'child',
+    'sibling',
+    'other'
+  ], []);
+
   useEffect(() => {
     setIsMounted(true);
     return () => setIsMounted(false);
   }, []);
 
-  // Check if user is already logged in
   useEffect(() => {
     if (user) {
       navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
 
-  const steps = [
-    { number: 1, label: 'Verify Ghana Card', component: 'identity' },
-    { number: 2, label: 'Confirm Information', component: 'confirm' },
-    { number: 3, label: 'Create Credentials', component: 'credentials' }
-  ];
+  const steps = useMemo(() => [
+    { number: 1, label: 'Personal Info', component: 'personal' },
+    { number: 2, label: 'Next of Kin', component: 'nextOfKin' },
+    { number: 3, label: 'Employment', component: 'employment' },
+    { number: 4, label: 'Credentials', component: 'credentials' }
+  ], []);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  // Single optimized handler for all inputs
+  const handleInputChange = useCallback((field, value) => {
+    formDataRef.current[field] = value;
+    
+    // Only update errors if this field has an error
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
         [field]: ''
       }));
     }
-  };
+    
+    // Force a re-render to update the input value
+    setFormVersion(prev => prev + 1);
+  }, [errors]);
 
-  const validateIdentity = () => {
+  // Create stable handler functions
+  const createChangeHandler = useCallback((field) => {
+    return (e) => handleInputChange(field, e.target.value);
+  }, [handleInputChange]);
+
+  // Memoize all handlers
+  const handlers = useMemo(() => ({
+    ghanaCardNumber: createChangeHandler('ghanaCardNumber'),
+    firstName: createChangeHandler('firstName'),
+    middleName: createChangeHandler('middleName'),
+    lastName: createChangeHandler('lastName'),
+    sex: createChangeHandler('sex'),
+    dateOfBirth: createChangeHandler('dateOfBirth'),
+    phone: createChangeHandler('phone'),
+    otherPhone: createChangeHandler('otherPhone'),
+    email: createChangeHandler('email'),
+    homeAddress: createChangeHandler('homeAddress'),
+    region: createChangeHandler('region'),
+    nextOfKinFirstName: createChangeHandler('nextOfKinFirstName'),
+    nextOfKinLastName: createChangeHandler('nextOfKinLastName'),
+    nextOfKinPhone: createChangeHandler('nextOfKinPhone'),
+    nextOfKinRelationship: createChangeHandler('nextOfKinRelationship'),
+    employmentType: createChangeHandler('employmentType'),
+    employer: createChangeHandler('employer'),
+    staffNumber: createChangeHandler('staffNumber'),
+    employmentDate: createChangeHandler('employmentDate'),
+    gradeLevel: createChangeHandler('gradeLevel'),
+    lastMonthPay: createChangeHandler('lastMonthPay'),
+    username: createChangeHandler('username'),
+    password: createChangeHandler('password'),
+    confirmPassword: createChangeHandler('confirmPassword')
+  }), [createChangeHandler]);
+
+  const validatePersonalInfo = () => {
+    const formData = formDataRef.current;
     const newErrors = {};
     const ghanaCardRegex = /^GHA-\d{9}-\d{1}$/;
+    const phoneRegex = /^0\d{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     if (!formData.ghanaCardNumber.trim()) {
       newErrors.ghanaCardNumber = 'Ghana Card number is required';
@@ -117,31 +214,31 @@ const SignupPage = () => {
       newErrors.ghanaCardNumber = 'Please enter a valid Ghana Card number (GHA-XXXXXXXXX-X)';
     }
     
-    setErrors(newErrors);
-    
-    if (Object.keys(newErrors).length > 0) {
-      toast.error('Please fix the Ghana Card validation errors', 3000);
-      return false;
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
     }
     
-    return true;
-  };
-
-  const validateConfirmation = () => {
-    const newErrors = {};
-    const phoneRegex = /^0\d{9}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    } else if (formData.fullName.trim().length < 3) {
-      newErrors.fullName = 'Full name must be at least 3 characters';
+    if (!formData.sex) {
+      newErrors.sex = 'Gender is required';
+    }
+    
+    if (!formData.dateOfBirth) {
+      newErrors.dateOfBirth = 'Date of birth is required';
+    } else {
+      const today = new Date();
+      const birthDate = new Date(formData.dateOfBirth);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 18) newErrors.dateOfBirth = 'You must be at least 18 years old';
     }
     
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
     } else if (!phoneRegex.test(formData.phone.trim())) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number (e.g., 0241234567)';
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
     }
     
     if (!formData.email.trim()) {
@@ -150,23 +247,63 @@ const SignupPage = () => {
       newErrors.email = 'Please enter a valid email address';
     }
     
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
-    } else if (formData.address.trim().length < 10) {
-      newErrors.address = 'Please enter your full address (at least 10 characters)';
+    if (!formData.homeAddress.trim()) {
+      newErrors.homeAddress = 'Home address is required';
+    }
+    
+    if (!formData.region) {
+      newErrors.region = 'Region is required';
     }
     
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateNextOfKin = () => {
+    const formData = formDataRef.current;
+    const newErrors = {};
+    const phoneRegex = /^0\d{9}$/;
     
-    if (Object.keys(newErrors).length > 0) {
-      toast.error('Please fix the personal information errors', 3000);
-      return false;
+    if (!formData.nextOfKinFirstName.trim()) {
+      newErrors.nextOfKinFirstName = 'Next of kin first name is required';
     }
     
-    return true;
+    if (!formData.nextOfKinLastName.trim()) {
+      newErrors.nextOfKinLastName = 'Next of kin last name is required';
+    }
+    
+    if (!formData.nextOfKinPhone.trim()) {
+      newErrors.nextOfKinPhone = 'Next of kin phone number is required';
+    } else if (!phoneRegex.test(formData.nextOfKinPhone.trim())) {
+      newErrors.nextOfKinPhone = 'Please enter a valid 10-digit phone number';
+    }
+
+    if (!formData.nextOfKinRelationship) {
+      newErrors.nextOfKinRelationship = 'Relationship is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateEmployment = () => {
+    const formData = formDataRef.current;
+    const newErrors = {};
+    
+    if (!formData.employmentType) {
+      newErrors.employmentType = 'Employment type is required';
+    }
+    
+    if (formData.employmentType !== 'Unemployed' && !formData.employer.trim()) {
+      newErrors.employer = 'Employer name is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const validateCredentials = () => {
+    const formData = formDataRef.current;
     const newErrors = {};
     const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/;
     
@@ -191,13 +328,7 @@ const SignupPage = () => {
     }
     
     setErrors(newErrors);
-    
-    if (Object.keys(newErrors).length > 0) {
-      toast.error('Please fix the credential validation errors', 3000);
-      return false;
-    }
-    
-    return true;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleProceed = () => {
@@ -207,12 +338,15 @@ const SignupPage = () => {
 
     switch (currentStep) {
       case 0:
-        isValid = validateIdentity();
+        isValid = validatePersonalInfo();
         break;
       case 1:
-        isValid = validateConfirmation();
+        isValid = validateNextOfKin();
         break;
       case 2:
+        isValid = validateEmployment();
+        break;
+      case 3:
         isValid = validateCredentials();
         break;
       default:
@@ -222,10 +356,11 @@ const SignupPage = () => {
     if (isValid) {
       if (currentStep < steps.length - 1) {
         setCurrentStep(prev => prev + 1);
-        toast.success(`Moving to ${steps[currentStep + 1].label}`, 2000);
       } else {
         handleSubmit();
       }
+    } else {
+      toast.error('Please fix the validation errors', 3000);
     }
   };
 
@@ -246,15 +381,42 @@ const SignupPage = () => {
     setErrors({});
 
     try {
+      const formData = formDataRef.current;
+      
+      // Format nextOfKin as an array with phone field included
+      const nextOfKinArray = (formData.nextOfKinFirstName.trim() && formData.nextOfKinLastName.trim()) ? [
+        {
+          firstName: formData.nextOfKinFirstName.trim(),
+          lastName: formData.nextOfKinLastName.trim(),
+          phone: formData.nextOfKinPhone.trim(), // Include phone in the array object
+          relationship: formData.nextOfKinRelationship
+        }
+      ] : [];
+
       const userData = {
-        ghanaCardNumber: formData.ghanaCardNumber.trim(),
-        fullName: formData.fullName.trim(),
+        sex: formData.sex,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        middleName: formData.middleName.trim(),
+        dateOfBirth: formData.dateOfBirth,
         phone: formData.phone.trim(),
-        email: formData.email.trim(),
-        address: formData.address.trim(),
+        otherPhone: formData.otherPhone.trim(),
+        ghanaCardNumber: formData.ghanaCardNumber.trim().toUpperCase(),
+        email: formData.email.trim().toLowerCase(),
+        homeAddress: formData.homeAddress.trim(),
+        region: formData.region,
+        nextOfKin: nextOfKinArray, // Send as array
+        employmentType: formData.employmentType,
+        employer: formData.employer.trim(),
+        staffNumber: formData.staffNumber.trim(),
+        employmentDate: formData.employmentDate,
+        gradeLevel: formData.gradeLevel.trim(),
+        lastMonthPay: formData.lastMonthPay,
         username: formData.username.trim(),
         password: formData.password
       };
+
+      console.log('Submitting user data:', userData);
 
       const result = await register(userData);
 
@@ -435,162 +597,413 @@ const SignupPage = () => {
     </div>
   );
 
-  const IdentityStep = () => (
-    <div>
-      <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Verify Ghana Card</h1>
-      <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your Ghana Card details</p>
+  const PersonalInfoStep = () => {
+    const formData = formDataRef.current;
+    return (
+      <div>
+        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Personal Information</h1>
+        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your personal details</p>
 
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Ghana Card Number</label>
-        <input
-          type="text"
-          value={formData.ghanaCardNumber}
-          onChange={e => handleInputChange('ghanaCardNumber', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="GHA-XXXXXXXXX-X"
-          disabled={isSubmitting}
-          autoComplete="off"
-        />
-        {errors.ghanaCardNumber && <div className="text-red-600 text-sm mt-1">{errors.ghanaCardNumber}</div>}
-      </div>
-
-      <div className="bg-gradient-to-br from-blue-800 to-purple-600 text-white p-4 lg:p-5 rounded-xl mb-6">
-        <h4 className="text-base mb-3 font-semibold">Why we need your Ghana Card</h4>
-        <p className="text-sm opacity-90 leading-relaxed">• Ghana Card is the official national identification</p>
-        <p className="text-sm opacity-90 leading-relaxed">• We use it to verify your identity and comply with regulations</p>
-        <p className="text-sm opacity-90 leading-relaxed">• Required for all financial transactions in Ghana</p>
-      </div>
-    </div>
-  );
-
-  const ConfirmStep = () => (
-    <div>
-      <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Confirm Information</h1>
-      <p className="text-gray-500 text-base mb-6 lg:mb-8">Please verify your details</p>
-
-      <div className="mb-4 lg:mb-5">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
-        <input
-          type="text"
-          value={formData.fullName}
-          onChange={e => handleInputChange('fullName', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Enter your full name"
-          disabled={isSubmitting}
-          autoComplete="name"
-        />
-        {errors.fullName && <div className="text-red-600 text-sm mt-1">{errors.fullName}</div>}
-      </div>
-
-      <div className="mb-4 lg:mb-5">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={e => handleInputChange('phone', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="0241234567"
-          disabled={isSubmitting}
-          autoComplete="tel"
-        />
-        {errors.phone && <div className="text-red-600 text-sm mt-1">{errors.phone}</div>}
-      </div>
-
-      <div className="mb-4 lg:mb-5">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={e => handleInputChange('email', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Enter email address"
-          disabled={isSubmitting}
-          autoComplete="email"
-        />
-        {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Residential Address</label>
-        <input
-          type="text"
-          value={formData.address}
-          onChange={e => handleInputChange('address', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Enter your complete address"
-          disabled={isSubmitting}
-          autoComplete="street-address"
-        />
-        {errors.address && <div className="text-red-600 text-sm mt-1">{errors.address}</div>}
-      </div>
-    </div>
-  );
-
-  const CredentialsStep = () => (
-    <div>
-      <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Create Credentials</h1>
-      <p className="text-gray-500 text-base mb-6 lg:mb-8">Set up your login details</p>
-
-      {errors.general && (
-        <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-5">
-          {errors.general}
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Ghana Card Number</label>
+          <input
+            type="text"
+            value={formData.ghanaCardNumber}
+            onChange={handlers.ghanaCardNumber}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="GHA-XXXXXXXXX-X"
+            disabled={isSubmitting}
+            autoComplete="off"
+            autoFocus={currentStep === 0}
+          />
+          {errors.ghanaCardNumber && <div className="text-red-600 text-sm mt-1">{errors.ghanaCardNumber}</div>}
         </div>
-      )}
 
-      <div className="mb-4 lg:mb-5">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
-        <input
-          type="text"
-          value={formData.username}
-          onChange={e => handleInputChange('username', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Choose a username"
-          disabled={isSubmitting}
-          autoComplete="username"
-        />
-        {errors.username && <div className="text-red-600 text-sm mt-1">{errors.username}</div>}
-      </div>
+        <div className="grid grid-cols-3 gap-4 mb-4 lg:mb-5">
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">First Name</label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={handlers.firstName}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="First name"
+              disabled={isSubmitting}
+              autoComplete="given-name"
+            />
+            {errors.firstName && <div className="text-red-600 text-sm mt-1">{errors.firstName}</div>}
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Middle Name</label>
+            <input
+              type="text"
+              value={formData.middleName}
+              onChange={handlers.middleName}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="Middle name"
+              disabled={isSubmitting}
+              autoComplete="additional-name"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={handlers.lastName}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="Last name"
+              disabled={isSubmitting}
+              autoComplete="family-name"
+            />
+            {errors.lastName && <div className="text-red-600 text-sm mt-1">{errors.lastName}</div>}
+          </div>
+        </div>
 
-      <div className="mb-4 lg:mb-5">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
-        <input
-          type="password"
-          value={formData.password}
-          onChange={e => handleInputChange('password', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Create a strong password"
-          disabled={isSubmitting}
-          autoComplete="new-password"
-        />
-        {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
-      </div>
+        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Gender</label>
+            <select
+              value={formData.sex}
+              onChange={handlers.sex}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              disabled={isSubmitting}
+            >
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.sex && <div className="text-red-600 text-sm mt-1">{errors.sex}</div>}
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Date of Birth</label>
+            <input
+              type="date"
+              value={formData.dateOfBirth}
+              onChange={handlers.dateOfBirth}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              disabled={isSubmitting}
+              max={new Date().toISOString().split('T')[0]}
+            />
+            {errors.dateOfBirth && <div className="text-red-600 text-sm mt-1">{errors.dateOfBirth}</div>}
+          </div>
+        </div>
 
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
-        <input
-          type="password"
-          value={formData.confirmPassword}
-          onChange={e => handleInputChange('confirmPassword', e.target.value)}
-          className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-          placeholder="Confirm your password"
-          disabled={isSubmitting}
-          autoComplete="new-password"
-        />
-        {errors.confirmPassword && <div className="text-red-600 text-sm mt-1">{errors.confirmPassword}</div>}
+        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={handlers.phone}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="0241234567"
+              disabled={isSubmitting}
+              autoComplete="tel"
+            />
+            {errors.phone && <div className="text-red-600 text-sm mt-1">{errors.phone}</div>}
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Other Phone (Optional)</label>
+            <input
+              type="tel"
+              value={formData.otherPhone}
+              onChange={handlers.otherPhone}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="0241234567"
+              disabled={isSubmitting}
+              autoComplete="tel"
+            />
+          </div>
+        </div>
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={handlers.email}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="your.email@example.com"
+            disabled={isSubmitting}
+            autoComplete="email"
+          />
+          {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
+        </div>
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Home Address</label>
+          <input
+            type="text"
+            value={formData.homeAddress}
+            onChange={handlers.homeAddress}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="Enter your complete home address"
+            disabled={isSubmitting}
+            autoComplete="street-address"
+          />
+          {errors.homeAddress && <div className="text-red-600 text-sm mt-1">{errors.homeAddress}</div>}
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Region</label>
+          <select
+            value={formData.region}
+            onChange={handlers.region}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            disabled={isSubmitting}
+          >
+            <option value="">Select your region</option>
+            {ghanaRegions.map(region => (
+              <option key={region} value={region}>{region}</option>
+            ))}
+          </select>
+          {errors.region && <div className="text-red-600 text-sm mt-1">{errors.region}</div>}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  const NextOfKinStep = () => {
+    const formData = formDataRef.current;
+    return (
+      <div>
+        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Next of Kin Information</h1>
+        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your next of kin details</p>
+
+        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">First Name</label>
+            <input
+              type="text"
+              value={formData.nextOfKinFirstName}
+              onChange={handlers.nextOfKinFirstName}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="First name"
+              disabled={isSubmitting}
+              autoComplete="given-name"
+              autoFocus={currentStep === 1}
+            />
+            {errors.nextOfKinFirstName && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinFirstName}</div>}
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
+            <input
+              type="text"
+              value={formData.nextOfKinLastName}
+              onChange={handlers.nextOfKinLastName}
+              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+              placeholder="Last name"
+              disabled={isSubmitting}
+              autoComplete="family-name"
+            />
+            {errors.nextOfKinLastName && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinLastName}</div>}
+          </div>
+        </div>
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Relationship</label>
+          <select
+            value={formData.nextOfKinRelationship}
+            onChange={handlers.nextOfKinRelationship}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            disabled={isSubmitting}
+          >
+            <option value="">Select relationship</option>
+            {relationshipTypes.map(relationship => (
+              <option key={relationship} value={relationship}>
+                {relationship.charAt(0).toUpperCase() + relationship.slice(1)}
+              </option>
+            ))}
+          </select>
+          {errors.nextOfKinRelationship && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinRelationship}</div>}
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+          <input
+            type="tel"
+            value={formData.nextOfKinPhone}
+            onChange={handlers.nextOfKinPhone}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="0241234567"
+            disabled={isSubmitting}
+            autoComplete="tel"
+          />
+          {errors.nextOfKinPhone && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinPhone}</div>}
+        </div>
+      </div>
+    );
+  };
+
+  const EmploymentStep = () => {
+    const formData = formDataRef.current;
+    return (
+      <div>
+        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Employment Information</h1>
+        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your employment details</p>
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Employment Type</label>
+          <select
+            value={formData.employmentType}
+            onChange={handlers.employmentType}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            disabled={isSubmitting}
+            autoFocus={currentStep === 2}
+          >
+            <option value="">Select employment type</option>
+            {employmentTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+          {errors.employmentType && <div className="text-red-600 text-sm mt-1">{errors.employmentType}</div>}
+        </div>
+
+        {formData.employmentType !== 'Unemployed' && (
+          <>
+            <div className="mb-4 lg:mb-5">
+              <label className="block text-gray-700 text-sm font-medium mb-2">Employer Name</label>
+              <input
+                type="text"
+                value={formData.employer}
+                onChange={handlers.employer}
+                className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                placeholder="Enter employer name"
+                disabled={isSubmitting}
+              />
+              {errors.employer && <div className="text-red-600 text-sm mt-1">{errors.employer}</div>}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Staff Number (Optional)</label>
+                <input
+                  type="text"
+                  value={formData.staffNumber}
+                  onChange={handlers.staffNumber}
+                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                  placeholder="Staff number"
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Employment Date (Optional)</label>
+                <input
+                  type="date"
+                  value={formData.employmentDate}
+                  onChange={handlers.employmentDate}
+                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                  disabled={isSubmitting}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Grade Level (Optional)</label>
+                <input
+                  type="text"
+                  value={formData.gradeLevel}
+                  onChange={handlers.gradeLevel}
+                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                  placeholder="Grade level"
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Last Month Pay (Optional)</label>
+                <input
+                  type="number"
+                  value={formData.lastMonthPay}
+                  onChange={handlers.lastMonthPay}
+                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+                  placeholder="0.00"
+                  disabled={isSubmitting}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  const CredentialsStep = () => {
+    const formData = formDataRef.current;
+    return (
+      <div>
+        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Create Account Credentials</h1>
+        <p className="text-gray-500 text-base mb-6 lg:mb-8">Set up your login details</p>
+
+        {errors.general && (
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-5">
+            {errors.general}
+          </div>
+        )}
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
+          <input
+            type="text"
+            value={formData.username}
+            onChange={handlers.username}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="Choose a username"
+            disabled={isSubmitting}
+            autoComplete="username"
+            autoFocus={currentStep === 3}
+          />
+          {errors.username && <div className="text-red-600 text-sm mt-1">{errors.username}</div>}
+        </div>
+
+        <div className="mb-4 lg:mb-5">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
+          <input
+            type="password"
+            value={formData.password}
+            onChange={handlers.password}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="Create a strong password"
+            disabled={isSubmitting}
+            autoComplete="new-password"
+          />
+          {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+          <input
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handlers.confirmPassword}
+            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            placeholder="Confirm your password"
+            disabled={isSubmitting}
+            autoComplete="new-password"
+          />
+          {errors.confirmPassword && <div className="text-red-600 text-sm mt-1">{errors.confirmPassword}</div>}
+        </div>
+      </div>
+    );
+  };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <IdentityStep />;
+        return <PersonalInfoStep />;
       case 1:
-        return <ConfirmStep />;
+        return <NextOfKinStep />;
       case 2:
+        return <EmploymentStep />;
+      case 3:
         return <CredentialsStep />;
       default:
-        return <IdentityStep />;
+        return <PersonalInfoStep />;
     }
   };
 

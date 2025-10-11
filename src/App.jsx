@@ -2,9 +2,9 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ToastProvider } from "./components/CustomToast";
 import LoadingSpinner from "./components/LoadingSpinner";
 import PageLoader from "./components/PageLoader";
-import ToastContainer from "./components/CustomToast";
 
 // Lazy load all your pages for better performance
 const RootLayout = lazy(() => import("./layouts/Rootlayout"));
@@ -40,55 +40,56 @@ const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"))
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Suspense fallback={<LoadingSpinner />}>
-          <PageLoader />
-          <ToastContainer />
-          
-          <Routes>
-            {/* PUBLIC ROUTES - Anyone can access */}
-            <Route path="/" element={<RootLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="savings-account" element={<SavingsAccountPage />} />
-              <Route path="susu-account" element={<SusuAccount />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="blog" element={<BlogPage />} />
-              <Route path="mtloans" element={<MTLoans />} />
-              <Route path="ippis-loans" element={<Ippisloan />} />
-              <Route path="car4cash" element={<Car4CashPage />} />
-              <Route path="mtplus-loans" element={<MTplus />} />
-              <Route path="sme-loan" element={<SMELoan />} />
-              <Route path="treasury-note" element={<TreasuryNotesPage />} />
-              <Route path="fixed-deposit" element={<FixedDepositPage />} />
-              <Route path="mudurabah" element={<MudarabahPage />} />
-              <Route path="mt-green-solar" element={<MTGreenSolar />} />
-              <Route path="agric-finance" element={<Agric />} />
-              <Route path="auto-finance" element={<AutoFinance />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="leadership" element={<Leadership />} />
-              <Route path="gallery" element={<Gallary />} />
-              <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
-              <Route path="privacy-page" element={<PrivacyPage />} />
-            </Route>
+      <ToastProvider>
+        <Router>
+          <Suspense fallback={<LoadingSpinner />}>
+            <PageLoader />
             
-            <Route path="form" element={<Form />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
+            <Routes>
+              {/* PUBLIC ROUTES - Anyone can access */}
+              <Route path="/" element={<RootLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="savings-account" element={<SavingsAccountPage />} />
+                <Route path="susu-account" element={<SusuAccount />} />
+                <Route path="contact" element={<Contact />} />
+                <Route path="blog" element={<BlogPage />} />
+                <Route path="mtloans" element={<MTLoans />} />
+                <Route path="ippis-loans" element={<Ippisloan />} />
+                <Route path="car4cash" element={<Car4CashPage />} />
+                <Route path="mtplus-loans" element={<MTplus />} />
+                <Route path="sme-loan" element={<SMELoan />} />
+                <Route path="treasury-note" element={<TreasuryNotesPage />} />
+                <Route path="fixed-deposit" element={<FixedDepositPage />} />
+                <Route path="mudurabah" element={<MudarabahPage />} />
+                <Route path="mt-green-solar" element={<MTGreenSolar />} />
+                <Route path="agric-finance" element={<Agric />} />
+                <Route path="auto-finance" element={<AutoFinance />} />
+                <Route path="about" element={<AboutPage />} />
+                <Route path="leadership" element={<Leadership />} />
+                <Route path="gallery" element={<Gallary />} />
+                <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
+                <Route path="privacy-page" element={<PrivacyPage />} />
+              </Route>
+              
+              <Route path="form" element={<Form />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
 
-            {/* 🔐 ADMIN ROUTES - Protected */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
-            <Route 
-              path="/admin/messages" 
-              element={
-                <ProtectedRoute>
-                  <AdminMessages />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </Suspense>
-      </Router>
+              {/* 🔐 ADMIN ROUTES - Protected */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <AdminMessages />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </Suspense>
+        </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }

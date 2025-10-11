@@ -1,164 +1,119 @@
 // src/components/CustomToast.jsx
-import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Info, AlertCircle, X } from 'lucide-react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
-const Toast = ({ message, type = 'info', duration = 4000, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isLeaving, setIsLeaving] = useState(false);
+const ToastContext = createContext(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleClose();
-    }, duration);
+export const ToastProvider = ({ children }) => {
+  const [toasts, setToasts] = useState([]);
 
-    return () => clearTimeout(timer);
-  }, [duration]);
-
-  const handleClose = () => {
-    setIsLeaving(true);
+  const addToast = useCallback((message, type = 'info', duration = 3000) => {
+    const id = Date.now().toString();
+    const toast = { id, message, type, duration };
+    
+    setToasts(prev => [...prev, toast]);
+    
+    // Auto remove after duration
     setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, 300);
-  };
-
-  const getToastStyles = () => {
-    const baseStyles = "fixed top-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 transform transition-all duration-300 ease-in-out";
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, duration);
     
-    const typeStyles = {
-      success: "border-green-500",
-      error: "border-red-500",
-      warning: "border-yellow-500",
-      info: "border-blue-500"
-    };
+    return id;
+  }, []);
 
-    const animationStyles = isLeaving 
-      ? "translate-x-full opacity-0" 
-      : "translate-x-0 opacity-100";
+  const removeToast = useCallback((id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
 
-    return `${baseStyles} ${typeStyles[type]} ${animationStyles}`;
+  const toastFunctions = {
+    toasts,
+    addToast,
+    removeToast,
+    success: (message, duration) => addToast(message, 'success', duration),
+    error: (message, duration) => addToast(message, 'error', duration),
+    warning: (message, duration) => addToast(message, 'warning', duration),
+    info: (message, duration) => addToast(message, 'info', duration),
   };
-
-  const getIcon = () => {
-    const iconProps = { size: 20 };
-    
-    switch (type) {
-      case 'success':
-        return <CheckCircle {...iconProps} className="text-green-500" />;
-      case 'error':
-        return <XCircle {...iconProps} className="text-red-500" />;
-      case 'warning':
-        return <AlertCircle {...iconProps} className="text-yellow-500" />;
-      case 'info':
-        return <Info {...iconProps} className="text-blue-500" />;
-      default:
-        return <Info {...iconProps} className="text-blue-500" />;
-    }
-  };
-
-  const getMessageStyles = () => {
-    const styles = {
-      success: "text-green-800",
-      error: "text-red-800",
-      warning: "text-yellow-800",
-      info: "text-blue-800"
-    };
-    return styles[type];
-  };
-
-  if (!isVisible) return null;
 
   return (
-    <div className={getToastStyles()}>
-      <div className="flex items-start p-4">
-        <div className="flex-shrink-0 mr-3">
-          {getIcon()}
-        </div>
-        <div className="flex-1">
-          <p className={`text-sm font-medium ${getMessageStyles()}`}>
-            {message}
-          </p>
-        </div>
-        <button
-          onClick={handleClose}
-          className="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <X size={16} />
-        </button>
-      </div>
-      
-      {/* Progress bar */}
-      <div className="w-full h-1 bg-gray-200 rounded-b-lg overflow-hidden">
-        <div 
-          className={`h-full ${
-            type === 'success' ? 'bg-green-500' :
-            type === 'error' ? 'bg-red-500' :
-            type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-          } transition-all duration-${duration} ease-linear`}
-          style={{ 
-            width: isLeaving ? '0%' : '100%',
-            transition: `width ${duration}ms linear`
-          }}
-        />
-      </div>
-    </div>
+    <ToastContext.Provider value={toastFunctions}>
+      {children}
+      <ToastContainer />
+    </ToastContext.Provider>
   );
 };
 
-// Toast Container to manage multiple toasts
+// Toast Container Component
 const ToastContainer = () => {
-  const [toasts, setToasts] = useState([]);
+  const { toasts, removeToast } = useToast();
 
-  const addToast = (message, type = 'info', duration = 4000) => {
-    const id = Date.now().toString();
-    const newToast = { id, message, type, duration };
-    setToasts(prev => [...prev, newToast]);
-  };
-
-  const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
-
-  // Export the addToast function so it can be used globally
-  useEffect(() => {
-    window.showToast = addToast;
-    return () => {
-      delete window.showToast;
-    };
-  }, []);
+  if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {toasts.map((toast, index) => (
-        <div key={toast.id} style={{ transform: `translateY(${index * 10}px)` }}>
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            duration={toast.duration}
-            onClose={() => removeToast(toast.id)}
-          />
-        </div>
+    <div className="fixed top-4 right-4 z-50 max-w-sm w-full space-y-2">
+      {toasts.map(toast => (
+        <ToastItem
+          key={toast.id}
+          toast={toast}
+          onRemove={removeToast}
+        />
       ))}
     </div>
   );
 };
 
-// Hook for using toast in functional components
-export const useToast = () => {
-  const showToast = (message, type = 'info', duration = 4000) => {
-    if (window.showToast) {
-      window.showToast(message, type, duration);
-    } else {
-      console.log(`[${type.toUpperCase()}]: ${message}`);
+// Toast Item Component
+const ToastItem = ({ toast, onRemove }) => {
+  const { id, message, type } = toast;
+
+  const getBackgroundColor = () => {
+    switch (type) {
+      case 'success': return 'bg-green-500';
+      case 'error': return 'bg-red-500';
+      case 'warning': return 'bg-yellow-500';
+      case 'info': return 'bg-blue-500';
+      default: return 'bg-gray-500';
     }
   };
 
-  return {
-    success: (message, duration) => showToast(message, 'success', duration),
-    error: (message, duration) => showToast(message, 'error', duration),
-    warning: (message, duration) => showToast(message, 'warning', duration),
-    info: (message, duration) => showToast(message, 'info', duration),
+  const getIcon = () => {
+    switch (type) {
+      case 'success': return '✓';
+      case 'error': return '✕';
+      case 'warning': return '⚠';
+      case 'info': return 'ℹ';
+      default: return '💡';
+    }
   };
+
+  return (
+    <div className={`flex items-center p-4 rounded-lg text-white shadow-lg ${getBackgroundColor()} animate-in slide-in-from-right-full duration-300`}>
+      <span className="text-lg mr-3">{getIcon()}</span>
+      <span className="flex-1">{message}</span>
+      <button
+        onClick={() => onRemove(id)}
+        className="ml-4 text-white hover:text-gray-200 text-lg"
+      >
+        ×
+      </button>
+    </div>
+  );
 };
 
-export default ToastContainer;
+// Custom Hook
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+};
+
+// Default export for backward compatibility
+const CustomToast = {
+  show: (message, type = 'info') => {
+    // This is a fallback - in real usage, use the useToast hook
+    console.log(`Toast: ${type} - ${message}`);
+  }
+};
+
+export default CustomToast;

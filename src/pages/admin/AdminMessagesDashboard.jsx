@@ -1,4 +1,3 @@
-// src/pages/admin/AdminMessages.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -41,20 +40,62 @@ const AdminMessages = () => {
   const fetchMessages = async (page = 1) => {
     try {
       setLoading(true);
+      console.log('📨 Fetching messages with params:', { 
+        page, 
+        limit: 10, 
+        status: filterStatus !== 'all' ? filterStatus : undefined 
+      });
+
       const response = await adminContactAPI.getMessages({
         page,
         limit: 10,
         status: filterStatus !== 'all' ? filterStatus : undefined
       });
 
-      const { contactMessages, pagination: paginationData } = response.data.data;
-      setMessages(contactMessages);
-      setPagination(paginationData);
-      setCurrentPage(page);
+      console.log('📨 Messages API Response:', response);
+
+      // Handle different response structures
+      if (response.data && response.data.success) {
+        const { data: responseData } = response.data;
+        
+        // Extract messages and pagination from various possible structures
+        const messagesData = responseData.contactMessages || responseData.messages || responseData.data || [];
+        const paginationData = responseData.pagination || {
+          page,
+          limit: 10,
+          total: messagesData.length,
+          pages: Math.ceil(messagesData.length / 10)
+        };
+
+        setMessages(messagesData);
+        setPagination(paginationData);
+        setCurrentPage(page);
+        
+        console.log(`✅ Loaded ${messagesData.length} messages`);
+        
+      } else {
+        console.error('❌ Invalid response structure:', response.data);
+        toast.error('Failed to load messages: Invalid response format');
+      }
       
     } catch (error) {
-      console.error('Error fetching messages:', error);
-      toast.error('Failed to load messages');
+      console.error('❌ Error fetching messages:', error);
+      
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        toast.error('Authentication failed. Please login again.');
+        localStorage.removeItem('adminAuthToken');
+        localStorage.removeItem('adminUser');
+        navigate('/admin/login');
+        return;
+      }
+      
+      if (error.response?.status === 404) {
+        toast.error('Messages endpoint not found. Please check backend configuration.');
+        return;
+      }
+      
+      toast.error('Failed to load messages: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -87,8 +128,8 @@ const AdminMessages = () => {
       
       toast.success('Marked as read');
     } catch (error) {
-      toast.error('Failed to update message');
       console.error('Error marking message as read:', error);
+      toast.error('Failed to update message: ' + (error.response?.data?.message || error.message));
     } finally {
       setActionLoading(false);
     }
@@ -110,8 +151,8 @@ const AdminMessages = () => {
       
       toast.success('Marked as new');
     } catch (error) {
-      toast.error('Failed to update message');
       console.error('Error marking message as new:', error);
+      toast.error('Failed to update message: ' + (error.response?.data?.message || error.message));
     } finally {
       setActionLoading(false);
     }
@@ -133,8 +174,8 @@ const AdminMessages = () => {
       
       toast.success('Marked as replied');
     } catch (error) {
-      toast.error('Failed to update message');
       console.error('Error marking message as replied:', error);
+      toast.error('Failed to update message: ' + (error.response?.data?.message || error.message));
     } finally {
       setActionLoading(false);
     }
@@ -157,8 +198,8 @@ const AdminMessages = () => {
       
       toast.success('Message deleted successfully');
     } catch (error) {
-      toast.error('Failed to delete message');
       console.error('Error deleting message:', error);
+      toast.error('Failed to delete message: ' + (error.response?.data?.message || error.message));
     } finally {
       setActionLoading(false);
     }
@@ -221,7 +262,7 @@ const AdminMessages = () => {
     }
   };
 
-  if (loading) {
+  if (loading && messages.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -321,7 +362,7 @@ const AdminMessages = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Response Rate</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {Math.round((messages.filter(msg => msg.status !== 'new').length / messages.length) * 100) || 0}%
+                  {Math.round((messages.filter(msg => msg.status !== 'new').length / (messages.length || 1)) * 100)}%
                 </p>
               </div>
               <User className="w-8 h-8 text-blue-600" />

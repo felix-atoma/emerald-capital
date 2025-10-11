@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://emerald-capital-backend.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://emerald-capital-backend.onrender.com';
 
 // Create regular axios instance for users
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,7 +12,7 @@ const api = axios.create({
 
 // Create admin axios instance for admin routes
 const adminApi = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,9 +27,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Request interceptor to add ADMIN auth token
@@ -41,12 +39,10 @@ adminApi.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors for regular users
+// Response interceptors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -59,7 +55,6 @@ api.interceptors.response.use(
   }
 );
 
-// Response interceptor to handle errors for admin users
 adminApi.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -82,39 +77,39 @@ export const authAPI = {
   healthCheck: () => api.get('/health'),
 };
 
-// Admin Auth API (uses direct calls without token for login)
-// ✅ FIXED: Changed from /auth/login to /admin/login
+// Admin Auth API
 export const adminAuthAPI = {
-  login: (credentials) => axios.post(`${API_BASE_URL}/admin/login`, credentials),
+  login: (credentials) => {
+    console.log('🔐 Admin login endpoint:', `${API_BASE_URL}/api/admin/login`);
+    return axios.post(`${API_BASE_URL}/api/admin/login`, credentials, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  },
+  getProfile: () => adminApi.get('/admin/profile'),
+  changePassword: (passwordData) => adminApi.put('/admin/change-password', passwordData),
 };
 
 // Loan API
 export const loanAPI = {
-  createApplication: (formData) => {
-    return api.post('/loans/applications', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
+  createApplication: (formData) =>
+    api.post('/loans/applications', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   getMyApplications: (params) => api.get('/loans/applications', { params }),
   getApplication: (id) => api.get(`/loans/applications/${id}`),
-  updateApplication: (id, formData) => {
-    return api.put(`/loans/applications/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
+  updateApplication: (id, formData) =>
+    api.put(`/loans/applications/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   deleteApplication: (id) => api.delete(`/loans/applications/${id}`),
 };
 
-// Contact API
+// Contact API (Public)
 export const contactAPI = {
   submitMessage: (messageData) => api.post('/contact', messageData),
 };
 
-// Admin Contact API (uses admin token)
+// ✅ Admin Contact API (fixed)
 export const adminContactAPI = {
   getMessages: (params) => adminApi.get('/contact', { params }),
   getMessage: (id) => adminApi.get(`/contact/${id}`),
@@ -122,10 +117,10 @@ export const adminContactAPI = {
   deleteMessage: (id) => adminApi.delete(`/contact/${id}`),
 };
 
-// Newsletter API
+// ✅ FIXED: Newsletter API - accept data object directly
 export const newsletterAPI = {
-  subscribe: (email) => api.post('/newsletter/subscribe', { email }),
-  unsubscribe: (email) => api.post('/newsletter/unsubscribe', { email }),
+  subscribe: (data) => api.post('/newsletter/subscribe', data),
+  unsubscribe: (data) => api.post('/newsletter/unsubscribe', data),
 };
 
 // Admin API
@@ -135,6 +130,10 @@ export const adminAPI = {
   getUser: (id) => adminApi.get(`/admin/users/${id}`),
   updateUser: (id, userData) => adminApi.put(`/admin/users/${id}`, userData),
   deleteUser: (id) => adminApi.delete(`/admin/users/${id}`),
+  getAllLoanApplications: (params) => adminApi.get('/admin/loans/applications', { params }),
+  getLoanApplication: (id) => adminApi.get(`/admin/loans/applications/${id}`),
+  updateLoanApplication: (id, updateData) => adminApi.put(`/admin/loans/applications/${id}`, updateData),
+  deleteLoanApplication: (id) => adminApi.delete(`/admin/loans/applications/${id}`),
 };
 
 export default api;
