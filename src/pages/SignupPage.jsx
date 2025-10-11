@@ -115,14 +115,17 @@ const SignupPage = () => {
     'Western North'
   ], []);
 
-  // Employment types
+  // Employment types - must match backend validation
   const employmentTypes = useMemo(() => [
-    'Government',
-    'Private',
-    'Self-Employed',
-    'Unemployed',
-    'Student',
-    'Retired'
+    { value: 'civilService', label: 'Civil Service' },
+    { value: 'police', label: 'Police' },
+    { value: 'military', label: 'Military' },
+    { value: 'immigration', label: 'Immigration' },
+    { value: 'fire', label: 'Fire Service' },
+    { value: 'education', label: 'Education' },
+    { value: 'health', label: 'Health' },
+    { value: 'private', label: 'Private' },
+    { value: 'other', label: 'Other' }
   ], []);
 
   // Next of Kin relationship types
@@ -383,12 +386,12 @@ const SignupPage = () => {
     try {
       const formData = formDataRef.current;
       
-      // Format nextOfKin as an array with phone field included
+      // Format nextOfKin as an array WITHOUT phone field
+      // Phone goes in a separate nextOfKinPhone field at root level
       const nextOfKinArray = (formData.nextOfKinFirstName.trim() && formData.nextOfKinLastName.trim()) ? [
         {
           firstName: formData.nextOfKinFirstName.trim(),
           lastName: formData.nextOfKinLastName.trim(),
-          phone: formData.nextOfKinPhone.trim(), // Include phone in the array object
           relationship: formData.nextOfKinRelationship
         }
       ] : [];
@@ -405,15 +408,17 @@ const SignupPage = () => {
         email: formData.email.trim().toLowerCase(),
         homeAddress: formData.homeAddress.trim(),
         region: formData.region,
-        nextOfKin: nextOfKinArray, // Send as array
-        employmentType: formData.employmentType,
-        employer: formData.employer.trim(),
-        staffNumber: formData.staffNumber.trim(),
-        employmentDate: formData.employmentDate,
-        gradeLevel: formData.gradeLevel.trim(),
-        lastMonthPay: formData.lastMonthPay,
+        nextOfKin: nextOfKinArray, // Array without phone field
+        nextOfKinPhone: formData.nextOfKinPhone.trim(), // Phone as separate root field
+        employmentType: formData.employmentType ? [formData.employmentType] : [], // Convert to array
+        employer: formData.employer.trim() || undefined, // Don't send empty string
+        staffNumber: formData.staffNumber.trim() || undefined, // Don't send empty string
+        employmentDate: formData.employmentDate || undefined, // Don't send empty string
+        gradeLevel: formData.gradeLevel.trim() || undefined, // Don't send empty string
+        lastMonthPay: formData.lastMonthPay || undefined, // Don't send empty string
         username: formData.username.trim(),
-        password: formData.password
+        password: formData.password,
+        agreementConfirmed: agreeTerms // Add agreement confirmation
       };
 
       console.log('Submitting user data:', userData);
@@ -855,13 +860,13 @@ const SignupPage = () => {
           >
             <option value="">Select employment type</option>
             {employmentTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type.value} value={type.value}>{type.label}</option>
             ))}
           </select>
           {errors.employmentType && <div className="text-red-600 text-sm mt-1">{errors.employmentType}</div>}
         </div>
 
-        {formData.employmentType !== 'Unemployed' && (
+        {formData.employmentType && formData.employmentType !== 'other' && (
           <>
             <div className="mb-4 lg:mb-5">
               <label className="block text-gray-700 text-sm font-medium mb-2">Employer Name</label>
