@@ -1,8 +1,157 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Star, X } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Camera, Upload, Star, X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
+
+// Performance monitoring utility
+const measurePerformance = async (operationName, operation) => {
+  const startTime = performance.now();
+  try {
+    const result = await operation();
+    const endTime = performance.now();
+    console.log(`${operationName} took ${(endTime - startTime).toFixed(2)}ms`);
+    return result;
+  } catch (error) {
+    const endTime = performance.now();
+    console.error(`${operationName} failed after ${(endTime - startTime).toFixed(2)}ms:`, error);
+    throw error;
+  }
+};
+
+// Web Worker helper function
+const processImageWithWorker = (file, maxWidth, maxHeight, quality) => {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker('/image-compressor.worker.js');
+    const id = `${file.name}-${Date.now()}`;
+    
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      reject(new Error('Image processing timeout'));
+    }, 30000); // 30 second timeout
+    
+    worker.onmessage = (e) => {
+      clearTimeout(timeout);
+      if (e.data.success) {
+        console.log(`Compressed ${file.name}: ${(file.size / 1024 / 1024).toFixed(2)}MB -> ${(e.data.compressedSize / 1024 / 1024).toFixed(2)}MB`);
+        resolve(e.data.file);
+      } else {
+        reject(new Error(e.data.error));
+      }
+      worker.terminate();
+    };
+    
+    worker.onerror = (error) => {
+      clearTimeout(timeout);
+      reject(error);
+      worker.terminate();
+    };
+    
+    worker.postMessage({ file, maxWidth, maxHeight, quality, id });
+  });
+};
+
+// Enhanced image compression with multiple fallbacks
+const compressImage = async (file, maxWidth = 1024, maxHeight = 1024, quality = 0.8) => {
+  return measurePerformance(`Compress ${file.name}`, async () => {
+    // Skip compression for very small files
+    if (file.size < 300 * 1024) { // 300KB
+      return file;
+    }
+    
+    // Skip compression for non-images
+    if (!file.type.startsWith('image/')) {
+      return file;
+    }
+    
+    try {
+      // Try Web Worker first
+      if (window.Worker) {
+        return await processImageWithWorker(file, maxWidth, maxHeight, quality);
+      }
+      
+      // Fallback to main thread compression
+      return await compressImageMainThread(file, maxWidth, maxHeight, quality);
+    } catch (error) {
+      console.warn('Compression failed, using original file:', error);
+      return file; // Return original file if compression fails
+    }
+  });
+};
+
+// Main thread compression fallback
+const compressImageMainThread = (file, maxWidth, maxHeight, quality) => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: false });
+    const img = new Image();
+    
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+        
+        if (ratio < 1) {
+          width = Math.floor(width * ratio);
+          height = Math.floor(height * ratio);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Canvas to Blob conversion failed'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    img.onerror = () => reject(new Error('Image loading failed'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+// File size validator
+const validateFileSize = (file, maxSizeMB = 10) => {
+  const maxSize = maxSizeMB * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new Error(`${file.name} exceeds ${maxSizeMB}MB limit (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+  }
+  return true;
+};
+
+// File type validator
+const isValidFileType = (file, fieldName) => {
+  const validTypes = {
+    passportPhoto: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    ghanaCard: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
+    lastMonthPayslip: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
+    bankStatement: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']
+  };
+  
+  const isValid = validTypes[fieldName]?.includes(file.type);
+  if (!isValid) {
+    throw new Error(`${file.name} is not a valid file type for ${fieldName.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+  }
+  return true;
+};
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -33,7 +182,7 @@ class ErrorBoundary extends React.Component {
         <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">⚠️</span>
+              <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
             <h2 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
             <p className="text-gray-600 mb-4">
@@ -62,13 +211,12 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-// Loading Spinner Component
-const SubmitLoadingSpinner = () => {
+// Enhanced Loading Spinner Component with progress
+const SubmitLoadingSpinner = ({ progress = 0 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl min-w-[300px]">
         <div className="relative w-32 h-32 mx-auto mb-4">
-          {/* Your Logo in the center */}
           <div className="absolute inset-0 flex items-center justify-center">
             <img 
               src="emerald.png" 
@@ -77,7 +225,6 @@ const SubmitLoadingSpinner = () => {
             />
           </div>
           
-          {/* Spinning gradient ring around logo */}
           <div className="absolute inset-0">
             <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
               <defs>
@@ -104,6 +251,51 @@ const SubmitLoadingSpinner = () => {
         </div>
         <p className="text-gray-700 text-lg font-semibold">Submitting your application...</p>
         <p className="text-gray-500 text-sm mt-2">Please wait, this may take a moment</p>
+        {progress > 0 && (
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-600 mt-1">{progress}% complete</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// File Processing Spinner
+const FileProcessingSpinner = ({ currentFile, processedCount, totalCount, onCancel }) => {
+  const progress = totalCount > 0 ? (processedCount / totalCount) * 100 : 0;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-6 text-center shadow-2xl min-w-[320px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Processing Files</h3>
+        <p className="text-sm text-gray-600 mb-1">
+          {currentFile ? `Processing: ${currentFile.name}` : 'Preparing files...'}
+        </p>
+        <p className="text-xs text-gray-500 mb-4">
+          {processedCount} of {totalCount} files completed
+        </p>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+          <div 
+            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+        
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm"
+        >
+          Cancel Processing
+        </button>
       </div>
     </div>
   );
@@ -125,8 +317,14 @@ const GhanaLoanForm = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Add loading state for auth
   const [authLoading, setAuthLoading] = useState(true);
+  const [isProcessingFiles, setIsProcessingFiles] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState({
+    currentFile: null,
+    processedCount: 0,
+    totalCount: 0
+  });
+  const [processingCancelled, setProcessingCancelled] = useState(false);
 
   const getInitialFormData = () => ({
     sex: '',
@@ -198,7 +396,6 @@ const GhanaLoanForm = () => {
     { id: 'other', label: 'Other' }
   ];
 
-  // Check authentication on component mount
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -207,18 +404,16 @@ const GhanaLoanForm = () => {
     setAuthLoading(false);
   }, [user, navigate]);
 
-  // Reset form data when user changes
   useEffect(() => {
     if (user) {
       setFormData(getInitialFormData());
     }
   }, [user]);
 
-  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
@@ -250,21 +445,171 @@ const GhanaLoanForm = () => {
     }));
   };
 
-  const handleFileChange = (e, fieldName) => {
+  const cancelFileProcessing = useCallback(() => {
+    setProcessingCancelled(true);
+    setIsProcessingFiles(false);
+    toast.error('File processing cancelled');
+  }, []);
+
+  const handleFileChange = async (e, fieldName) => {
     try {
       const selectedFiles = Array.from(e.target.files);
-      if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
-        setFiles(prev => ({ ...prev, [fieldName]: selectedFiles }));
-      } else {
-        setFiles(prev => ({ ...prev, [fieldName]: selectedFiles[0] }));
+      
+      if (selectedFiles.length === 0) return;
+      
+      // Reset cancellation state
+      setProcessingCancelled(false);
+      
+      // Configuration
+      const MAX_CONCURRENT_PROCESSING = 2;
+      const MAX_TOTAL_FILES = 10;
+      const MAX_FILE_SIZE_MB = 10;
+      
+      // Validate total file count
+      if (selectedFiles.length > MAX_TOTAL_FILES) {
+        toast.error(`Please select no more than ${MAX_TOTAL_FILES} files at once`);
+        e.target.value = '';
+        return;
       }
+      
+      // Validate individual file sizes first
+      for (const file of selectedFiles) {
+        try {
+          validateFileSize(file, MAX_FILE_SIZE_MB);
+        } catch (error) {
+          toast.error(error.message);
+          e.target.value = '';
+          return;
+        }
+      }
+      
+      setIsProcessingFiles(true);
+      setProcessingProgress({
+        currentFile: null,
+        processedCount: 0,
+        totalCount: selectedFiles.length
+      });
+      
+      const processedFiles = [];
+      let processedCount = 0;
+      
+      // Process files in batches
+      const batches = [];
+      for (let i = 0; i < selectedFiles.length; i += MAX_CONCURRENT_PROCESSING) {
+        batches.push(selectedFiles.slice(i, i + MAX_CONCURRENT_PROCESSING));
+      }
+      
+      for (const batch of batches) {
+        if (processingCancelled) {
+          break;
+        }
+        
+        // Process batch concurrently
+        const batchPromises = batch.map(async (file) => {
+          if (processingCancelled) {
+            return null;
+          }
+          
+          setProcessingProgress(prev => ({
+            ...prev,
+            currentFile: file
+          }));
+          
+          try {
+            // Validate file type
+            isValidFileType(file, fieldName);
+            
+            // Process file (compression if image)
+            const processedFile = await compressImage(file, 
+              fieldName === 'passportPhoto' ? 800 : 1200,
+              fieldName === 'passportPhoto' ? 800 : 1200,
+              fieldName === 'passportPhoto' ? 0.7 : 0.8
+            );
+            
+            processedCount++;
+            setProcessingProgress(prev => ({
+              ...prev,
+              processedCount
+            }));
+            
+            return processedFile;
+          } catch (error) {
+            console.error(`Failed to process ${file.name}:`, error);
+            toast.error(`Failed to process ${file.name}: ${error.message}`);
+            return null;
+          }
+        });
+        
+        const batchResults = await Promise.all(batchPromises);
+        const successfulResults = batchResults.filter(Boolean);
+        processedFiles.push(...successfulResults);
+        
+        // Small delay between batches to prevent UI blocking
+        if (batches.length > 1 && !processingCancelled) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      if (!processingCancelled) {
+        // Update files state
+        if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
+          setFiles(prev => ({ 
+            ...prev, 
+            [fieldName]: [...prev[fieldName], ...processedFiles].slice(0, 20) // Reasonable limit
+          }));
+        } else {
+          setFiles(prev => ({ ...prev, [fieldName]: processedFiles[0] }));
+        }
+        
+        // Show success message
+        if (processedFiles.length > 0) {
+          const savedSpace = selectedFiles.reduce((acc, file, index) => {
+            if (processedFiles[index]) {
+              return acc + (file.size - processedFiles[index].size);
+            }
+            return acc;
+          }, 0);
+          
+          let successMessage = `${processedFiles.length} file(s) uploaded successfully`;
+          if (savedSpace > 0) {
+            successMessage += ` (saved ${(savedSpace / 1024 / 1024).toFixed(2)}MB)`;
+          }
+          
+          toast.success(successMessage);
+        }
+      }
+      
     } catch (error) {
       console.error('File upload error:', error);
-      toast.error('Error uploading file. Please try again.');
+      toast.error(error.message || 'Error uploading files. Please try again.');
+    } finally {
+      setIsProcessingFiles(false);
+      setProcessingProgress({
+        currentFile: null,
+        processedCount: 0,
+        totalCount: 0
+      });
+      e.target.value = '';
     }
   };
 
-  // Improved drawing functions with error handling
+  const removeFile = (fieldName, index = null) => {
+    setFiles(prev => {
+      if (index !== null && (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement')) {
+        return {
+          ...prev,
+          [fieldName]: prev[fieldName].filter((_, i) => i !== index)
+        };
+      } else {
+        return {
+          ...prev,
+          [fieldName]: null
+        };
+      }
+    });
+    toast.success('File removed');
+  };
+
   const startDrawing = (e) => {
     try {
       if (!canvasRef.current) return;
@@ -272,14 +617,14 @@ const GhanaLoanForm = () => {
       setIsDrawing(true);
       setSignatureEmpty(false);
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
       const rect = canvas.getBoundingClientRect();
       
+      const x = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+      const y = e.clientY !== undefined ? e.clientY : e.touches?.[0]?.clientY;
+      
       ctx.beginPath();
-      ctx.moveTo(
-        e.clientX - rect.left,
-        e.clientY - rect.top
-      );
+      ctx.moveTo(x - rect.left, y - rect.top);
     } catch (error) {
       console.error('Drawing error:', error);
       toast.error('Error with signature pad. Please refresh the page.');
@@ -291,13 +636,13 @@ const GhanaLoanForm = () => {
       if (!isDrawing || !canvasRef.current) return;
       
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
       const rect = canvas.getBoundingClientRect();
       
-      ctx.lineTo(
-        e.clientX - rect.left,
-        e.clientY - rect.top
-      );
+      const x = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+      const y = e.clientY !== undefined ? e.clientY : e.touches?.[0]?.clientY;
+      
+      ctx.lineTo(x - rect.left, y - rect.top);
       ctx.stroke();
     } catch (error) {
       console.error('Drawing error:', error);
@@ -313,7 +658,7 @@ const GhanaLoanForm = () => {
       if (!canvasRef.current) return;
       
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       setSignatureEmpty(true);
     } catch (error) {
@@ -326,7 +671,6 @@ const GhanaLoanForm = () => {
     navigate('/login');
   };
 
-  // Form validation
   const validateForm = () => {
     const requiredFields = [
       'sex', 'firstName', 'lastName', 'dateOfBirth', 'phone',
@@ -368,7 +712,6 @@ const GhanaLoanForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate form before submission
     if (!validateForm()) {
       return;
     }
@@ -376,7 +719,6 @@ const GhanaLoanForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Convert signature canvas to blob
       const canvas = canvasRef.current;
       if (!canvas) {
         throw new Error('Signature canvas not available');
@@ -390,10 +732,8 @@ const GhanaLoanForm = () => {
         throw new Error('Failed to create signature image');
       }
 
-      // Create FormData for file upload
       const formDataToSend = new FormData();
       
-      // Append all form fields
       Object.keys(formData).forEach(key => {
         if (key === 'nextOfKin' || key === 'employmentType') {
           formDataToSend.append(key, JSON.stringify(formData[key]));
@@ -402,7 +742,6 @@ const GhanaLoanForm = () => {
         }
       });
 
-      // Append files
       if (files.passportPhoto) formDataToSend.append('passportPhoto', files.passportPhoto);
       if (files.ghanaCard) formDataToSend.append('ghanaCard', files.ghanaCard);
       if (signatureBlob) formDataToSend.append('signature', signatureBlob, 'signature.png');
@@ -415,7 +754,6 @@ const GhanaLoanForm = () => {
         formDataToSend.append(`bankStatement_${index}`, file);
       });
 
-      // Submit to your backend API
       const response = await fetch('/api/loan-application', {
         method: 'POST',
         headers: {
@@ -431,10 +769,8 @@ const GhanaLoanForm = () => {
 
       const result = await response.json();
       
-      // Show success toast
       toast.success(`Application submitted successfully! Reference: ${result.referenceNumber}`);
       
-      // Navigate after a short delay
       setTimeout(() => {
         navigate('/');
       }, 2000);
@@ -447,19 +783,24 @@ const GhanaLoanForm = () => {
     }
   };
 
-  // Show loading while checking auth
   if (authLoading) {
     return <AuthLoadingSpinner />;
   }
 
   return (
     <>
-      {/* Show loading spinner when submitting */}
       {isSubmitting && <SubmitLoadingSpinner />}
+      {isProcessingFiles && (
+        <FileProcessingSpinner
+          currentFile={processingProgress.currentFile}
+          processedCount={processingProgress.processedCount}
+          totalCount={processingProgress.totalCount}
+          onCancel={cancelFileProcessing}
+        />
+      )}
       
       <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
           <div className="bg-white p-8 border-b-4 border-gray-100">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-4">
@@ -481,7 +822,6 @@ const GhanaLoanForm = () => {
             </div>
           </div>
 
-          {/* Progress Steps */}
           <div className="bg-gray-50 py-6 px-8">
             <div className="flex items-center justify-center gap-4">
               <div className="flex items-center gap-2">
@@ -496,9 +836,8 @@ const GhanaLoanForm = () => {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            {/* Personal Data */}
+            {/* Personal Data Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Personal Data</h3>
               
@@ -674,7 +1013,7 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Next of Kin */}
+            {/* Next of Kin Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Next of Kin</h3>
               
@@ -740,7 +1079,7 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Employment Details */}
+            {/* Employment Details Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Employment Details</h3>
               
@@ -841,7 +1180,7 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Loan Details */}
+            {/* Loan Details Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Loan Details</h3>
               
@@ -930,19 +1269,21 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Attachments */}
+            {/* Attachments Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Attachments</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Passport Photo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Passport Photograph <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB | Formats: JPG, PNG, WebP</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={(e) => handleFileChange(e, 'passportPhoto')}
                       className="hidden"
                       id="passportPhoto"
@@ -951,19 +1292,34 @@ const GhanaLoanForm = () => {
                     <label htmlFor="passportPhoto" className="cursor-pointer">
                       <Camera className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Click to upload or take photo</p>
-                      {files.passportPhoto && <p className="text-xs text-green-600 mt-2">{files.passportPhoto.name}</p>}
+                      {files.passportPhoto && (
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                          <p className="text-xs text-green-600 font-medium">
+                            ✓ {files.passportPhoto.name} ({(files.passportPhoto.size / 1024 / 1024).toFixed(2)}MB)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeFile('passportPhoto')}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </label>
                   </div>
                 </div>
 
+                {/* Ghana Card */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Ghana Card (Front & Back) <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept="image/*,.pdf"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       onChange={(e) => handleFileChange(e, 'ghanaCard')}
                       className="hidden"
                       id="ghanaCard"
@@ -972,19 +1328,34 @@ const GhanaLoanForm = () => {
                     <label htmlFor="ghanaCard" className="cursor-pointer">
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload Ghana Card (both sides)</p>
-                      {files.ghanaCard && <p className="text-xs text-green-600 mt-2">{files.ghanaCard.name}</p>}
+                      {files.ghanaCard && (
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                          <p className="text-xs text-green-600 font-medium">
+                            ✓ {files.ghanaCard.name} ({(files.ghanaCard.size / 1024 / 1024).toFixed(2)}MB)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeFile('ghanaCard')}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </label>
                   </div>
                 </div>
 
+                {/* Payslip */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Last Month Payslip <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB per file | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept=".pdf,image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       multiple
                       onChange={(e) => handleFileChange(e, 'lastMonthPayslip')}
                       className="hidden"
@@ -995,22 +1366,41 @@ const GhanaLoanForm = () => {
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload payslip(s)</p>
                       {files.lastMonthPayslip.length > 0 && (
-                        <p className="text-xs text-green-600 mt-2">
-                          {files.lastMonthPayslip.length} file(s) selected
-                        </p>
+                        <div className="mt-2">
+                          <p className="text-xs text-green-600 font-medium mb-2">
+                            ✓ {files.lastMonthPayslip.length} file(s) selected
+                          </p>
+                          <div className="space-y-1 max-h-20 overflow-y-auto">
+                            {files.lastMonthPayslip.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 truncate flex-1">{file.name}</span>
+                                <span className="text-gray-500 mx-2">({(file.size / 1024 / 1024).toFixed(2)}MB)</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFile('lastMonthPayslip', index)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </label>
                   </div>
                 </div>
 
+                {/* Bank Statement */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Bank Statement (Last 3 months) <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB per file | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept=".pdf,image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       multiple
                       onChange={(e) => handleFileChange(e, 'bankStatement')}
                       className="hidden"
@@ -1021,14 +1411,32 @@ const GhanaLoanForm = () => {
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload bank statement(s)</p>
                       {files.bankStatement.length > 0 && (
-                        <p className="text-xs text-green-600 mt-2">
-                          {files.bankStatement.length} file(s) selected
-                        </p>
+                        <div className="mt-2">
+                          <p className="text-xs text-green-600 font-medium mb-2">
+                            ✓ {files.bankStatement.length} file(s) selected
+                          </p>
+                          <div className="space-y-1 max-h-20 overflow-y-auto">
+                            {files.bankStatement.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 truncate flex-1">{file.name}</span>
+                                <span className="text-gray-500 mx-2">({(file.size / 1024 / 1024).toFixed(2)}MB)</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFile('bankStatement', index)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </label>
                   </div>
                 </div>
 
+                {/* Signature */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Signature <span className="text-red-500">*</span>
@@ -1073,7 +1481,7 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Account Officer */}
+            {/* Account Officer Details */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Account Officer Details</h3>
               
@@ -1156,7 +1564,7 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Agreement */}
+            {/* Terms & Conditions */}
             <section>
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Terms & Conditions</h3>
@@ -1187,13 +1595,12 @@ const GhanaLoanForm = () => {
               </div>
             </section>
 
-            {/* Submit Button */}
             <div className="flex justify-center pt-6">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isProcessingFiles}
                 className={`px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  isSubmitting || isProcessingFiles ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Application'}
@@ -1206,7 +1613,6 @@ const GhanaLoanForm = () => {
   );
 };
 
-// Export with Error Boundary
 export default function GhanaLoanFormWithErrorBoundary() {
   return (
     <ErrorBoundary>

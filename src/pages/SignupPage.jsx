@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Headphones, X, Check } from 'lucide-react';
+import { Headphones, X, Check, Shield, Lock, User, Phone, MapPin, Building, Eye, EyeOff, Calendar, Mail, IdCard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../components/CustomToast';
@@ -52,6 +52,160 @@ const SignupLoadingSpinner = () => {
   );
 };
 
+// Create stable input components outside the main component
+const InputField = React.memo(({ 
+  label, 
+  type = 'text', 
+  defaultValue,
+  onChange,
+  error, 
+  placeholder, 
+  disabled, 
+  autoComplete,
+  icon: Icon,
+  optional = false,
+  inputRef
+}) => {
+  const handleChange = useCallback((e) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  }, [onChange]);
+
+  return (
+    <div className="mb-6">
+      <label className="block text-gray-700 font-medium mb-3 flex items-center gap-2">
+        {Icon && <Icon size={16} className="text-gray-500" />}
+        {label}
+        {optional && <span className="text-gray-400 text-sm font-normal">(Optional)</span>}
+      </label>
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type={type}
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none ${
+            error 
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+              : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+          } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoComplete={autoComplete}
+        />
+      </div>
+      {error && (
+        <div className="text-red-600 text-sm mt-2 flex items-center gap-1">
+          <X size={14} />
+          {error}
+        </div>
+      )}
+    </div>
+  );
+});
+
+const SelectField = React.memo(({ 
+  label, 
+  defaultValue,
+  onChange, 
+  error, 
+  disabled, 
+  icon: Icon,
+  children,
+  inputRef
+}) => {
+  const handleChange = useCallback((e) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  }, [onChange]);
+
+  return (
+    <div className="mb-6">
+      <label className="block text-gray-700 font-medium mb-3 flex items-center gap-2">
+        {Icon && <Icon size={16} className="text-gray-500" />}
+        {label}
+      </label>
+      <select
+        ref={inputRef}
+        defaultValue={defaultValue}
+        onChange={handleChange}
+        className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none ${
+          error 
+            ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+            : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+        } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
+        disabled={disabled}
+      >
+        {children}
+      </select>
+      {error && (
+        <div className="text-red-600 text-sm mt-2 flex items-center gap-1">
+          <X size={14} />
+          {error}
+        </div>
+      )}
+    </div>
+  );
+});
+
+const PasswordField = React.memo(({ 
+  label, 
+  defaultValue,
+  onChange, 
+  error, 
+  placeholder, 
+  disabled,
+  showPassword,
+  onToggleVisibility,
+  inputRef
+}) => {
+  const handleChange = useCallback((e) => {
+    if (onChange) {
+      onChange(e.target.value);
+    }
+  }, [onChange]);
+
+  return (
+    <div className="mb-6">
+      <label className="block text-gray-700 font-medium mb-3 flex items-center gap-2">
+        <Lock size={16} className="text-gray-500" />
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type={showPassword ? "text" : "password"}
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none pr-12 ${
+            error 
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
+              : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+          } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+          onClick={onToggleVisibility}
+        >
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button>
+      </div>
+      {error && (
+        <div className="text-red-600 text-sm mt-2 flex items-center gap-1">
+          <X size={14} />
+          {error}
+        </div>
+      )}
+    </div>
+  );
+});
+
 const SignupPage = () => {
   const { register, user } = useAuth();
   const navigate = useNavigate();
@@ -63,8 +217,12 @@ const SignupPage = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // Use useRef for form data to prevent unnecessary re-renders
+  // Use refs to store form data without causing re-renders
   const formDataRef = useRef({
     ghanaCardNumber: '',
     firstName: '',
@@ -92,8 +250,33 @@ const SignupPage = () => {
     confirmPassword: ''
   });
 
-  const [errors, setErrors] = useState({});
-  const [formVersion, setFormVersion] = useState(0);
+  // Create refs for all inputs
+  const inputRefs = useRef({
+    ghanaCardNumber: React.createRef(),
+    firstName: React.createRef(),
+    middleName: React.createRef(),
+    lastName: React.createRef(),
+    sex: React.createRef(),
+    dateOfBirth: React.createRef(),
+    phone: React.createRef(),
+    otherPhone: React.createRef(),
+    email: React.createRef(),
+    homeAddress: React.createRef(),
+    region: React.createRef(),
+    nextOfKinFirstName: React.createRef(),
+    nextOfKinLastName: React.createRef(),
+    nextOfKinPhone: React.createRef(),
+    nextOfKinRelationship: React.createRef(),
+    employmentType: React.createRef(),
+    employer: React.createRef(),
+    staffNumber: React.createRef(),
+    employmentDate: React.createRef(),
+    gradeLevel: React.createRef(),
+    lastMonthPay: React.createRef(),
+    username: React.createRef(),
+    password: React.createRef(),
+    confirmPassword: React.createRef()
+  });
 
   // Updated Ghana regions to match backend expected format
   const ghanaRegions = useMemo(() => [
@@ -117,24 +300,24 @@ const SignupPage = () => {
 
   // Employment types - must match backend validation
   const employmentTypes = useMemo(() => [
-    { value: 'civilService', label: 'Civil Service' },
-    { value: 'police', label: 'Police' },
-    { value: 'military', label: 'Military' },
-    { value: 'immigration', label: 'Immigration' },
-    { value: 'fire', label: 'Fire Service' },
-    { value: 'education', label: 'Education' },
-    { value: 'health', label: 'Health' },
-    { value: 'private', label: 'Private' },
-    { value: 'other', label: 'Other' }
+    { value: 'civilService', label: 'Civil Service', icon: Building },
+    { value: 'police', label: 'Police', icon: Shield },
+    { value: 'military', label: 'Military', icon: Shield },
+    { value: 'immigration', label: 'Immigration', icon: Shield },
+    { value: 'fire', label: 'Fire Service', icon: Shield },
+    { value: 'education', label: 'Education', icon: User },
+    { value: 'health', label: 'Health', icon: User },
+    { value: 'private', label: 'Private Sector', icon: Building },
+    { value: 'other', label: 'Other', icon: Building }
   ], []);
 
   // Next of Kin relationship types
   const relationshipTypes = useMemo(() => [
-    'spouse',
-    'parent', 
-    'child',
-    'sibling',
-    'other'
+    { value: 'spouse', label: 'Spouse' },
+    { value: 'parent', label: 'Parent' }, 
+    { value: 'child', label: 'Child' },
+    { value: 'sibling', label: 'Sibling' },
+    { value: 'other', label: 'Other' }
   ], []);
 
   useEffect(() => {
@@ -148,32 +331,70 @@ const SignupPage = () => {
     }
   }, [user, navigate]);
 
+  // Calculate password strength
+  useEffect(() => {
+    if (!formDataRef.current.password) {
+      setPasswordStrength(0);
+      return;
+    }
+
+    let strength = 0;
+    if (formDataRef.current.password.length >= 8) strength += 1;
+    if (/[a-z]/.test(formDataRef.current.password)) strength += 1;
+    if (/[A-Z]/.test(formDataRef.current.password)) strength += 1;
+    if (/[0-9]/.test(formDataRef.current.password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(formDataRef.current.password)) strength += 1;
+
+    setPasswordStrength(strength);
+  }, [formDataRef.current.password]);
+
   const steps = useMemo(() => [
-    { number: 1, label: 'Personal Info', component: 'personal' },
-    { number: 2, label: 'Next of Kin', component: 'nextOfKin' },
-    { number: 3, label: 'Employment', component: 'employment' },
-    { number: 4, label: 'Credentials', component: 'credentials' }
+    { 
+      number: 1, 
+      label: 'Personal Info', 
+      component: 'personal',
+      icon: User,
+      description: 'Your basic information'
+    },
+    { 
+      number: 2, 
+      label: 'Next of Kin', 
+      component: 'nextOfKin',
+      icon: User,
+      description: 'Emergency contact'
+    },
+    { 
+      number: 3, 
+      label: 'Employment', 
+      component: 'employment',
+      icon: Building,
+      description: 'Work details'
+    },
+    { 
+      number: 4, 
+      label: 'Security', 
+      component: 'credentials',
+      icon: Lock,
+      description: 'Login credentials'
+    }
   ], []);
 
-  // Single optimized handler for all inputs
+  // Simple input handler that updates ref without causing re-renders
   const handleInputChange = useCallback((field, value) => {
     formDataRef.current[field] = value;
     
-    // Only update errors if this field has an error
+    // Clear error for this field if it exists
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
         [field]: ''
       }));
     }
-    
-    // Force a re-render to update the input value
-    setFormVersion(prev => prev + 1);
   }, [errors]);
 
   // Create stable handler functions
   const createChangeHandler = useCallback((field) => {
-    return (e) => handleInputChange(field, e.target.value);
+    return (value) => handleInputChange(field, value);
   }, [handleInputChange]);
 
   // Memoize all handlers
@@ -297,7 +518,7 @@ const SignupPage = () => {
       newErrors.employmentType = 'Employment type is required';
     }
     
-    if (formData.employmentType !== 'Unemployed' && !formData.employer.trim()) {
+    if (formData.employmentType && formData.employmentType !== 'other' && !formData.employer.trim()) {
       newErrors.employer = 'Employer name is required';
     }
     
@@ -387,7 +608,6 @@ const SignupPage = () => {
       const formData = formDataRef.current;
       
       // Format nextOfKin as an array WITHOUT phone field
-      // Phone goes in a separate nextOfKinPhone field at root level
       const nextOfKinArray = (formData.nextOfKinFirstName.trim() && formData.nextOfKinLastName.trim()) ? [
         {
           firstName: formData.nextOfKinFirstName.trim(),
@@ -408,20 +628,18 @@ const SignupPage = () => {
         email: formData.email.trim().toLowerCase(),
         homeAddress: formData.homeAddress.trim(),
         region: formData.region,
-        nextOfKin: nextOfKinArray, // Array without phone field
-        nextOfKinPhone: formData.nextOfKinPhone.trim(), // Phone as separate root field
-        employmentType: formData.employmentType ? [formData.employmentType] : [], // Convert to array
-        employer: formData.employer.trim() || undefined, // Don't send empty string
-        staffNumber: formData.staffNumber.trim() || undefined, // Don't send empty string
-        employmentDate: formData.employmentDate || undefined, // Don't send empty string
-        gradeLevel: formData.gradeLevel.trim() || undefined, // Don't send empty string
-        lastMonthPay: formData.lastMonthPay || undefined, // Don't send empty string
+        nextOfKin: nextOfKinArray,
+        nextOfKinPhone: formData.nextOfKinPhone.trim(),
+        employmentType: formData.employmentType ? [formData.employmentType] : [],
+        employer: formData.employer.trim() || undefined,
+        staffNumber: formData.staffNumber.trim() || undefined,
+        employmentDate: formData.employmentDate || undefined,
+        gradeLevel: formData.gradeLevel.trim() || undefined,
+        lastMonthPay: formData.lastMonthPay || undefined,
         username: formData.username.trim(),
         password: formData.password,
-        agreementConfirmed: agreeTerms // Add agreement confirmation
+        agreementConfirmed: agreeTerms
       };
-
-      console.log('Submitting user data:', userData);
 
       const result = await register(userData);
 
@@ -466,42 +684,60 @@ const SignupPage = () => {
 
   const Logo = ({ className = '' }) => (
     <div className={`flex items-center ${className}`}>
-      <div className="w-10 h-8 bg-red-600 mr-3 relative rounded-sm">
-        <div className="absolute top-1 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
-        <div className="absolute top-3.5 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
+      <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
+        <div className="text-white font-bold text-lg">EC</div>
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
       </div>
-      <div className="text-gray-800 text-lg font-bold leading-tight">
+      <div className="text-gray-800 text-xl font-bold leading-tight">
         Emerald<br />
-        <span className="text-blue-600 font-normal">Capital</span>
+        <span className="text-emerald-600 font-semibold text-lg">Capital</span>
       </div>
     </div>
   );
 
   const ProgressSteps = () => (
-    <div className="flex justify-between mb-8 lg:mb-10 relative">
-      <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
-      {steps.map((step, index) => (
-        <div key={step.number} className="flex flex-col items-center gap-2 relative z-10 flex-1">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
-              index < currentStep
-                ? 'bg-green-600 text-white'
-                : index === currentStep
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-200 text-gray-500'
-            }`}
-          >
-            {index < currentStep ? <Check size={16} /> : step.number}
-          </div>
-          <div
-            className={`text-xs text-center transition-colors ${
-              index === currentStep ? 'text-red-600 font-semibold' : 'text-gray-500'
-            }`}
-          >
-            {step.label}
-          </div>
+    <div className="mb-8 lg:mb-10">
+      <div className="flex justify-between relative mb-4">
+        <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
+        {steps.map((step, index) => {
+          const StepIcon = step.icon;
+          return (
+            <div key={step.number} className="flex flex-col items-center gap-3 relative z-10 flex-1">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                  index < currentStep
+                    ? 'bg-green-500 text-white shadow-lg shadow-green-200'
+                    : index === currentStep
+                    ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg shadow-red-200 scale-110'
+                    : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                }`}
+              >
+                {index < currentStep ? <Check size={16} /> : <StepIcon size={16} />}
+              </div>
+              <div className="text-center">
+                <div
+                  className={`text-xs font-medium transition-colors ${
+                    index === currentStep ? 'text-red-600' : index < currentStep ? 'text-green-600' : 'text-gray-500'
+                  }`}
+                >
+                  {step.label}
+                </div>
+                <div className="text-xs text-gray-400 mt-1 hidden lg:block">
+                  {step.description}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="text-center">
+        <div className="text-sm text-gray-600 font-medium">
+          Step {currentStep + 1} of {steps.length}
         </div>
-      ))}
+        <div className="text-xs text-gray-500 mt-1">
+          {steps[currentStep].description}
+        </div>
+      </div>
     </div>
   );
 
@@ -516,72 +752,80 @@ const SignupPage = () => {
         className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto relative m-4"
         onClick={e => e.stopPropagation()}
       >
-        <div className="p-6 lg:p-10">
-          <div className="flex items-center mb-6 lg:mb-8 relative">
-            <Logo />
-            <h2 className="text-xl lg:text-2xl font-semibold text-gray-800 ml-4">Terms & Conditions</h2>
+        <div className="p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <Logo />
+              <h2 className="text-xl lg:text-2xl font-semibold text-gray-800 ml-4">Terms & Conditions</h2>
+            </div>
             <button
-              className="absolute right-0 top-0 text-gray-500 text-2xl bg-transparent border-none cursor-pointer hover:text-gray-700 transition-colors"
+              className="text-gray-500 hover:text-gray-700 transition-colors bg-gray-100 hover:bg-gray-200 rounded-full p-2"
               onClick={() => setShowTermsModal(false)}
             >
-              <X size={28} />
+              <X size={20} />
             </button>
           </div>
 
-          <div className="mb-6 lg:mb-8">
-            <div className="mb-4 lg:mb-6">
-              <h3 className="text-lg text-gray-800 mb-3">
-                <span className="text-red-600">Privacy</span> Policy
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border border-red-100">
+              <h3 className="text-lg font-semibold text-red-800 mb-3 flex items-center gap-2">
+                <Shield size={20} />
+                Privacy Policy
               </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
+              <p className="text-gray-600 text-sm leading-relaxed">
                 At Emerald Capital Microfinance Bank Limited, one of our main priorities is the privacy 
                 of our visitors. This Privacy Policy document contains types of information that is 
                 collected and recorded and how we use it.
               </p>
             </div>
 
-            <div className="mb-4 lg:mb-6">
-              <h3 className="text-lg text-gray-800 mb-3">Information We Collect</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                We collect personal information including but not limited to your name, contact details, 
-                Ghana Card, identification documents, and financial information necessary for account 
-                creation and management.
-              </p>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">Information We Collect</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  We collect personal information including but not limited to your name, contact details, 
+                  Ghana Card, identification documents, and financial information necessary for account 
+                  creation and management.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">How We Use Your Information</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Your information is used to verify your identity, process transactions, prevent fraud, 
+                  comply with regulatory requirements, and provide you with banking services.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">Data Security</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  We implement industry-standard security measures to protect your personal information 
+                  from unauthorized access, disclosure, or misuse.
+                </p>
+              </div>
             </div>
 
-            <div className="mb-4 lg:mb-6">
-              <h3 className="text-lg text-gray-800 mb-3">How We Use Your Information</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Your information is used to verify your identity, process transactions, prevent fraud, 
-                comply with regulatory requirements, and provide you with banking services.
-              </p>
-            </div>
-
-            <div className="mb-6 lg:mb-8">
-              <h3 className="text-lg text-gray-800 mb-3">Data Security</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                We implement industry-standard security measures to protect your personal information 
-                from unauthorized access, disclosure, or misuse.
-              </p>
-            </div>
-
-            <div className="flex items-start gap-3 mb-6">
-              <input
-                type="checkbox"
-                id="agreeTerms"
-                checked={agreeTerms}
-                onChange={e => setAgreeTerms(e.target.checked)}
-                className="w-5 h-5 text-red-600 mt-0.5 rounded focus:ring-2 focus:ring-red-500"
-              />
-              <label htmlFor="agreeTerms" className="text-gray-700 text-sm cursor-pointer">
-                I Agree to the Terms & Conditions and Privacy Policy
-              </label>
+            <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="agreeTerms"
+                  checked={agreeTerms}
+                  onChange={e => setAgreeTerms(e.target.checked)}
+                  className="w-5 h-5 text-red-600 mt-0.5 rounded focus:ring-2 focus:ring-red-500"
+                />
+                <label htmlFor="agreeTerms" className="text-gray-700 text-sm cursor-pointer flex-1">
+                  I Agree to the Terms & Conditions and Privacy Policy. I understand that Emerald Capital 
+                  will process my information in accordance with these terms.
+                </label>
+              </div>
             </div>
 
             <button
-              className={`w-full py-3 lg:py-4 rounded-xl font-semibold text-lg transition-all duration-200 ${
+              className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                 agreeTerms
-                  ? 'bg-red-600 text-white hover:bg-red-700 transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-300 active:translate-y-0'
+                  ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-0.5'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!agreeTerms}
@@ -594,7 +838,8 @@ const SignupPage = () => {
                 }
               }}
             >
-              Continue
+              <Check size={20} />
+              Continue to Registration
             </button>
           </div>
         </div>
@@ -602,400 +847,387 @@ const SignupPage = () => {
     </div>
   );
 
-  const PersonalInfoStep = () => {
-    const formData = formDataRef.current;
-    return (
-      <div>
-        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Personal Information</h1>
-        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your personal details</p>
-
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Ghana Card Number</label>
-          <input
-            type="text"
-            value={formData.ghanaCardNumber}
-            onChange={handlers.ghanaCardNumber}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            placeholder="GHA-XXXXXXXXX-X"
-            disabled={isSubmitting}
-            autoComplete="off"
-            autoFocus={currentStep === 0}
-          />
-          {errors.ghanaCardNumber && <div className="text-red-600 text-sm mt-1">{errors.ghanaCardNumber}</div>}
+  const PersonalInfoStep = () => (
+    <div>
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <User className="w-8 h-8 text-white" />
         </div>
-
-        <div className="grid grid-cols-3 gap-4 mb-4 lg:mb-5">
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">First Name</label>
-            <input
-              type="text"
-              value={formData.firstName}
-              onChange={handlers.firstName}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="First name"
-              disabled={isSubmitting}
-              autoComplete="given-name"
-            />
-            {errors.firstName && <div className="text-red-600 text-sm mt-1">{errors.firstName}</div>}
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Middle Name</label>
-            <input
-              type="text"
-              value={formData.middleName}
-              onChange={handlers.middleName}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="Middle name"
-              disabled={isSubmitting}
-              autoComplete="additional-name"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
-            <input
-              type="text"
-              value={formData.lastName}
-              onChange={handlers.lastName}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="Last name"
-              disabled={isSubmitting}
-              autoComplete="family-name"
-            />
-            {errors.lastName && <div className="text-red-600 text-sm mt-1">{errors.lastName}</div>}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Gender</label>
-            <select
-              value={formData.sex}
-              onChange={handlers.sex}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              disabled={isSubmitting}
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-            {errors.sex && <div className="text-red-600 text-sm mt-1">{errors.sex}</div>}
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Date of Birth</label>
-            <input
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={handlers.dateOfBirth}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              disabled={isSubmitting}
-              max={new Date().toISOString().split('T')[0]}
-            />
-            {errors.dateOfBirth && <div className="text-red-600 text-sm mt-1">{errors.dateOfBirth}</div>}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={handlers.phone}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="0241234567"
-              disabled={isSubmitting}
-              autoComplete="tel"
-            />
-            {errors.phone && <div className="text-red-600 text-sm mt-1">{errors.phone}</div>}
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Other Phone (Optional)</label>
-            <input
-              type="tel"
-              value={formData.otherPhone}
-              onChange={handlers.otherPhone}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="0241234567"
-              disabled={isSubmitting}
-              autoComplete="tel"
-            />
-          </div>
-        </div>
-
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={handlers.email}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            placeholder="your.email@example.com"
-            disabled={isSubmitting}
-            autoComplete="email"
-          />
-          {errors.email && <div className="text-red-600 text-sm mt-1">{errors.email}</div>}
-        </div>
-
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Home Address</label>
-          <input
-            type="text"
-            value={formData.homeAddress}
-            onChange={handlers.homeAddress}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            placeholder="Enter your complete home address"
-            disabled={isSubmitting}
-            autoComplete="street-address"
-          />
-          {errors.homeAddress && <div className="text-red-600 text-sm mt-1">{errors.homeAddress}</div>}
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Region</label>
-          <select
-            value={formData.region}
-            onChange={handlers.region}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            disabled={isSubmitting}
-          >
-            <option value="">Select your region</option>
-            {ghanaRegions.map(region => (
-              <option key={region} value={region}>{region}</option>
-            ))}
-          </select>
-          {errors.region && <div className="text-red-600 text-sm mt-1">{errors.region}</div>}
-        </div>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Personal Information</h1>
+        <p className="text-gray-500">Enter your personal details to get started</p>
       </div>
-    );
-  };
 
-  const NextOfKinStep = () => {
-    const formData = formDataRef.current;
-    return (
-      <div>
-        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Next of Kin Information</h1>
-        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your next of kin details</p>
+      <div className="space-y-1">
+        <InputField
+          label="Ghana Card Number"
+          defaultValue={formDataRef.current.ghanaCardNumber}
+          onChange={handlers.ghanaCardNumber}
+          error={errors.ghanaCardNumber}
+          placeholder="GHA-XXXXXXXXX-X"
+          disabled={isSubmitting}
+          icon={IdCard}
+          inputRef={inputRefs.current.ghanaCardNumber}
+        />
 
-        <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">First Name</label>
-            <input
-              type="text"
-              value={formData.nextOfKinFirstName}
-              onChange={handlers.nextOfKinFirstName}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="First name"
-              disabled={isSubmitting}
-              autoComplete="given-name"
-              autoFocus={currentStep === 1}
-            />
-            {errors.nextOfKinFirstName && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinFirstName}</div>}
-          </div>
-          <div>
-            <label className="block text-gray-700 text-sm font-medium mb-2">Last Name</label>
-            <input
-              type="text"
-              value={formData.nextOfKinLastName}
-              onChange={handlers.nextOfKinLastName}
-              className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-              placeholder="Last name"
-              disabled={isSubmitting}
-              autoComplete="family-name"
-            />
-            {errors.nextOfKinLastName && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinLastName}</div>}
-          </div>
-        </div>
-
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Relationship</label>
-          <select
-            value={formData.nextOfKinRelationship}
-            onChange={handlers.nextOfKinRelationship}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <InputField
+            label="First Name"
+            defaultValue={formDataRef.current.firstName}
+            onChange={handlers.firstName}
+            error={errors.firstName}
+            placeholder="First name"
             disabled={isSubmitting}
-          >
-            <option value="">Select relationship</option>
-            {relationshipTypes.map(relationship => (
-              <option key={relationship} value={relationship}>
-                {relationship.charAt(0).toUpperCase() + relationship.slice(1)}
-              </option>
-            ))}
-          </select>
-          {errors.nextOfKinRelationship && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinRelationship}</div>}
+            autoComplete="given-name"
+            inputRef={inputRefs.current.firstName}
+          />
+          <InputField
+            label="Middle Name"
+            defaultValue={formDataRef.current.middleName}
+            onChange={handlers.middleName}
+            placeholder="Middle name"
+            disabled={isSubmitting}
+            autoComplete="additional-name"
+            optional
+            inputRef={inputRefs.current.middleName}
+          />
+          <InputField
+            label="Last Name"
+            defaultValue={formDataRef.current.lastName}
+            onChange={handlers.lastName}
+            error={errors.lastName}
+            placeholder="Last name"
+            disabled={isSubmitting}
+            autoComplete="family-name"
+            inputRef={inputRefs.current.lastName}
+          />
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
-          <input
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SelectField
+            label="Gender"
+            defaultValue={formDataRef.current.sex}
+            onChange={handlers.sex}
+            error={errors.sex}
+            disabled={isSubmitting}
+            inputRef={inputRefs.current.sex}
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </SelectField>
+          
+          <InputField
+            label="Date of Birth"
+            type="date"
+            defaultValue={formDataRef.current.dateOfBirth}
+            onChange={handlers.dateOfBirth}
+            error={errors.dateOfBirth}
+            disabled={isSubmitting}
+            icon={Calendar}
+            inputRef={inputRefs.current.dateOfBirth}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InputField
+            label="Phone Number"
             type="tel"
-            value={formData.nextOfKinPhone}
-            onChange={handlers.nextOfKinPhone}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            defaultValue={formDataRef.current.phone}
+            onChange={handlers.phone}
+            error={errors.phone}
+            placeholder="0241234567"
+            disabled={isSubmitting}
+            icon={Phone}
+            autoComplete="tel"
+            inputRef={inputRefs.current.phone}
+          />
+          <InputField
+            label="Other Phone"
+            type="tel"
+            defaultValue={formDataRef.current.otherPhone}
+            onChange={handlers.otherPhone}
             placeholder="0241234567"
             disabled={isSubmitting}
             autoComplete="tel"
+            optional
+            inputRef={inputRefs.current.otherPhone}
           />
-          {errors.nextOfKinPhone && <div className="text-red-600 text-sm mt-1">{errors.nextOfKinPhone}</div>}
         </div>
+
+        <InputField
+          label="Email Address"
+          type="email"
+          defaultValue={formDataRef.current.email}
+          onChange={handlers.email}
+          error={errors.email}
+          placeholder="your.email@example.com"
+          disabled={isSubmitting}
+          icon={Mail}
+          autoComplete="email"
+          inputRef={inputRefs.current.email}
+        />
+
+        <InputField
+          label="Home Address"
+          defaultValue={formDataRef.current.homeAddress}
+          onChange={handlers.homeAddress}
+          error={errors.homeAddress}
+          placeholder="Enter your complete home address"
+          disabled={isSubmitting}
+          icon={MapPin}
+          autoComplete="street-address"
+          inputRef={inputRefs.current.homeAddress}
+        />
+
+        <SelectField
+          label="Region"
+          defaultValue={formDataRef.current.region}
+          onChange={handlers.region}
+          error={errors.region}
+          disabled={isSubmitting}
+          icon={MapPin}
+          inputRef={inputRefs.current.region}
+        >
+          <option value="">Select your region</option>
+          {ghanaRegions.map(region => (
+            <option key={region} value={region}>{region}</option>
+          ))}
+        </SelectField>
       </div>
-    );
-  };
+    </div>
+  );
 
-  const EmploymentStep = () => {
-    const formData = formDataRef.current;
-    return (
-      <div>
-        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Employment Information</h1>
-        <p className="text-gray-500 text-base mb-6 lg:mb-8">Enter your employment details</p>
+  const NextOfKinStep = () => (
+    <div>
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <User className="w-8 h-8 text-white" />
+        </div>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Next of Kin Information</h1>
+        <p className="text-gray-500">Provide emergency contact details</p>
+      </div>
 
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Employment Type</label>
-          <select
-            value={formData.employmentType}
-            onChange={handlers.employmentType}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+      <div className="space-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InputField
+            label="First Name"
+            defaultValue={formDataRef.current.nextOfKinFirstName}
+            onChange={handlers.nextOfKinFirstName}
+            error={errors.nextOfKinFirstName}
+            placeholder="First name"
             disabled={isSubmitting}
-            autoFocus={currentStep === 2}
-          >
-            <option value="">Select employment type</option>
-            {employmentTypes.map(type => (
-              <option key={type.value} value={type.value}>{type.label}</option>
-            ))}
-          </select>
-          {errors.employmentType && <div className="text-red-600 text-sm mt-1">{errors.employmentType}</div>}
+            autoComplete="given-name"
+            inputRef={inputRefs.current.nextOfKinFirstName}
+          />
+          <InputField
+            label="Last Name"
+            defaultValue={formDataRef.current.nextOfKinLastName}
+            onChange={handlers.nextOfKinLastName}
+            error={errors.nextOfKinLastName}
+            placeholder="Last name"
+            disabled={isSubmitting}
+            autoComplete="family-name"
+            inputRef={inputRefs.current.nextOfKinLastName}
+          />
         </div>
 
-        {formData.employmentType && formData.employmentType !== 'other' && (
+        <SelectField
+          label="Relationship"
+          defaultValue={formDataRef.current.nextOfKinRelationship}
+          onChange={handlers.nextOfKinRelationship}
+          error={errors.nextOfKinRelationship}
+          disabled={isSubmitting}
+          inputRef={inputRefs.current.nextOfKinRelationship}
+        >
+          <option value="">Select relationship</option>
+          {relationshipTypes.map(relationship => (
+            <option key={relationship.value} value={relationship.value}>
+              {relationship.label}
+            </option>
+          ))}
+        </SelectField>
+
+        <InputField
+          label="Phone Number"
+          type="tel"
+          defaultValue={formDataRef.current.nextOfKinPhone}
+          onChange={handlers.nextOfKinPhone}
+          error={errors.nextOfKinPhone}
+          placeholder="0241234567"
+          disabled={isSubmitting}
+          icon={Phone}
+          autoComplete="tel"
+          inputRef={inputRefs.current.nextOfKinPhone}
+        />
+      </div>
+    </div>
+  );
+
+  const EmploymentStep = () => (
+    <div>
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <Building className="w-8 h-8 text-white" />
+        </div>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Employment Information</h1>
+        <p className="text-gray-500">Tell us about your work situation</p>
+      </div>
+
+      <div className="space-y-1">
+        <SelectField
+          label="Employment Type"
+          defaultValue={formDataRef.current.employmentType}
+          onChange={handlers.employmentType}
+          error={errors.employmentType}
+          disabled={isSubmitting}
+          icon={Building}
+          inputRef={inputRefs.current.employmentType}
+        >
+          <option value="">Select employment type</option>
+          {employmentTypes.map(type => (
+            <option key={type.value} value={type.value}>{type.label}</option>
+          ))}
+        </SelectField>
+
+        {formDataRef.current.employmentType && formDataRef.current.employmentType !== 'other' && (
           <>
-            <div className="mb-4 lg:mb-5">
-              <label className="block text-gray-700 text-sm font-medium mb-2">Employer Name</label>
-              <input
-                type="text"
-                value={formData.employer}
-                onChange={handlers.employer}
-                className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-                placeholder="Enter employer name"
+            <InputField
+              label="Employer Name"
+              defaultValue={formDataRef.current.employer}
+              onChange={handlers.employer}
+              error={errors.employer}
+              placeholder="Enter employer name"
+              disabled={isSubmitting}
+              inputRef={inputRefs.current.employer}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InputField
+                label="Staff Number"
+                defaultValue={formDataRef.current.staffNumber}
+                onChange={handlers.staffNumber}
+                placeholder="Staff number"
                 disabled={isSubmitting}
+                optional
+                inputRef={inputRefs.current.staffNumber}
               />
-              {errors.employer && <div className="text-red-600 text-sm mt-1">{errors.employer}</div>}
+              <InputField
+                label="Employment Date"
+                type="date"
+                defaultValue={formDataRef.current.employmentDate}
+                onChange={handlers.employmentDate}
+                disabled={isSubmitting}
+                icon={Calendar}
+                optional
+                inputRef={inputRefs.current.employmentDate}
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4 lg:mb-5">
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Staff Number (Optional)</label>
-                <input
-                  type="text"
-                  value={formData.staffNumber}
-                  onChange={handlers.staffNumber}
-                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-                  placeholder="Staff number"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Employment Date (Optional)</label>
-                <input
-                  type="date"
-                  value={formData.employmentDate}
-                  onChange={handlers.employmentDate}
-                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-                  disabled={isSubmitting}
-                  max={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Grade Level (Optional)</label>
-                <input
-                  type="text"
-                  value={formData.gradeLevel}
-                  onChange={handlers.gradeLevel}
-                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-                  placeholder="Grade level"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Last Month Pay (Optional)</label>
-                <input
-                  type="number"
-                  value={formData.lastMonthPay}
-                  onChange={handlers.lastMonthPay}
-                  className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-                  placeholder="0.00"
-                  disabled={isSubmitting}
-                  min="0"
-                  step="0.01"
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InputField
+                label="Grade Level"
+                defaultValue={formDataRef.current.gradeLevel}
+                onChange={handlers.gradeLevel}
+                placeholder="Grade level"
+                disabled={isSubmitting}
+                optional
+                inputRef={inputRefs.current.gradeLevel}
+              />
+              <InputField
+                label="Last Month Pay"
+                type="number"
+                defaultValue={formDataRef.current.lastMonthPay}
+                onChange={handlers.lastMonthPay}
+                placeholder="0.00"
+                disabled={isSubmitting}
+                optional
+                inputRef={inputRefs.current.lastMonthPay}
+              />
             </div>
           </>
         )}
       </div>
-    );
-  };
+    </div>
+  );
 
-  const CredentialsStep = () => {
-    const formData = formDataRef.current;
-    return (
-      <div>
-        <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Create Account Credentials</h1>
-        <p className="text-gray-500 text-base mb-6 lg:mb-8">Set up your login details</p>
-
-        {errors.general && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-5">
-            {errors.general}
-          </div>
-        )}
-
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Username</label>
-          <input
-            type="text"
-            value={formData.username}
-            onChange={handlers.username}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            placeholder="Choose a username"
-            disabled={isSubmitting}
-            autoComplete="username"
-            autoFocus={currentStep === 3}
-          />
-          {errors.username && <div className="text-red-600 text-sm mt-1">{errors.username}</div>}
+  const CredentialsStep = () => (
+    <div>
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <Lock className="w-8 h-8 text-white" />
         </div>
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Security Credentials</h1>
+        <p className="text-gray-500">Create secure login details</p>
+      </div>
 
-        <div className="mb-4 lg:mb-5">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
-          <input
-            type="password"
-            value={formData.password}
+      {errors.general && (
+        <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-4 rounded-xl mb-6 flex items-center gap-2">
+          <X size={16} />
+          {errors.general}
+        </div>
+      )}
+
+      <div className="space-y-1">
+        <InputField
+          label="Username"
+          defaultValue={formDataRef.current.username}
+          onChange={handlers.username}
+          error={errors.username}
+          placeholder="Choose a username"
+          disabled={isSubmitting}
+          autoComplete="username"
+          inputRef={inputRefs.current.username}
+        />
+
+        <div>
+          <PasswordField
+            label="Password"
+            defaultValue={formDataRef.current.password}
             onChange={handlers.password}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
+            error={errors.password}
             placeholder="Create a strong password"
             disabled={isSubmitting}
-            autoComplete="new-password"
+            showPassword={showPassword}
+            onToggleVisibility={() => setShowPassword(!showPassword)}
+            inputRef={inputRefs.current.password}
           />
-          {errors.password && <div className="text-red-600 text-sm mt-1">{errors.password}</div>}
+          
+          {/* Password Strength Indicator */}
+          {formDataRef.current.password && (
+            <div className="mt-3 mb-6">
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <span>Password Strength</span>
+                <span className={passwordStrength < 3 ? 'text-red-500' : passwordStrength < 5 ? 'text-yellow-500' : 'text-green-500'}>
+                  {passwordStrength < 3 ? 'Weak' : passwordStrength < 5 ? 'Good' : 'Strong'}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    passwordStrength < 3 ? 'bg-red-500' : passwordStrength < 5 ? 'bg-yellow-500' : 'bg-green-500'
+                  }`}
+                  style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
-          <input
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handlers.confirmPassword}
-            className="w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none"
-            placeholder="Confirm your password"
-            disabled={isSubmitting}
-            autoComplete="new-password"
-          />
-          {errors.confirmPassword && <div className="text-red-600 text-sm mt-1">{errors.confirmPassword}</div>}
-        </div>
+        <PasswordField
+          label="Confirm Password"
+          defaultValue={formDataRef.current.confirmPassword}
+          onChange={handlers.confirmPassword}
+          error={errors.confirmPassword}
+          placeholder="Confirm your password"
+          disabled={isSubmitting}
+          showPassword={showConfirmPassword}
+          onToggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
+          inputRef={inputRefs.current.confirmPassword}
+        />
       </div>
-    );
-  };
+    </div>
+  );
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -1016,93 +1248,141 @@ const SignupPage = () => {
     <>
       {isSubmitting && <SignupLoadingSpinner />}
       
-      <div className="min-h-screen bg-white flex flex-col lg:flex-row overflow-hidden">
-        <div className="flex-1 p-6 lg:p-8 xl:p-14 flex flex-col justify-center max-w-lg mx-auto w-full">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col lg:flex-row overflow-hidden">
+        {/* Left Panel - Form */}
+        <div className="flex-1 p-6 lg:p-8 xl:p-12 flex flex-col justify-center max-w-4xl mx-auto w-full">
           {currentPage === 'signup' ? (
-            <div>
-              <Logo className="mb-8 lg:mb-10" />
+            <div className="text-center max-w-md mx-auto">
+              <Logo className="mb-8 lg:mb-12 justify-center" />
               
-              <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Do you have an Account with Us?</h1>
-              <p className="text-gray-500 text-base mb-8 lg:mb-10">Choose an option to continue</p>
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-3">Join Emerald Capital</h1>
+                <p className="text-gray-500 text-lg mb-8">Choose an option to continue your journey</p>
 
-              <button
-                className="w-full py-3 lg:py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg mb-4 transition-all duration-200 hover:border-red-600 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleExistingAccount}
-                disabled={isSubmitting}
-              >
-                Yes, I already Have an Account
-              </button>
-              
-              <button
-                className="w-full py-3 lg:py-4 bg-red-600 text-white rounded-xl font-semibold text-lg mb-4 transition-all duration-200 hover:bg-red-700 transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-300 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => setShowTermsModal(true)}
-                disabled={isSubmitting}
-              >
-                No, I'm ready to Onboard
-              </button>
+                <div className="space-y-4">
+                  <button
+                    className="w-full py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all duration-200 hover:border-red-500 hover:text-red-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    onClick={handleExistingAccount}
+                    disabled={isSubmitting}
+                  >
+                    <Check size={20} />
+                    Yes, I already Have an Account
+                  </button>
+                  
+                  <button
+                    className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    onClick={() => setShowTermsModal(true)}
+                    disabled={isSubmitting}
+                  >
+                    <User size={20} />
+                    No, I'm ready to Onboard
+                  </button>
+                </div>
 
-              <div className="text-center text-gray-700 text-sm mt-5">
-                <button 
-                  onClick={handleLoginRedirect}
-                  className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer transition-colors disabled:opacity-50"
-                  disabled={isSubmitting}
-                >
-                  Go Back to Login
-                </button>
+                <div className="text-center text-gray-600 text-sm mt-6">
+                  <button 
+                    onClick={handleLoginRedirect}
+                    className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer transition-colors disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    ← Go Back to Login
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
-            <div>
-              <Logo className="mb-8 lg:mb-10" />
+            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg border border-gray-100 max-w-4xl mx-auto w-full">
+              <Logo className="mb-6" />
               <ProgressSteps />
-              {renderStepContent()}
+              <div className="max-h-[60vh] overflow-y-auto pr-2">
+                {renderStepContent()}
+              </div>
               
-              <div className="flex gap-3 lg:gap-4 mt-6 lg:mt-8">
+              <div className="flex gap-4 mt-8 pt-4 border-t border-gray-200">
                 <button
-                  className="flex-1 py-3 lg:py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all duration-200 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all duration-200 hover:border-gray-400 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   onClick={handleBack}
                   disabled={isSubmitting}
                 >
                   ← Back
                 </button>
                 <button
-                  className={`flex-[2] py-3 lg:py-4 rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`flex-[2] py-4 rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                     isSubmitting
                       ? 'bg-gray-400 text-white'
-                      : 'bg-red-600 text-white hover:bg-red-700 transform hover:-translate-y-0.5 active:translate-y-0'
+                      : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-1 active:translate-y-0'
                   }`}
                   onClick={handleProceed}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Creating Account...' : 
-                   currentStep === steps.length - 1 ? 'Create Account' : 'Proceed'}
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Creating Account...
+                    </>
+                  ) : (
+                    <>
+                      {currentStep === steps.length - 1 ? (
+                        <>
+                          <Check size={20} />
+                          Create Account
+                        </>
+                      ) : (
+                        'Continue'
+                      )}
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-50 to-purple-50 items-center justify-center relative border-l border-gray-200 overflow-hidden">
-          <div className="text-center p-8 max-w-md">
-            <div className="w-48 h-48 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
+        {/* Right Panel - Graphics */}
+        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-red-600 to-red-700 items-center justify-center relative overflow-hidden">
+          <div className="text-center p-8 max-w-md text-white relative z-10">
+            <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl backdrop-blur-sm">
               <div className="text-white text-center">
-                <div className="text-3xl font-bold mb-2">EC</div>
-                <div className="text-lg font-semibold">Emerald Capital</div>
+                <div className="text-4xl font-bold mb-3">EC</div>
+                <div className="text-xl font-semibold">Emerald Capital</div>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Join Emerald Capital</h2>
-            <p className="text-gray-600">
-              Start your financial journey with us. Enjoy secure banking, competitive rates, 
-              and personalized service tailored to your needs.
+            <h2 className="text-3xl font-bold mb-4">Start Your Financial Journey</h2>
+            <p className="text-white/80 text-lg leading-relaxed mb-6">
+              Join thousands of Ghanaians who trust Emerald Capital for secure banking, 
+              competitive rates, and personalized service that grows with you.
             </p>
+            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-2xl font-bold">24/7</div>
+                  <div className="text-white/80">Digital Banking</div>
+                </div>
+                <div className="w-px h-8 bg-white/30"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">100%</div>
+                  <div className="text-white/80">Secure</div>
+                </div>
+                <div className="w-px h-8 bg-white/30"></div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">0₵</div>
+                  <div className="text-white/80">Account Fee</div>
+                </div>
+              </div>
+            </div>
           </div>
 
+          {/* Floating Elements */}
+          <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-6 h-6 bg-green-400 rounded-full opacity-30 animate-bounce"></div>
+          <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-white rounded-full opacity-40 animate-ping"></div>
+
           <button
-            className="absolute bottom-8 right-8 w-14 h-14 bg-red-600 rounded-full flex items-center justify-center text-white text-xl shadow-2xl shadow-red-300 cursor-pointer transition-transform hover:scale-110 border-none"
+            className="absolute bottom-8 right-8 w-16 h-16 bg-white rounded-full flex items-center justify-center text-red-600 text-xl shadow-2xl cursor-pointer transition-transform hover:scale-110 border-none group"
             onClick={handleCustomerService}
             title="Contact Customer Service"
           >
-            <Headphones size={24} />
+            <Headphones size={28} className="group-hover:animate-bounce" />
           </button>
         </div>
 
