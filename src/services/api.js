@@ -196,5 +196,24 @@ export const adminAPI = {
   deleteLoanApplication: (id) => adminApi.delete(`/admin/loans/applications/${id}`),
 };
 
+// Add these to your existing authAPI in services/api.js
+
+// Account API
+export const accountAPI = {
+  getBalance: () => api.get('/account/balance'),
+  getDetails: () => api.get('/account/details'),
+  getTransactions: (params) => api.get('/account/transactions', { params }),
+  getTransaction: (id) => api.get(`/account/transactions/${id}`),
+  transferFunds: (transferData) => api.post('/account/transfer', transferData),
+  updateStatus: (statusData) => api.patch('/account/status', statusData),
+};
+
+// Add these methods to your existing authAPI
+authAPI.getAccountBalance = accountAPI.getBalance;
+authAPI.getAccountDetails = accountAPI.getDetails;
+authAPI.getTransactions = accountAPI.getTransactions;
+authAPI.getTransaction = accountAPI.getTransaction;
+authAPI.transferFunds = accountAPI.transferFunds;
+authAPI.updateAccountStatus = accountAPI.updateStatus;
 export default api;
 export { adminApi };

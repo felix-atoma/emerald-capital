@@ -32,6 +32,7 @@ const CSRPage = lazy(() => import("./pages/CSRPage"));
 const Gallary = lazy(() => import("./pages/Gallary"));
 const Form = lazy(() => import("./pages/Form"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -69,6 +70,7 @@ function App() {
                 <Route path="gallery" element={<Gallary />} />
                 <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
                 <Route path="privacy-page" element={<PrivacyPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
               </Route>
               
               <Route path="form" element={<Form />} />
