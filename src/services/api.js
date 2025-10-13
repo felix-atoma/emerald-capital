@@ -106,7 +106,7 @@ export const authAPI = {
   healthCheck: () => api.get('/health'),
 };
 
-// Admin Auth API - UPDATED to match backend response structure
+// Admin Auth API
 export const adminAuthAPI = {
   login: (credentials) => {
     console.log('👑 Admin login attempt:', {
@@ -151,20 +151,20 @@ export const contactAPI = {
   },
 };
 
-// Admin Contact API - UPDATED to use correct endpoints
+// Admin Contact API - FIXED: Using correct endpoints based on your backend structure
 export const adminContactAPI = {
   getMessages: (params) => {
     console.log('📨 Fetching contact messages');
-    return adminApi.get('/admin/contact', { params });
+    return adminApi.get('/contact', { params }); // Changed from '/admin/contact' to '/contact'
   },
-  getMessage: (id) => adminApi.get(`/admin/contact/${id}`),
+  getMessage: (id) => adminApi.get(`/contact/${id}`), // Changed from '/admin/contact' to '/contact'
   updateMessageStatus: (id, statusData) => {
     console.log('📨 Updating message status:', id, statusData);
-    return adminApi.put(`/admin/contact/${id}/status`, statusData);
+    return adminApi.put(`/contact/${id}/status`, statusData); // Changed from '/admin/contact' to '/contact'
   },
   deleteMessage: (id) => {
     console.log('📨 Deleting message:', id);
-    return adminApi.delete(`/admin/contact/${id}`);
+    return adminApi.delete(`/contact/${id}`); // Changed from '/admin/contact' to '/contact'
   },
 };
 
@@ -180,7 +180,7 @@ export const newsletterAPI = {
   },
 };
 
-// Admin API
+// Admin API - FIXED: Updated to match your backend routes
 export const adminAPI = {
   getDashboardStats: () => {
     console.log('📊 Fetching dashboard stats');
@@ -195,8 +195,6 @@ export const adminAPI = {
   updateLoanApplication: (id, updateData) => adminApi.put(`/admin/loans/applications/${id}`, updateData),
   deleteLoanApplication: (id) => adminApi.delete(`/admin/loans/applications/${id}`),
 };
-
-// Add these to your existing authAPI in services/api.js
 
 // Account API
 export const accountAPI = {
@@ -215,5 +213,6 @@ authAPI.getTransactions = accountAPI.getTransactions;
 authAPI.getTransaction = accountAPI.getTransaction;
 authAPI.transferFunds = accountAPI.transferFunds;
 authAPI.updateAccountStatus = accountAPI.updateStatus;
+
 export default api;
 export { adminApi };
