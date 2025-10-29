@@ -5,7 +5,7 @@ import LoanCalculator from "../components/LoanCalculator";
 import DownloadAppSection from "../components/DownloadAppSection";
 import BusinessCTABanner from "../components/BusinessCTABanner";
 
-function CorporateAccountPage() {
+function SusuAccount() {
   return (
     <div className="min-h-screen">
       <HeroSection />
@@ -18,4 +18,4 @@ function CorporateAccountPage() {
   );
 }
 
-export default CorporateAccountPage
+export default SusuAccount

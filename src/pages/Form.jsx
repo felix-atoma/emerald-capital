@@ -1,25 +1,234 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Upload, Star, X } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Camera, Upload, Star, X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
+import { loanAPI } from '../services/api';
 
-// Loading Spinner Component
-const SubmitLoadingSpinner = () => {
+// Performance monitoring utility
+const measurePerformance = async (operationName, operation) => {
+  const startTime = performance.now();
+  try {
+    const result = await operation();
+    const endTime = performance.now();
+    console.log(`${operationName} took ${(endTime - startTime).toFixed(2)}ms`);
+    return result;
+  } catch (error) {
+    const endTime = performance.now();
+    console.error(`${operationName} failed after ${(endTime - startTime).toFixed(2)}ms:`, error);
+    throw error;
+  }
+};
+
+// Web Worker helper function
+const processImageWithWorker = (file, maxWidth, maxHeight, quality) => {
+  return new Promise((resolve, reject) => {
+    // Fallback to main thread if worker not available
+    if (!window.Worker) {
+      compressImageMainThread(file, maxWidth, maxHeight, quality)
+        .then(resolve)
+        .catch(reject);
+      return;
+    }
+
+    const worker = new Worker('/image-compressor.worker.js');
+    const id = `${file.name}-${Date.now()}`;
+    
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      reject(new Error('Image processing timeout'));
+    }, 30000); // 30 second timeout
+    
+    worker.onmessage = (e) => {
+      clearTimeout(timeout);
+      if (e.data.success) {
+        console.log(`Compressed ${file.name}: ${(file.size / 1024 / 1024).toFixed(2)}MB -> ${(e.data.compressedSize / 1024 / 1024).toFixed(2)}MB`);
+        resolve(e.data.file);
+      } else {
+        reject(new Error(e.data.error));
+      }
+      worker.terminate();
+    };
+    
+    worker.onerror = (error) => {
+      clearTimeout(timeout);
+      reject(error);
+      worker.terminate();
+    };
+    
+    worker.postMessage({ file, maxWidth, maxHeight, quality, id });
+  });
+};
+
+// Enhanced image compression with multiple fallbacks
+const compressImage = async (file, maxWidth = 1024, maxHeight = 1024, quality = 0.8) => {
+  return measurePerformance(`Compress ${file.name}`, async () => {
+    // Skip compression for very small files
+    if (file.size < 300 * 1024) { // 300KB
+      return file;
+    }
+    
+    // Skip compression for non-images
+    if (!file.type.startsWith('image/')) {
+      return file;
+    }
+    
+    try {
+      // Try Web Worker first
+      return await processImageWithWorker(file, maxWidth, maxHeight, quality);
+    } catch (error) {
+      console.warn('Compression failed, using original file:', error);
+      return file; // Return original file if compression fails
+    }
+  });
+};
+
+// Main thread compression fallback
+const compressImageMainThread = (file, maxWidth, maxHeight, quality) => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: false });
+    const img = new Image();
+    
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+        
+        if (ratio < 1) {
+          width = Math.floor(width * ratio);
+          height = Math.floor(height * ratio);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('Canvas to Blob conversion failed'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      } catch (error) {
+        reject(error);
+      }
+    };
+    
+    img.onerror = () => reject(new Error('Image loading failed'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+// File size validator
+const validateFileSize = (file, maxSizeMB = 10) => {
+  const maxSize = maxSizeMB * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new Error(`${file.name} exceeds ${maxSizeMB}MB limit (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+  }
+  return true;
+};
+
+// File type validator
+const isValidFileType = (file, fieldName) => {
+  const validTypes = {
+    passportPhoto: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    ghanaCard: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
+    lastMonthPayslip: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'],
+    bankStatement: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']
+  };
+  
+  const isValid = validTypes[fieldName]?.includes(file.type);
+  if (!isValid) {
+    throw new Error(`${file.name} is not a valid file type for ${fieldName.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+  }
+  return true;
+};
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      hasError: false, 
+      error: null,
+      errorInfo: null 
+    };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+    this.setState({
+      error: error,
+      errorInfo: errorInfo
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <h2 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
+            <p className="text-gray-600 mb-4">
+              We encountered an error while loading the application form.
+            </p>
+            <div className="space-y-2">
+              <button 
+                onClick={() => window.location.reload()}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              >
+                Reload Page
+              </button>
+              <button 
+                onClick={() => this.setState({ hasError: false, error: null, errorInfo: null })}
+                className="w-full bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Enhanced Loading Spinner Component with progress
+const SubmitLoadingSpinner = ({ progress = 0, message = "Submitting your application..." }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl min-w-[300px]">
         <div className="relative w-32 h-32 mx-auto mb-4">
-          {/* Your Logo in the center */}
           <div className="absolute inset-0 flex items-center justify-center">
             <img 
-              src="emerald.png" 
+              src="/emerald.png" 
               alt="Logo" 
               className="w-20 h-20 object-contain"
             />
           </div>
           
-          {/* Spinning gradient ring around logo */}
           <div className="absolute inset-0">
             <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
               <defs>
@@ -44,18 +253,84 @@ const SubmitLoadingSpinner = () => {
             </svg>
           </div>
         </div>
-        <p className="text-gray-700 text-lg font-semibold">Submitting your application...</p>
+        <p className="text-gray-700 text-lg font-semibold">{message}</p>
         <p className="text-gray-500 text-sm mt-2">Please wait, this may take a moment</p>
+        {progress > 0 && (
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-600 mt-1">{progress}% complete</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default function GhanaLoanForm() {
+// File Processing Spinner
+const FileProcessingSpinner = ({ currentFile, processedCount, totalCount, onCancel }) => {
+  const progress = totalCount > 0 ? (processedCount / totalCount) * 100 : 0;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-6 text-center shadow-2xl min-w-[320px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">Processing Files</h3>
+        <p className="text-sm text-gray-600 mb-1">
+          {currentFile ? `Processing: ${currentFile.name}` : 'Preparing files...'}
+        </p>
+        <p className="text-xs text-gray-500 mb-4">
+          {processedCount} of {totalCount} files completed
+        </p>
+        
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+          <div 
+            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+        
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm"
+        >
+          Cancel Processing
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Auth Loading Component
+const AuthLoadingSpinner = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 text-center shadow-2xl">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-700">Loading application form...</p>
+      </div>
+    </div>
+  );
+};
+
+const GhanaLoanForm = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isProcessingFiles, setIsProcessingFiles] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState({
+    currentFile: null,
+    processedCount: 0,
+    totalCount: 0
+  });
+  const [processingCancelled, setProcessingCancelled] = useState(false);
+
+  const getInitialFormData = () => ({
     sex: '',
     firstName: '',
     lastName: '',
@@ -69,10 +344,9 @@ export default function GhanaLoanForm() {
     homeAddress: '',
     region: '',
     nextOfKin: [
-      { relationship: '', firstName: '', lastName: '' },
-      { relationship: '', firstName: '', lastName: '' }
+      { relationship: '', firstName: '', lastName: '', phone: '' },
+      { relationship: '', firstName: '', lastName: '', phone: '' }
     ],
-    nextOfKinPhone: '',
     employmentType: [],
     employer: '',
     staffNumber: '',
@@ -89,21 +363,22 @@ export default function GhanaLoanForm() {
     accountOfficerName: '',
     feedback: '',
     agreementConfirmed: false,
-    userId: user?.id
+    userId: user?.id || ''
   });
 
+  const [formData, setFormData] = useState(getInitialFormData);
   const [files, setFiles] = useState({
     passportPhoto: null,
     ghanaCard: null,
     lastMonthPayslip: [],
     bankStatement: [],
-    signature: null,
-    compulsoryPayslip: null
+    signature: null
   });
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [signatureEmpty, setSignatureEmpty] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState(0);
   const canvasRef = useRef(null);
 
   const ghanaRegions = [
@@ -125,12 +400,27 @@ export default function GhanaLoanForm() {
   ];
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    setAuthLoading(false);
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData(getInitialFormData());
+    }
+  }, [user]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }, []);
 
@@ -158,32 +448,208 @@ export default function GhanaLoanForm() {
     }));
   };
 
-  const handleFileChange = (e, fieldName) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
-      setFiles(prev => ({ ...prev, [fieldName]: selectedFiles }));
-    } else {
-      setFiles(prev => ({ ...prev, [fieldName]: selectedFiles[0] }));
+  const cancelFileProcessing = useCallback(() => {
+    setProcessingCancelled(true);
+    setIsProcessingFiles(false);
+    toast.error('File processing cancelled');
+  }, []);
+
+  const handleFileChange = async (e, fieldName) => {
+    try {
+      const selectedFiles = Array.from(e.target.files);
+      
+      if (selectedFiles.length === 0) return;
+      
+      // Reset cancellation state
+      setProcessingCancelled(false);
+      
+      // Configuration
+      const MAX_CONCURRENT_PROCESSING = 2;
+      const MAX_TOTAL_FILES = 10;
+      const MAX_FILE_SIZE_MB = 10;
+      
+      // Validate total file count
+      if (selectedFiles.length > MAX_TOTAL_FILES) {
+        toast.error(`Please select no more than ${MAX_TOTAL_FILES} files at once`);
+        e.target.value = '';
+        return;
+      }
+      
+      // Validate individual file sizes first
+      for (const file of selectedFiles) {
+        try {
+          validateFileSize(file, MAX_FILE_SIZE_MB);
+        } catch (error) {
+          toast.error(error.message);
+          e.target.value = '';
+          return;
+        }
+      }
+      
+      setIsProcessingFiles(true);
+      setProcessingProgress({
+        currentFile: null,
+        processedCount: 0,
+        totalCount: selectedFiles.length
+      });
+      
+      const processedFiles = [];
+      let processedCount = 0;
+      
+      // Process files in batches
+      const batches = [];
+      for (let i = 0; i < selectedFiles.length; i += MAX_CONCURRENT_PROCESSING) {
+        batches.push(selectedFiles.slice(i, i + MAX_CONCURRENT_PROCESSING));
+      }
+      
+      for (const batch of batches) {
+        if (processingCancelled) {
+          break;
+        }
+        
+        // Process batch concurrently
+        const batchPromises = batch.map(async (file) => {
+          if (processingCancelled) {
+            return null;
+          }
+          
+          setProcessingProgress(prev => ({
+            ...prev,
+            currentFile: file
+          }));
+          
+          try {
+            // Validate file type
+            isValidFileType(file, fieldName);
+            
+            // Process file (compression if image)
+            const processedFile = await compressImage(file, 
+              fieldName === 'passportPhoto' ? 800 : 1200,
+              fieldName === 'passportPhoto' ? 800 : 1200,
+              fieldName === 'passportPhoto' ? 0.7 : 0.8
+            );
+            
+            processedCount++;
+            setProcessingProgress(prev => ({
+              ...prev,
+              processedCount
+            }));
+            
+            return processedFile;
+          } catch (error) {
+            console.error(`Failed to process ${file.name}:`, error);
+            toast.error(`Failed to process ${file.name}: ${error.message}`);
+            return null;
+          }
+        });
+        
+        const batchResults = await Promise.all(batchPromises);
+        const successfulResults = batchResults.filter(Boolean);
+        processedFiles.push(...successfulResults);
+        
+        // Small delay between batches to prevent UI blocking
+        if (batches.length > 1 && !processingCancelled) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      
+      if (!processingCancelled) {
+        // Update files state
+        if (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement') {
+          setFiles(prev => ({ 
+            ...prev, 
+            [fieldName]: [...prev[fieldName], ...processedFiles].slice(0, 20) // Reasonable limit
+          }));
+        } else {
+          setFiles(prev => ({ ...prev, [fieldName]: processedFiles[0] }));
+        }
+        
+        // Show success message
+        if (processedFiles.length > 0) {
+          const savedSpace = selectedFiles.reduce((acc, file, index) => {
+            if (processedFiles[index]) {
+              return acc + (file.size - processedFiles[index].size);
+            }
+            return acc;
+          }, 0);
+          
+          let successMessage = `${processedFiles.length} file(s) uploaded successfully`;
+          if (savedSpace > 0) {
+            successMessage += ` (saved ${(savedSpace / 1024 / 1024).toFixed(2)}MB)`;
+          }
+          
+          toast.success(successMessage);
+        }
+      }
+      
+    } catch (error) {
+      console.error('File upload error:', error);
+      toast.error(error.message || 'Error uploading files. Please try again.');
+    } finally {
+      setIsProcessingFiles(false);
+      setProcessingProgress({
+        currentFile: null,
+        processedCount: 0,
+        totalCount: 0
+      });
+      e.target.value = '';
     }
   };
 
+  const removeFile = (fieldName, index = null) => {
+    setFiles(prev => {
+      if (index !== null && (fieldName === 'lastMonthPayslip' || fieldName === 'bankStatement')) {
+        return {
+          ...prev,
+          [fieldName]: prev[fieldName].filter((_, i) => i !== index)
+        };
+      } else {
+        return {
+          ...prev,
+          [fieldName]: null
+        };
+      }
+    });
+    toast.success('File removed');
+  };
+
   const startDrawing = (e) => {
-    setIsDrawing(true);
-    setSignatureEmpty(false);
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    try {
+      if (!canvasRef.current) return;
+      
+      setIsDrawing(true);
+      setSignatureEmpty(false);
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
+      const rect = canvas.getBoundingClientRect();
+      
+      const x = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+      const y = e.clientY !== undefined ? e.clientY : e.touches?.[0]?.clientY;
+      
+      ctx.beginPath();
+      ctx.moveTo(x - rect.left, y - rect.top);
+    } catch (error) {
+      console.error('Drawing error:', error);
+      toast.error('Error with signature pad. Please refresh the page.');
+    }
   };
 
   const draw = (e) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-    ctx.stroke();
+    try {
+      if (!isDrawing || !canvasRef.current) return;
+      
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
+      const rect = canvas.getBoundingClientRect();
+      
+      const x = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+      const y = e.clientY !== undefined ? e.clientY : e.touches?.[0]?.clientY;
+      
+      ctx.lineTo(x - rect.left, y - rect.top);
+      ctx.stroke();
+    } catch (error) {
+      console.error('Drawing error:', error);
+    }
   };
 
   const stopDrawing = () => {
@@ -191,10 +657,16 @@ export default function GhanaLoanForm() {
   };
 
   const clearSignature = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setSignatureEmpty(true);
+    try {
+      if (!canvasRef.current) return;
+      
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setSignatureEmpty(true);
+    } catch (error) {
+      console.error('Clear signature error:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -202,77 +674,247 @@ export default function GhanaLoanForm() {
     navigate('/login');
   };
 
+  const validateForm = () => {
+    const requiredFields = [
+      'sex', 'firstName', 'lastName', 'dateOfBirth', 'phone',
+      'ghanaCardNumber', 'homeAddress', 'employer', 'staffNumber',
+      'employmentDate', 'gradeLevel', 'lastMonthPay', 'tenor',
+      'loanAmountRequested', 'existingCustomer', 'loanPurpose'
+    ];
+
+    // Check required text fields
+    for (const field of requiredFields) {
+      if (!formData[field]?.toString().trim()) {
+        const fieldName = field.replace(/([A-Z])/g, ' $1').toLowerCase();
+        toast.error(`Please fill in ${fieldName}`);
+        
+        // Focus on the first invalid field
+        const element = document.querySelector(`[name="${field}"]`);
+        if (element) {
+          element.focus();
+        }
+        return false;
+      }
+    }
+
+    // Check Ghana Card number match
+    if (formData.ghanaCardNumber !== formData.ghanaCardNumberConfirm) {
+      toast.error('Ghana Card numbers do not match');
+      const element = document.querySelector('[name="ghanaCardNumberConfirm"]');
+      if (element) element.focus();
+      return false;
+    }
+
+    // Check next of kin fields
+    for (let i = 0; i < formData.nextOfKin.length; i++) {
+      const kin = formData.nextOfKin[i];
+      if (!kin.relationship?.trim() || !kin.firstName?.trim() || !kin.lastName?.trim()) {
+        toast.error(`Please fill in all next of kin ${i + 1} details`);
+        return false;
+      }
+    }
+
+    // Check employment type
+    if (formData.employmentType.length === 0) {
+      toast.error('Please select at least one employment type');
+      return false;
+    }
+
+    // Check file uploads
+    if (!files.passportPhoto) {
+      toast.error('Please upload a passport photograph');
+      return false;
+    }
+
+    if (!files.ghanaCard) {
+      toast.error('Please upload Ghana Card');
+      return false;
+    }
+
+    if (files.lastMonthPayslip.length === 0) {
+      toast.error('Please upload last month payslip');
+      return false;
+    }
+
+    if (files.bankStatement.length === 0) {
+      toast.error('Please upload bank statement');
+      return false;
+    }
+
+    // Check signature
+    if (signatureEmpty) {
+      toast.error('Please provide your signature');
+      return false;
+    }
+
+    // Check agreement
+    if (!formData.agreementConfirmed) {
+      toast.error('Please agree to the terms and conditions');
+      return false;
+    }
+
+    // Check account officer fields
+    if (!formData.accountOfficerCode?.trim() || !formData.accountOfficerName?.trim() || !formData.accountOfficerEmail?.trim()) {
+      toast.error('Please fill in all account officer details');
+      return false;
+    }
+
+    // Check officer rating
+    if (formData.officerRating === 0) {
+      toast.error('Please provide an officer rating');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
+    setSubmitProgress(0);
 
     try {
-      // Convert signature canvas to blob
-      const canvas = canvasRef.current;
-      const signatureBlob = await new Promise(resolve => canvas.toBlob(resolve));
+      setSubmitProgress(10);
 
-      // Create FormData for file upload
+      // Prepare signature
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        throw new Error('Signature canvas not available');
+      }
+
+      const signatureBlob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, 'image/png');
+      });
+
+      if (!signatureBlob) {
+        throw new Error('Failed to create signature image');
+      }
+
+      setSubmitProgress(30);
+
+      // Prepare form data for backend
       const formDataToSend = new FormData();
       
-      // Append all form fields
+      // Add all form fields
       Object.keys(formData).forEach(key => {
         if (key === 'nextOfKin' || key === 'employmentType') {
           formDataToSend.append(key, JSON.stringify(formData[key]));
         } else {
-          formDataToSend.append(key, formData[key]);
+          formDataToSend.append(key, formData[key] || '');
         }
       });
 
-      // Append files
-      if (files.passportPhoto) formDataToSend.append('passportPhoto', files.passportPhoto);
-      if (files.ghanaCard) formDataToSend.append('ghanaCard', files.ghanaCard);
-      if (signatureBlob) formDataToSend.append('signature', signatureBlob, 'signature.png');
+      setSubmitProgress(50);
+
+      // Add files
+      if (files.passportPhoto) {
+        formDataToSend.append('passportPhoto', files.passportPhoto);
+      }
+      if (files.ghanaCard) {
+        formDataToSend.append('ghanaCard', files.ghanaCard);
+      }
+      if (signatureBlob) {
+        formDataToSend.append('signature', signatureBlob, 'signature.png');
+      }
       
+      // Add multiple files for payslips and bank statements
       files.lastMonthPayslip.forEach((file, index) => {
-        formDataToSend.append(`lastMonthPayslip_${index}`, file);
+        formDataToSend.append('lastMonthPayslip', file);
       });
       
       files.bankStatement.forEach((file, index) => {
-        formDataToSend.append(`bankStatement_${index}`, file);
+        formDataToSend.append('bankStatement', file);
       });
 
-      // Submit to your backend API
-      const response = await fetch('/api/loan-application', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        },
-        body: formDataToSend
-      });
+      setSubmitProgress(70);
 
-      if (!response.ok) throw new Error('Submission failed');
+      // Submit to backend using the API service
+      console.log('Submitting loan application...');
+      const response = await loanAPI.createApplication(formDataToSend);
 
-      const result = await response.json();
-      
-      // Show success toast
-      toast.success(`Application submitted successfully! Reference: ${result.referenceNumber}`);
-      
-      // Navigate after a short delay
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      setSubmitProgress(90);
+
+      if (response.data) {
+        const result = response.data;
+        
+        toast.success(`Application submitted successfully! Reference: ${result.referenceNumber || 'Pending'}`);
+        
+        // Reset form
+        setFormData(getInitialFormData());
+        setFiles({
+          passportPhoto: null,
+          ghanaCard: null,
+          lastMonthPayslip: [],
+          bankStatement: [],
+          signature: null
+        });
+        clearSignature();
+        
+        setSubmitProgress(100);
+        
+        // Redirect to dashboard after success
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
+      }
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error('Failed to submit application. Please try again.');
+      
+      let errorMessage = 'Failed to submit application. Please try again.';
+      
+      if (error.response) {
+        // Backend returned an error response
+        const backendError = error.response.data;
+        errorMessage = backendError.message || backendError.error || errorMessage;
+        
+        // Handle specific error cases
+        if (error.response.status === 401) {
+          errorMessage = 'Session expired. Please login again.';
+          setTimeout(() => {
+            logout();
+            navigate('/login');
+          }, 2000);
+        } else if (error.response.status === 413) {
+          errorMessage = 'File size too large. Please reduce file sizes and try again.';
+        } else if (error.response.status === 422) {
+          errorMessage = 'Invalid form data. Please check all fields and try again.';
+        }
+      } else if (error.request) {
+        // Network error
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
+      setSubmitProgress(0);
     }
   };
 
+  if (authLoading) {
+    return <AuthLoadingSpinner />;
+  }
+
   return (
     <>
-      {/* Show loading spinner when submitting */}
-      {isSubmitting && <SubmitLoadingSpinner />}
+      {isSubmitting && <SubmitLoadingSpinner progress={submitProgress} />}
+      {isProcessingFiles && (
+        <FileProcessingSpinner
+          currentFile={processingProgress.currentFile}
+          processedCount={processingProgress.processedCount}
+          totalCount={processingProgress.totalCount}
+          onCancel={cancelFileProcessing}
+        />
+      )}
       
       <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
           <div className="bg-white p-8 border-b-4 border-gray-100">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-4">
@@ -284,7 +926,7 @@ export default function GhanaLoanForm() {
                   <p className="text-sm font-semibold text-gray-700">MICROFINANCE BANK LTD</p>
                   <p className="text-xs text-gray-600">Bolgatanga, Ghana</p>
                   <p className="text-xs text-gray-600">+233 24 123 4567</p>
-                  <p className="text-xs text-gray-600">info@mutualtrustgh.com</p>
+                  <p className="text-xs text-gray-600">info@emeraldcapital.com</p>
                 </div>
               </div>
               <div className="text-center">
@@ -294,7 +936,6 @@ export default function GhanaLoanForm() {
             </div>
           </div>
 
-          {/* Progress Steps */}
           <div className="bg-gray-50 py-6 px-8">
             <div className="flex items-center justify-center gap-4">
               <div className="flex items-center gap-2">
@@ -309,9 +950,8 @@ export default function GhanaLoanForm() {
             </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            {/* Personal Data */}
+          <form onSubmit={handleSubmit} className="p-8 space-y-8" noValidate>
+            {/* Personal Data Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Personal Data</h3>
               
@@ -325,7 +965,6 @@ export default function GhanaLoanForm() {
                     value={formData.sex}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   >
                     <option value="">Select</option>
                     <option value="male">Male</option>
@@ -342,7 +981,6 @@ export default function GhanaLoanForm() {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -355,7 +993,6 @@ export default function GhanaLoanForm() {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -381,7 +1018,6 @@ export default function GhanaLoanForm() {
                     value={formData.dateOfBirth}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -395,7 +1031,6 @@ export default function GhanaLoanForm() {
                     onChange={handleInputChange}
                     placeholder="e.g., 0244123456"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
               </div>
@@ -425,7 +1060,6 @@ export default function GhanaLoanForm() {
                     placeholder="GHA-XXXXXXXXX-X"
                     maxLength="15"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -440,7 +1074,6 @@ export default function GhanaLoanForm() {
                     placeholder="GHA-XXXXXXXXX-X"
                     maxLength="15"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
               </div>
@@ -467,7 +1100,6 @@ export default function GhanaLoanForm() {
                   rows="3"
                   placeholder="House number, street name, area"
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
                 ></textarea>
               </div>
 
@@ -487,12 +1119,12 @@ export default function GhanaLoanForm() {
               </div>
             </section>
 
-            {/* Next of Kin */}
+            {/* Next of Kin Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Next of Kin</h3>
               
               {formData.nextOfKin.map((kin, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Relationship <span className="text-red-500">*</span>
@@ -501,7 +1133,6 @@ export default function GhanaLoanForm() {
                       value={kin.relationship}
                       onChange={(e) => handleNextOfKinChange(index, 'relationship', e.target.value)}
                       className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                      required
                     >
                       <option value="">Select</option>
                       <option value="spouse">Spouse</option>
@@ -520,7 +1151,6 @@ export default function GhanaLoanForm() {
                       value={kin.firstName}
                       onChange={(e) => handleNextOfKinChange(index, 'firstName', e.target.value)}
                       className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                      required
                     />
                   </div>
                   <div>
@@ -532,28 +1162,24 @@ export default function GhanaLoanForm() {
                       value={kin.lastName}
                       onChange={(e) => handleNextOfKinChange(index, 'lastName', e.target.value)}
                       className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={kin.phone}
+                      onChange={(e) => handleNextOfKinChange(index, 'phone', e.target.value)}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
                     />
                   </div>
                 </div>
               ))}
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Next of Kin Phone <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="tel"
-                  name="nextOfKinPhone"
-                  value={formData.nextOfKinPhone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
-                />
-              </div>
             </section>
 
-            {/* Employment Details */}
+            {/* Employment Details Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Employment Details</h3>
               
@@ -589,7 +1215,6 @@ export default function GhanaLoanForm() {
                   onChange={handleInputChange}
                   placeholder="Name of organization/ministry"
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                  required
                 />
               </div>
 
@@ -604,7 +1229,6 @@ export default function GhanaLoanForm() {
                     value={formData.staffNumber}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -617,7 +1241,6 @@ export default function GhanaLoanForm() {
                     value={formData.employmentDate}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
               </div>
@@ -633,7 +1256,6 @@ export default function GhanaLoanForm() {
                     value={formData.gradeLevel}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -647,14 +1269,13 @@ export default function GhanaLoanForm() {
                     onChange={handleInputChange}
                     placeholder="0.00"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                   <p className="text-xs text-gray-500 mt-1">As shown on your payslip</p>
                 </div>
               </div>
             </section>
 
-            {/* Loan Details */}
+            {/* Loan Details Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Loan Details</h3>
               
@@ -671,7 +1292,6 @@ export default function GhanaLoanForm() {
                     max="24"
                     placeholder="Max 24 months"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -686,13 +1306,14 @@ export default function GhanaLoanForm() {
                     min="1000"
                     max="50000"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-3">Purpose of Loan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Purpose of Loan <span className="text-red-500">*</span>
+                </label>
                 <div className="space-y-2">
                   {['Education', 'Family/Feeding', 'Healthcare', 'Housing', 'Business', 'Other'].map(purpose => (
                     <label key={purpose} className="flex items-center gap-2 cursor-pointer">
@@ -723,7 +1344,6 @@ export default function GhanaLoanForm() {
                       checked={formData.existingCustomer === 'yes'}
                       onChange={handleInputChange}
                       className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                      required
                     />
                     <span className="text-sm text-gray-700">Yes</span>
                   </label>
@@ -735,7 +1355,6 @@ export default function GhanaLoanForm() {
                       checked={formData.existingCustomer === 'no'}
                       onChange={handleInputChange}
                       className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                      required
                     />
                     <span className="text-sm text-gray-700">No</span>
                   </label>
@@ -743,120 +1362,201 @@ export default function GhanaLoanForm() {
               </div>
             </section>
 
-            {/* Attachments */}
+            {/* Attachments Section */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Attachments</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Passport Photo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Passport Photograph <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB | Formats: JPG, PNG, WebP</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={(e) => handleFileChange(e, 'passportPhoto')}
                       className="hidden"
                       id="passportPhoto"
-                      required
                     />
                     <label htmlFor="passportPhoto" className="cursor-pointer">
                       <Camera className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Click to upload or take photo</p>
-                      {files.passportPhoto && <p className="text-xs text-green-600 mt-2">{files.passportPhoto.name}</p>}
+                      {files.passportPhoto && (
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                          <p className="text-xs text-green-600 font-medium">
+                            ✓ {files.passportPhoto.name} ({(files.passportPhoto.size / 1024 / 1024).toFixed(2)}MB)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeFile('passportPhoto')}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </label>
                   </div>
                 </div>
 
+                {/* Ghana Card */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Ghana Card (Front & Back) <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept="image/*,.pdf"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       onChange={(e) => handleFileChange(e, 'ghanaCard')}
                       className="hidden"
                       id="ghanaCard"
-                      required
                     />
                     <label htmlFor="ghanaCard" className="cursor-pointer">
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload Ghana Card (both sides)</p>
-                      {files.ghanaCard && <p className="text-xs text-green-600 mt-2">{files.ghanaCard.name}</p>}
+                      {files.ghanaCard && (
+                        <div className="mt-2 flex items-center justify-center gap-2">
+                          <p className="text-xs text-green-600 font-medium">
+                            ✓ {files.ghanaCard.name} ({(files.ghanaCard.size / 1024 / 1024).toFixed(2)}MB)
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeFile('ghanaCard')}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </label>
                   </div>
                 </div>
 
+                {/* Payslip */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Last Month Payslip <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB per file | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept=".pdf,image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       multiple
                       onChange={(e) => handleFileChange(e, 'lastMonthPayslip')}
                       className="hidden"
                       id="lastMonthPayslip"
-                      required
                     />
                     <label htmlFor="lastMonthPayslip" className="cursor-pointer">
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload payslip(s)</p>
                       {files.lastMonthPayslip.length > 0 && (
-                        <p className="text-xs text-green-600 mt-2">
-                          {files.lastMonthPayslip.length} file(s) selected
-                        </p>
+                        <div className="mt-2">
+                          <p className="text-xs text-green-600 font-medium mb-2">
+                            ✓ {files.lastMonthPayslip.length} file(s) selected
+                          </p>
+                          <div className="space-y-1 max-h-20 overflow-y-auto">
+                            {files.lastMonthPayslip.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 truncate flex-1">{file.name}</span>
+                                <span className="text-gray-500 mx-2">({(file.size / 1024 / 1024).toFixed(2)}MB)</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFile('lastMonthPayslip', index)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </label>
                   </div>
                 </div>
 
+                {/* Bank Statement */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Bank Statement (Last 3 months) <span className="text-red-500">*</span>
                   </label>
+                  <p className="text-xs text-gray-500 mb-2">Max size: 10MB per file | Formats: JPG, PNG, WebP, PDF</p>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
                     <input
                       type="file"
-                      accept=".pdf,image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
                       multiple
                       onChange={(e) => handleFileChange(e, 'bankStatement')}
                       className="hidden"
                       id="bankStatement"
-                      required
                     />
                     <label htmlFor="bankStatement" className="cursor-pointer">
                       <Upload className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                       <p className="text-sm text-gray-600">Upload bank statement(s)</p>
                       {files.bankStatement.length > 0 && (
-                        <p className="text-xs text-green-600 mt-2">
-                          {files.bankStatement.length} file(s) selected
-                        </p>
+                        <div className="mt-2">
+                          <p className="text-xs text-green-600 font-medium mb-2">
+                            ✓ {files.bankStatement.length} file(s) selected
+                          </p>
+                          <div className="space-y-1 max-h-20 overflow-y-auto">
+                            {files.bankStatement.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-600 truncate flex-1">{file.name}</span>
+                                <span className="text-gray-500 mx-2">({(file.size / 1024 / 1024).toFixed(2)}MB)</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeFile('bankStatement', index)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       )}
                     </label>
                   </div>
                 </div>
 
+                {/* Signature */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Signature <span className="text-red-500">*</span>
                   </label>
                   <div className="border-2 border-gray-300 rounded-lg p-4">
-                    <canvas
-                      ref={canvasRef}
-                      width={600}
-                      height={150}
-                      className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
-                      onMouseDown={startDrawing}
-                      onMouseMove={draw}
-                      onMouseUp={stopDrawing}
-                      onMouseLeave={stopDrawing}
-                    />
+                    <div className="relative">
+                      <canvas
+                        ref={canvasRef}
+                        width={600}
+                        height={150}
+                        className="w-full border border-gray-200 rounded cursor-crosshair bg-white"
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          startDrawing(e.touches[0]);
+                        }}
+                        onTouchMove={(e) => {
+                          e.preventDefault();
+                          draw(e.touches[0]);
+                        }}
+                        onTouchEnd={stopDrawing}
+                      />
+                      {signatureEmpty && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <p className="text-gray-400">Draw your signature here</p>
+                        </div>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={clearSignature}
@@ -870,7 +1570,7 @@ export default function GhanaLoanForm() {
               </div>
             </section>
 
-            {/* Account Officer */}
+            {/* Account Officer Details */}
             <section>
               <h3 className="text-xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Account Officer Details</h3>
               
@@ -909,7 +1609,6 @@ export default function GhanaLoanForm() {
                     value={formData.accountOfficerCode}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -922,7 +1621,6 @@ export default function GhanaLoanForm() {
                     value={formData.accountOfficerName}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
                 <div>
@@ -935,7 +1633,6 @@ export default function GhanaLoanForm() {
                     value={formData.accountOfficerEmail}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                    required
                   />
                 </div>
               </div>
@@ -953,7 +1650,7 @@ export default function GhanaLoanForm() {
               </div>
             </section>
 
-            {/* Agreement */}
+            {/* Terms & Conditions */}
             <section>
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Terms & Conditions</h3>
@@ -961,7 +1658,7 @@ export default function GhanaLoanForm() {
                   <p>By submitting this application, I confirm that:</p>
                   <ul className="list-disc pl-5 space-y-1">
                     <li>All information provided is true and accurate to the best of my knowledge</li>
-                    <li>I authorize Mutual Trust Microfinance Bank Ltd to verify the information provided</li>
+                    <li>I authorize Emerald Capital Microfinance Bank Ltd to verify the information provided</li>
                     <li>I understand that providing false information may result in rejection of this application</li>
                     <li>I have read and agree to the loan terms and conditions</li>
                     <li>I authorize deductions from my salary for loan repayment</li>
@@ -975,7 +1672,6 @@ export default function GhanaLoanForm() {
                     checked={formData.agreementConfirmed}
                     onChange={(e) => setFormData(prev => ({ ...prev, agreementConfirmed: e.target.checked }))}
                     className="w-5 h-5 mt-0.5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    required
                   />
                   <span className="text-sm font-medium text-gray-700">
                     I have read and agree to the terms and conditions <span className="text-red-500">*</span>
@@ -984,13 +1680,12 @@ export default function GhanaLoanForm() {
               </div>
             </section>
 
-            {/* Submit Button */}
             <div className="flex justify-center pt-6">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isProcessingFiles}
                 className={`px-12 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105 ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  isSubmitting || isProcessingFiles ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Application'}
@@ -1000,5 +1695,13 @@ export default function GhanaLoanForm() {
         </div>
       </div>
     </>
+  );
+};
+
+export default function GhanaLoanFormWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <GhanaLoanForm />
+    </ErrorBoundary>
   );
 }
