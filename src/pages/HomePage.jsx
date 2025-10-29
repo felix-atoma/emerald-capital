@@ -24,7 +24,7 @@ const HomePage = () => {
         <TestimonialCarousel />
         <ThreeRowCarousel />
         <FAQsSection />
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
       </section>
       
     </div>
