@@ -46,7 +46,7 @@ export default function MicrofinanceHero() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 pt-8">
+            {/* <div className="flex items-center gap-4 pt-8">
               <span className="text-gray-700 font-medium">We are licensed by</span>
               <div className="flex items-center gap-2">
                 <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-yellow-500 rounded-lg flex items-center justify-center">
@@ -57,7 +57,7 @@ export default function MicrofinanceHero() {
               <div className="px-4 py-2 bg-blue-900 rounded text-white font-bold text-sm">
                 GHDIC
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Content - Image Section */}

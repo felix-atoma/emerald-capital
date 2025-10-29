@@ -91,7 +91,7 @@ const TestimonialCarousel = () => {
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">Clients Reviews</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Mutual Trust MFBank: Trusted by thousands worldwide, endorsed by industry leaders.
+            Emerald Capital: Trusted by thousands worldwide, endorsed by industry leaders.
           </p>
         </div>
 
