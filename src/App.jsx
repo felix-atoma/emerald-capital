@@ -33,7 +33,24 @@ const Gallary = lazy(() => import("./pages/Gallary"));
 const Form = lazy(() => import("./pages/Form"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
-
+const RemittancePage = lazy(() => import("./pages/RemittancePage"));
+const SavingsProduct = lazy(() => import("./pages/SavingsProduct"));
+const InvestmentPage = lazy(() => import("./pages/InvestmentPage"));
+const SavingsProductsPage = lazy(() => import("./pages/SavingsProductsPage"));
+const BusinessStarterPage = lazy(() => import("./pages/BusinessStarterPage"));
+const WorkingCapitalPage = lazy(() => import("./pages/WorkingCapitalPage"));
+const EducationSkillsPage = lazy(() => import("./pages/EducationSkillsLoanPage"));
+const EmmergencyPersonalLoanPage = lazy(() => import("./pages/EmergencyPersonalLoanPage"));
+const GroupCommunityLoanPage = lazy(() => import("./pages/GroupCommunityLoanPage"));
+const GreenSustainableLoanPage = lazy(() => import("./pages/GreenSustainableLoanPage")); 
+const HouseingHomeImprovementLoanPage = lazy(() => import("./pages/HousingHomeImprovementLoanPage")); 
+const HealthMedicalLoanPage = lazy(() => import("./pages/HealthMedicalLoanPage")); 
+const WomensEmpowermentLoanPage = lazy(() => import("./pages/WomensEmpowermentLoanPage"));
+const MicroEnterpriseExpansionPage = lazy(() => import("./pages/MicroEnterpriseExpansionPage"));
+const TransportAndEquipmentLoanPage = lazy(() => import("./pages/TransportAndEquipmentLoanPage"));
+const SeasonalBusinessLoanPage = lazy(() => import("./pages/SeasonalBusinessLoanPage"));
+const MicrofinanceLoanProductsPage= lazy(() => import("./pages/MicrofinanceLoanProductsPage"));
+const SpecializedLoanProductsPage= lazy(() => import("./pages/SpecializedLoanProductsPage"));
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"));
@@ -58,12 +75,12 @@ function App() {
                 <Route path="ippis-loans" element={<Ippisloan />} />
                 <Route path="car4cash" element={<Car4CashPage />} />
                 <Route path="mtplus-loans" element={<MTplus />} />
-                <Route path="sme-loan" element={<SMELoan />} />
+                <Route path="smeloan" element={<SMELoan />} />
                 <Route path="treasury-note" element={<TreasuryNotesPage />} />
                 <Route path="fixed-deposit" element={<FixedDepositPage />} />
                 <Route path="mudurabah" element={<MudarabahPage />} />
                 <Route path="mt-green-solar" element={<MTGreenSolar />} />
-                <Route path="agric-finance" element={<Agric />} />
+                <Route path="agriculturalloan" element={<Agric />} />
                 <Route path="auto-finance" element={<AutoFinance />} />
                 <Route path="about" element={<AboutPage />} />
                 <Route path="leadership" element={<Leadership />} />
@@ -71,6 +88,24 @@ function App() {
                 <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
                 <Route path="privacy-page" element={<PrivacyPage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="remittance-and-moneytransfer" element={<RemittancePage />} />
+                <Route path="emeraldcapitalsavingsproducts" element={<SavingsProduct />} />
+                <Route path="investment-and-wealthmanagement" element={<InvestmentPage/>} />
+                <Route path="savingsproductspurplegoldtheme" element={<SavingsProductsPage/>} />
+                <Route path="businessstarterloan" element={<BusinessStarterPage/>} />
+                <Route path="workingcapitalloan" element={<WorkingCapitalPage/>} />
+                <Route path="education-and-skillsloan" element={<EducationSkillsPage/>} />
+                <Route path="emergency-and-personalloan" element={<EmmergencyPersonalLoanPage/>} />
+                <Route path="groupcommunityloan" element={<GroupCommunityLoanPage/>} />
+                <Route path="green-and-sustainableloan" element={<GreenSustainableLoanPage/>} />
+                <Route path="housing-and-homeimprovementloan" element={<HouseingHomeImprovementLoanPage/>} />
+                <Route path="health-and-medicalloan" element={<HealthMedicalLoanPage/>} />
+                <Route path="womensempowermentloan" element={<WomensEmpowermentLoanPage/>} />
+                <Route path="micro-enterpriseexpansionloan" element={<MicroEnterpriseExpansionPage/>} />
+                <Route path="transport-and-equipmentloan" element={<TransportAndEquipmentLoanPage/>} />
+                <Route path="seasonalbusinessloan" element={<SeasonalBusinessLoanPage/>} />
+                <Route path="microfinanceloanproducts" element={<MicrofinanceLoanProductsPage/>} />
+                <Route path="specializedloanproducts" element={<SpecializedLoanProductsPage/>} />
               </Route>
               
               <Route path="form" element={<Form />} />

@@ -1,150 +1,371 @@
-import React, { useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom"; // ✅ import Link
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openNestedDropdown, setOpenNestedDropdown] = useState(null);
+  const dropdownRefs = useRef({});
 
-const navLinks = [
-  { label: "Banking", 
-    dropdown: ["Susu Account", "Savings Account"] },
-  {
-    label: "Loans",
-    dropdown: ["SME Loan", "Business Loan", "Personal Loan", "Funeral Loans", "Education Loan"],
-  },
-  {
-    label: "Investment",
-    dropdown: ["Fixed Deposit"],
-  },
-  {
-    label: "Project Financing",
-    dropdown: ["Emerald Business", "Emerald Pay"],
-  },
-  {
-    label: "Company",
-    dropdown: ["About"],
-  },
-  { label: "Blog" },
-  { label: "Contact" },
-  // 🚨 Removed "Internet Banking" from here
-];
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      Object.values(dropdownRefs.current).forEach(ref => {
+        if (ref && !ref.contains(event.target)) {
+          setOpenDropdown(null);
+          setOpenNestedDropdown(null);
+        }
+      });
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  const NavItem = ({ link, isMobile = false }) => {
-    const hasDropdown = !!link.dropdown;
-    const toggle = () =>
-      isMobile && hasDropdown
-        ? setOpenDropdown(openDropdown === link.label ? null : link.label)
-        : null;
+  const navLinks = [
+    { 
+      label: "Banking", 
+      dropdown: [
+        // { label: " Digital & Mobile Banking", link: true },
+        { label: "Remittance & Money Transfer", link: true },
+        { 
+          label: "Savings Products",
+          nested: [
+            "Emerald Capital — Savings Products",
+            "Digital & Mobile Banking",
+            "Remittance & Money Transfer",
+            "Investment & Wealth Management",
+            "Savings Products (Purple / Gold Theme)"
+          ]
+        }
+      ]
+    },
+    {
+      label: "Loans",
+      dropdown: [
+        { 
+          label: "Microfinance Loans",
+          nested: [
+            "Business Starter Loan",
+            "Working Capital Loan",
+            "Agricultural Loan",
+            "Education & Skills Loan",
+            "Emergency & Personal Loan",
+            "Group/Community Loan",
+            "Green & Sustainable Loan",
+            "Housing & Home Improvement Loan",
+            "Health & Medical Loan",
+            "Women's Empowerment Loan",
+            "Micro-Enterprise Expansion Loan",
+            "Emergency Agriculture Relief Loan",
+            "Transport & Equipment Loan",
+            "Seasonal Business Loan"
+          ]
+        },
+        { 
+          label: "Specialized Loans",
+          nested: [
+            "Section 1: Microfinance Loan Products",
+            "Section 2: Specialized Loan Products"
+          ]
+        },
+        { label: "SME Loan", link: true },
+        { label: "Business Loan", link: true },
+        { label: "Personal Loan", link: true },
+        { label: "Funeral Loans", link: true },
+        { label: "Education Loan", link: true },
+      ]
+    },
+    {
+      label: "Investment",
+      dropdown: [
+        { label: "Investment & Wealth Management", link: true },
+        { label: "Fixed Deposit", link: true },
+      ],
+    },
+    {
+      label: "Project Financing",
+      dropdown: [
+        { label: "Emerald Business", link: true },
+        { label: "Emerald Pay", link: true },
+        { label: "Insurance Products", link: true },
+      ],
+    },
+    {
+      label: "Company",
+      dropdown: [
+        { label: "About", link: true },
+        { 
+          label: "Leadership & Governance",
+          nested: [
+            "Leadership & Governance Overview",
+            "Ownership & Shareholders",
+            "Board of Directors",
+            "Executive Leadership Team",
+            "Governance Framework"
+          ]
+        },
+        { 
+          label: "Organizational Structure",
+          nested: [
+            "Shareholders/Owners",
+            "Board of Directors Structure",
+            "Executive Management / C-Suite",
+            "Chief Executive Officer (CEO)",
+            "Chief Operating Officer (COO)",
+            "Chief Financial Officer (CFO)",
+            "Chief Risk Officer (CRO)",
+            "Chief Technology Officer (CTO)",
+            "Chief Marketing & Business Development Officer (CMO/BDO)",
+            "Chief Compliance & Legal Officer (CCO/CLO)",
+            "Chief Investment Officer (CIO)",
+            "Chief Insurance Officer (CInsO)",
+            "Chief Human Resources Officer (CHRO)",
+            "Operational Structure and Organogram"
+          ]
+        },
+        { 
+          label: "Regional Management",
+          nested: [
+            "Greater Accra Region",
+            "Ashanti Region",
+            "Ahafo Region",
+            "Western North Region",
+            "Western Region",
+            "Central Region",
+            "Eastern Region",
+            "Volta & Oti Region",
+            "Bono & Bono East Region",
+            "Northern, Savannah & North East",
+            "Upper West & Upper East Region",
+            "Diaspora Services"
+          ]
+        },
+      ]
+    },
+    { label: "Blog", link: true },
+    { label: "Contact", link: true },
+  ];
 
-    // helper to convert a label to a path
-    const pathFor = (item) =>
-      `/${item.toLowerCase().replace(/\s*&\s*/g, "").replace(/\s+/g, "-")}`;
+  const handleDropdownToggle = (label) => {
+    setOpenDropdown(openDropdown === label ? null : label);
+    setOpenNestedDropdown(null);
+  };
 
+  const handleNestedToggle = (label) => {
+    setOpenNestedDropdown(openNestedDropdown === label ? null : label);
+  };
+
+  const pathFor = (item) => {
+    const cleanItem = item
+      .replace(/^Section\s+\d+:\s*/, '')
+      .replace(/—/g, '')
+      .toLowerCase()
+      .replace(/\s*&\s*/g, "-and-")
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, '-');
+    return `/${cleanItem}`;
+  };
+
+  // Desktop Nav Item Component
+  const DesktopNavItem = ({ link }) => {
+    const hasDropdown = link.dropdown && link.dropdown.length > 0;
+    
     return (
-      <div className="relative group" onClick={toggle}>
-        <div className="flex items-center space-x-1 cursor-pointer hover:text-deepgreen-500 text-sm">
+      <div 
+        className="relative group"
+        ref={el => dropdownRefs.current[link.label] = el}
+      >
+        <div className="flex items-center space-x-1 cursor-pointer hover:text-red-600 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
           {hasDropdown ? (
             <span>{link.label}</span>
           ) : (
-            <Link
-              to={pathFor(link.label)}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
+            <Link to={pathFor(link.label)}>{link.label}</Link>
           )}
-          {hasDropdown && <ChevronDown className="w-3 h-3" />}
+          {hasDropdown && <ChevronDown className="w-3 h-3 ml-1" />}
         </div>
 
-        {/* Desktop Dropdown */}
-        {hasDropdown && !isMobile && (
-          <div className="absolute left-0 mt-1 w-48 bg-white shadow-md rounded opacity-0 group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 z-20">
-            {link.dropdown.map((item) => (
-              <Link
-                key={item}
-                to={pathFor(item)}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-1 text-gray-700 hover:bg-gray-100 hover:text-green-500 text-sm"
-              >
-                {item}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Mobile Dropdown */}
-        {hasDropdown && isMobile && openDropdown === link.label && (
-          <div className="mt-1 ml-3 flex flex-col space-y-1">
-            {link.dropdown.map((item) => (
-              <Link
-                key={item}
-                to={pathFor(item)}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-2 py-1 text-gray-600 hover:text-red-500 text-sm"
-              >
-                {item}
-              </Link>
-            ))}
+        {/* Desktop Main Dropdown */}
+        {hasDropdown && (
+          <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-64">
+              <div className="py-2">
+                {link.dropdown.map((item, index) => (
+                  <div key={`${link.label}-${index}`} className="relative group/sub">
+                    {item.nested ? (
+                      <>
+                        <div className="flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 cursor-pointer border-b border-gray-100 last:border-b-0">
+                          <span className="font-medium">{item.label}</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
+                        
+                        {/* Nested Desktop Dropdown */}
+                        <div className="absolute left-full top-0 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 z-50">
+                          <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-64 ml-2">
+                            <div className="py-2 max-h-80 overflow-y-auto">
+                              {item.nested.map((nestedItem, nestedIndex) => (
+                                <Link
+                                  key={`${item.label}-${nestedIndex}`}
+                                  to={pathFor(nestedItem)}
+                                  className="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 border-b border-gray-100 last:border-b-0"
+                                >
+                                  {nestedItem}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <Link
+                        to={pathFor(item.label)}
+                        className="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 border-b border-gray-100 last:border-b-0 font-medium"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
     );
   };
 
+  // Mobile Nav Item Component
+  const MobileNavItem = ({ link }) => {
+    const hasDropdown = link.dropdown && link.dropdown.length > 0;
+    
+    return (
+      <div className="border-b border-gray-100 last:border-b-0">
+        {hasDropdown ? (
+          <>
+            <div 
+              className="flex items-center justify-between py-4 px-4 text-gray-800 font-medium cursor-pointer"
+              onClick={() => handleDropdownToggle(link.label)}
+            >
+              <span>{link.label}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
+            </div>
+            
+            {/* Mobile Main Dropdown */}
+            {openDropdown === link.label && (
+              <div className="bg-gray-50">
+                {link.dropdown.map((item, index) => (
+                  <div key={`mobile-${link.label}-${index}`}>
+                    {item.nested ? (
+                      <>
+                        <div 
+                          className="flex items-center justify-between py-3 px-6 text-gray-700 cursor-pointer border-t border-gray-200"
+                          onClick={() => handleNestedToggle(`${link.label}-${item.label}`)}
+                        >
+                          <span className="font-medium">{item.label}</span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${openNestedDropdown === `${link.label}-${item.label}` ? 'rotate-180' : ''}`} />
+                        </div>
+                        
+                        {/* Mobile Nested Dropdown */}
+                        {openNestedDropdown === `${link.label}-${item.label}` && (
+                          <div className="bg-gray-100">
+                            {item.nested.map((nestedItem, nestedIndex) => (
+                              <Link
+                                key={`mobile-nested-${item.label}-${nestedIndex}`}
+                                to={pathFor(nestedItem)}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="block py-3 px-8 text-gray-600 hover:text-red-600 border-t border-gray-300"
+                              >
+                                {nestedItem}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <Link
+                        to={pathFor(item.label)}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="block py-3 px-6 text-gray-700 hover:text-red-600 font-medium border-t border-gray-200"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <Link
+            to={pathFor(link.label)}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block py-4 px-4 text-gray-800 font-medium hover:text-red-600"
+          >
+            {link.label}
+          </Link>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 h-20 bg-white border-b border-gray-200 shadow-sm">
-      {/* Logo */}
-      <Link to="/" className="flex items-center space-x-1">
-          <img
-            src="./emerald-logo.png"
-            alt="Emerald Capital Logo"
-            className="h-10 w-auto m-20"
-          />
-      </Link>
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link to="/" className="flex items-center">
+            <img
+              src="./emerald-logo.png"
+              alt="Emerald Capital Logo"
+              className="h-12 w-auto"
+            />
+          </Link>
 
-
-      {/* Desktop Links */}
-      <div className="hidden lg:flex items-center space-x-4 text-gray-700">
-        {navLinks.map((link) => (
-          <NavItem key={link.label} link={link} />
-        ))}
-      </div>
-
-      {/* Internet Banking / Mobile Toggle */}
-      <div className="flex items-center space-x-2">
-        <Link
-          to="/login"
-          className="hidden lg:block bg-red-500 text-white px-5 py-3 rounded-full text-xs font-semibold hover:bg-red-600"
-        >
-          Internet Banking
-        </Link>
-        <button
-          className="lg:hidden p-1"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white shadow-md lg:hidden">
-          <div className="flex flex-col space-y-3 p-4 text-gray-700 text-sm">
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
-              <NavItem key={link.label} link={link} isMobile />
+              <DesktopNavItem key={link.label} link={link} />
             ))}
+            
+            {/* Internet Banking Button */}
             <Link
               to="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="bg-red-500 text-white px-4 py-1 rounded-full text-xs font-semibold hover:bg-red-600 self-start"
+              className="ml-6 bg-red-600 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-red-700 transition-colors shadow-sm"
             >
-              Internet Banking
+              Digital & Mobile Banking
             </Link>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="lg:hidden flex items-center space-x-4">
+            <Link
+              to="/login"
+              className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-700 transition-colors"
+            >
+              Login
+            </Link>
+            <button
+              className="p-2 rounded-lg hover:bg-gray-100"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
-      )}
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden bg-white shadow-lg border-t border-gray-200 max-h-[80vh] overflow-y-auto">
+            <div className="py-2">
+              {navLinks.map((link) => (
+                <MobileNavItem key={`mobile-${link.label}`} link={link} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
   );
 };
