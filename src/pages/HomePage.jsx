@@ -21,8 +21,8 @@ const HomePage = () => {
         <TopServicesHero />
         <FinancialCards />
         <BusinessFocusCarousel />
-        <TestimonialCarousel />
-        <ThreeRowCarousel />
+        {/* <TestimonialCarousel /> */}
+        {/* <ThreeRowCarousel /> */}
         <FAQsSection />
         {/* <DownloadAppSection /> */}
       </section>

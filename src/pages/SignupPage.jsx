@@ -25,10 +25,10 @@ const SignupLoadingSpinner = () => {
             <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
               <defs>
                 <linearGradient id="signupSpinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#008B8B', stopOpacity: 1 }} />
-                  <stop offset="33%" style={{ stopColor: '#40E0D0', stopOpacity: 1 }} />
-                  <stop offset="66%" style={{ stopColor: '#2EB88A', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#C8D900', stopOpacity: 1 }} />
+                  <stop offset="0%" style={{ stopColor: '#059669', stopOpacity: 1 }} />
+                  <stop offset="33%" style={{ stopColor: '#10b981', stopOpacity: 1 }} />
+                  <stop offset="66%" style={{ stopColor: '#0d9488', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#fbbf24', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <circle
@@ -88,7 +88,7 @@ const InputField = React.memo(({
           className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none ${
             error 
               ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-              : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+              : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-100'
           } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
           placeholder={placeholder}
           disabled={disabled}
@@ -134,7 +134,7 @@ const SelectField = React.memo(({
         className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none ${
           error 
             ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-            : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+            : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-100'
         } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
         disabled={disabled}
       >
@@ -182,7 +182,7 @@ const PasswordField = React.memo(({
           className={`w-full p-4 border-2 rounded-xl text-base transition-all duration-200 bg-white focus:bg-white focus:ring-3 outline-none pr-12 ${
             error 
               ? 'border-red-500 focus:border-red-500 focus:ring-red-100' 
-              : 'border-gray-300 focus:border-red-500 focus:ring-red-100'
+              : 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-100'
           } ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:border-gray-400'}`}
           placeholder={placeholder}
           disabled={disabled}
@@ -684,7 +684,7 @@ const SignupPage = () => {
 
   const Logo = ({ className = '' }) => (
     <div className={`flex items-center ${className}`}>
-      <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
+      <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
         <div className="text-white font-bold text-lg">EC</div>
         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
       </div>
@@ -706,9 +706,9 @@ const SignupPage = () => {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
                   index < currentStep
-                    ? 'bg-green-500 text-white shadow-lg shadow-green-200'
+                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
                     : index === currentStep
-                    ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-lg shadow-red-200 scale-110'
+                    ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-200 scale-110'
                     : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
                 }`}
               >
@@ -717,7 +717,7 @@ const SignupPage = () => {
               <div className="text-center">
                 <div
                   className={`text-xs font-medium transition-colors ${
-                    index === currentStep ? 'text-red-600' : index < currentStep ? 'text-green-600' : 'text-gray-500'
+                    index === currentStep ? 'text-emerald-600' : index < currentStep ? 'text-emerald-600' : 'text-gray-500'
                   }`}
                 >
                   {step.label}
@@ -767,8 +767,8 @@ const SignupPage = () => {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border border-red-100">
-              <h3 className="text-lg font-semibold text-red-800 mb-3 flex items-center gap-2">
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+              <h3 className="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
                 <Shield size={20} />
                 Privacy Policy
               </h3>
@@ -813,7 +813,7 @@ const SignupPage = () => {
                   id="agreeTerms"
                   checked={agreeTerms}
                   onChange={e => setAgreeTerms(e.target.checked)}
-                  className="w-5 h-5 text-red-600 mt-0.5 rounded focus:ring-2 focus:ring-red-500"
+                  className="w-5 h-5 text-emerald-600 mt-0.5 rounded focus:ring-2 focus:ring-emerald-500"
                 />
                 <label htmlFor="agreeTerms" className="text-gray-700 text-sm cursor-pointer flex-1">
                   I Agree to the Terms & Conditions and Privacy Policy. I understand that Emerald Capital 
@@ -825,7 +825,7 @@ const SignupPage = () => {
             <button
               className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                 agreeTerms
-                  ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-0.5'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white hover:shadow-2xl hover:shadow-emerald-300 transform hover:-translate-y-0.5'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               disabled={!agreeTerms}
@@ -850,7 +850,7 @@ const SignupPage = () => {
   const PersonalInfoStep = () => (
     <div>
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <User className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Personal Information</h1>
@@ -1001,7 +1001,7 @@ const SignupPage = () => {
   const NextOfKinStep = () => (
     <div>
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <User className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Next of Kin Information</h1>
@@ -1067,7 +1067,7 @@ const SignupPage = () => {
   const EmploymentStep = () => (
     <div>
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <Building className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Employment Information</h1>
@@ -1154,7 +1154,7 @@ const SignupPage = () => {
   const CredentialsStep = () => (
     <div>
       <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <Lock className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Security Credentials</h1>
@@ -1205,7 +1205,7 @@ const SignupPage = () => {
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all duration-300 ${
-                    passwordStrength < 3 ? 'bg-red-500' : passwordStrength < 5 ? 'bg-yellow-500' : 'bg-green-500'
+                    passwordStrength < 3 ? 'bg-red-500' : passwordStrength < 5 ? 'bg-yellow-500' : 'bg-emerald-500'
                   }`}
                   style={{ width: `${(passwordStrength / 5) * 100}%` }}
                 ></div>
@@ -1248,7 +1248,7 @@ const SignupPage = () => {
     <>
       {isSubmitting && <SignupLoadingSpinner />}
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col lg:flex-row overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Panel - Form */}
         <div className="flex-1 p-6 lg:p-8 xl:p-12 flex flex-col justify-center max-w-4xl mx-auto w-full">
           {currentPage === 'signup' ? (
@@ -1261,7 +1261,7 @@ const SignupPage = () => {
 
                 <div className="space-y-4">
                   <button
-                    className="w-full py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all duration-200 hover:border-red-500 hover:text-red-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    className="w-full py-4 bg-white text-gray-800 border-2 border-gray-200 rounded-xl font-semibold text-lg transition-all duration-200 hover:border-emerald-500 hover:text-emerald-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     onClick={handleExistingAccount}
                     disabled={isSubmitting}
                   >
@@ -1270,7 +1270,7 @@ const SignupPage = () => {
                   </button>
                   
                   <button
-                    className="w-full py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-2xl hover:shadow-emerald-300 transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     onClick={() => setShowTermsModal(true)}
                     disabled={isSubmitting}
                   >
@@ -1282,7 +1282,7 @@ const SignupPage = () => {
                 <div className="text-center text-gray-600 text-sm mt-6">
                   <button 
                     onClick={handleLoginRedirect}
-                    className="text-red-600 bg-transparent border-none font-medium hover:underline cursor-pointer transition-colors disabled:opacity-50"
+                    className="text-emerald-600 bg-transparent border-none font-medium hover:underline cursor-pointer transition-colors disabled:opacity-50"
                     disabled={isSubmitting}
                   >
                     ← Go Back to Login
@@ -1310,7 +1310,7 @@ const SignupPage = () => {
                   className={`flex-[2] py-4 rounded-xl font-semibold text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                     isSubmitting
                       ? 'bg-gray-400 text-white'
-                      : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-2xl hover:shadow-red-300 transform hover:-translate-y-1 active:translate-y-0'
+                      : 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white hover:shadow-2xl hover:shadow-emerald-300 transform hover:-translate-y-1 active:translate-y-0'
                   }`}
                   onClick={handleProceed}
                   disabled={isSubmitting}
@@ -1339,7 +1339,7 @@ const SignupPage = () => {
         </div>
 
         {/* Right Panel - Graphics */}
-        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-red-600 to-red-700 items-center justify-center relative overflow-hidden">
+        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-emerald-600 to-teal-700 items-center justify-center relative overflow-hidden">
           <div className="text-center p-8 max-w-md text-white relative z-10">
             <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl backdrop-blur-sm">
               <div className="text-white text-center">
@@ -1374,11 +1374,11 @@ const SignupPage = () => {
 
           {/* Floating Elements */}
           <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-6 h-6 bg-green-400 rounded-full opacity-30 animate-bounce"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-6 h-6 bg-emerald-400 rounded-full opacity-30 animate-bounce"></div>
           <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-white rounded-full opacity-40 animate-ping"></div>
 
           <button
-            className="absolute bottom-8 right-8 w-16 h-16 bg-white rounded-full flex items-center justify-center text-red-600 text-xl shadow-2xl cursor-pointer transition-transform hover:scale-110 border-none group"
+            className="absolute bottom-8 right-8 w-16 h-16 bg-white rounded-full flex items-center justify-center text-emerald-600 text-xl shadow-2xl cursor-pointer transition-transform hover:scale-110 border-none group"
             onClick={handleCustomerService}
             title="Contact Customer Service"
           >

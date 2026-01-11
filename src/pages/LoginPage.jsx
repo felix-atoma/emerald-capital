@@ -25,10 +25,10 @@ const LoginLoadingSpinner = () => {
             <svg className="w-full h-full animate-spin" style={{ animationDuration: '1.5s' }} viewBox="0 0 100 100">
               <defs>
                 <linearGradient id="loginSpinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#008B8B', stopOpacity: 1 }} />
-                  <stop offset="33%" style={{ stopColor: '#40E0D0', stopOpacity: 1 }} />
-                  <stop offset="66%" style={{ stopColor: '#2EB88A', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#C8D900', stopOpacity: 1 }} />
+                  <stop offset="0%" style={{ stopColor: '#059669', stopOpacity: 1 }} />
+                  <stop offset="33%" style={{ stopColor: '#10b981', stopOpacity: 1 }} />
+                  <stop offset="66%" style={{ stopColor: '#0d9488', stopOpacity: 1 }} />
+                  <stop offset="100%" style={{ stopColor: '#fbbf24', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <circle
@@ -69,7 +69,7 @@ const MemoizedInput = React.memo(({
       type={type}
       value={value}
       onChange={onChange}
-      className={`w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-red-600 focus:ring-3 focus:ring-red-100 outline-none ${className}`}
+      className={`w-full p-3 lg:p-4 border-2 border-gray-200 rounded-xl text-base transition-all bg-gray-50 focus:bg-white focus:border-emerald-600 focus:ring-3 focus:ring-emerald-100 outline-none ${className}`}
       placeholder={placeholder}
       disabled={disabled}
       autoComplete={autoComplete}
@@ -213,15 +213,15 @@ const LoginPage = () => {
     setShowPassword(prev => !prev);
   }, []);
 
-  const Logo = () => (
-    <div className="flex items-center mb-10">
-      <div className="w-10 h-8 bg-red-600 mr-3 relative rounded-sm">
-        <div className="absolute top-1 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
-        <div className="absolute top-3.5 left-1 right-1 h-1.5 bg-white rounded-sm"></div>
+  const Logo = ({ className = '' }) => (
+    <div className={`flex items-center mb-10 ${className}`}>
+      <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
+        <div className="text-white font-bold text-lg">EC</div>
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
       </div>
-      <div className="text-gray-800 text-lg font-bold">
+      <div className="text-gray-800 text-xl font-bold leading-tight">
         Emerald<br />
-        <span className="text-blue-600 font-normal">Capital</span>
+        <span className="text-emerald-600 font-semibold text-lg">Capital</span>
       </div>
     </div>
   );
@@ -285,14 +285,14 @@ const LoginPage = () => {
                   type="checkbox"
                   checked={formData.rememberMe}
                   onChange={handleRememberMeChange}
-                  className="w-4 h-4 text-red-600 rounded focus:ring-2 focus:ring-red-500"
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-2 focus:ring-emerald-500"
                   disabled={isSubmitting}
                 />
                 Remember for 30 days
               </label>
               <button
                 type="button"
-                className="text-red-600 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer transition-colors"
+                className="text-emerald-600 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer transition-colors"
                 onClick={handleForgotPassword}
                 disabled={isSubmitting}
               >
@@ -306,7 +306,7 @@ const LoginPage = () => {
               className={`w-full py-3 lg:py-4 rounded-xl font-semibold text-lg transition-all duration-200 ${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-red-600 text-white hover:bg-red-700 transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-300 active:translate-y-0'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-emerald-300 active:translate-y-0'
               }`}
             >
               {isSubmitting ? 'Logging in...' : 'Login'}
@@ -315,7 +315,7 @@ const LoginPage = () => {
 
           <button
             onClick={handleSignupRedirect}
-            className="text-center text-gray-700 text-sm font-medium hover:text-red-600 bg-transparent border-none cursor-pointer w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-center text-gray-700 text-sm font-medium hover:text-emerald-600 bg-transparent border-none cursor-pointer w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting}
           >
             Set Up Internet Banking
@@ -326,7 +326,7 @@ const LoginPage = () => {
               Don't have an account?{' '}
               <button
                 onClick={handleSignupRedirect}
-                className="text-red-600 hover:underline font-medium bg-transparent border-none cursor-pointer"
+                className="text-emerald-600 hover:underline font-medium bg-transparent border-none cursor-pointer"
                 disabled={isSubmitting}
               >
                 Sign up here
@@ -335,10 +335,10 @@ const LoginPage = () => {
           </div>
         </div>
 
-        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-blue-50 to-purple-50 items-center justify-center relative border-l border-gray-200">
+        <div className="hidden lg:flex flex-1 bg-gradient-to-br from-emerald-50 to-teal-50 items-center justify-center relative border-l border-gray-200">
           <div className="w-full h-full flex items-center justify-center overflow-hidden">
             <div className="text-center p-8">
-              <div className="w-64 h-64 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
+              <div className="w-64 h-64 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
                 <div className="text-white text-center">
                   <div className="text-4xl font-bold mb-2">EC</div>
                   <div className="text-lg font-semibold">Emerald Capital</div>
@@ -353,7 +353,7 @@ const LoginPage = () => {
           </div>
 
           <button
-            className="absolute bottom-8 right-8 w-14 h-14 bg-red-600 rounded-full flex items-center justify-center text-white text-xl shadow-2xl shadow-red-300 cursor-pointer transition-transform hover:scale-110 border-none"
+            className="absolute bottom-8 right-8 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xl shadow-2xl shadow-emerald-300 cursor-pointer transition-transform hover:scale-110 border-none"
             onClick={handleCustomerService}
             title="Contact Customer Service"
           >
