@@ -179,7 +179,7 @@ const Navbar = () => {
         className="relative group"
         ref={el => dropdownRefs.current[link.label] = el}
       >
-        <div className="flex items-center space-x-1 cursor-pointer hover:text-red-600 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <div className="flex items-center space-x-1 cursor-pointer hover:text-emerald-600 text-sm font-medium px-3 py-2 rounded-lg hover:bg-emerald-50 transition-colors">
           {hasDropdown ? (
             <span>{link.label}</span>
           ) : (
@@ -191,26 +191,26 @@ const Navbar = () => {
         {/* Desktop Main Dropdown */}
         {hasDropdown && (
           <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-64">
+            <div className="bg-white rounded-lg shadow-xl border border-emerald-100 w-64">
               <div className="py-2">
                 {link.dropdown.map((item, index) => (
                   <div key={`${link.label}-${index}`} className="relative group/sub">
                     {item.nested ? (
                       <>
-                        <div className="flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 cursor-pointer border-b border-gray-100 last:border-b-0">
+                        <div className="flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer border-b border-gray-100 last:border-b-0">
                           <span className="font-medium">{item.label}</span>
                           <ChevronRight className="w-4 h-4" />
                         </div>
                         
                         {/* Nested Desktop Dropdown */}
                         <div className="absolute left-full top-0 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-200 z-50">
-                          <div className="bg-white rounded-lg shadow-xl border border-gray-200 w-64 ml-2">
+                          <div className="bg-white rounded-lg shadow-xl border border-emerald-100 w-64 ml-2">
                             <div className="py-2 max-h-80 overflow-y-auto">
                               {item.nested.map((nestedItem, nestedIndex) => (
                                 <Link
                                   key={`${item.label}-${nestedIndex}`}
                                   to={pathFor(nestedItem)}
-                                  className="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 border-b border-gray-100 last:border-b-0"
+                                  className="block px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 last:border-b-0"
                                 >
                                   {nestedItem}
                                 </Link>
@@ -222,7 +222,7 @@ const Navbar = () => {
                     ) : (
                       <Link
                         to={pathFor(item.label)}
-                        className="block px-4 py-3 text-gray-700 hover:bg-red-50 hover:text-red-600 border-b border-gray-100 last:border-b-0 font-medium"
+                        className="block px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 last:border-b-0 font-medium"
                       >
                         {item.label}
                       </Link>
@@ -276,7 +276,7 @@ const Navbar = () => {
                                 key={`mobile-nested-${item.label}-${nestedIndex}`}
                                 to={pathFor(nestedItem)}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block py-3 px-8 text-gray-600 hover:text-red-600 border-t border-gray-300"
+                                className="block py-3 px-8 text-gray-600 hover:text-emerald-600 border-t border-gray-300"
                               >
                                 {nestedItem}
                               </Link>
@@ -288,7 +288,7 @@ const Navbar = () => {
                       <Link
                         to={pathFor(item.label)}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-3 px-6 text-gray-700 hover:text-red-600 font-medium border-t border-gray-200"
+                        className="block py-3 px-6 text-gray-700 hover:text-emerald-600 font-medium border-t border-gray-200"
                       >
                         {item.label}
                       </Link>
@@ -302,7 +302,7 @@ const Navbar = () => {
           <Link
             to={pathFor(link.label)}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="block py-4 px-4 text-gray-800 font-medium hover:text-red-600"
+            className="block py-4 px-4 text-gray-800 font-medium hover:text-emerald-600"
           >
             {link.label}
           </Link>
@@ -312,7 +312,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-emerald-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -333,7 +333,7 @@ const Navbar = () => {
             {/* Internet Banking Button */}
             <Link
               to="/login"
-              className="ml-6 bg-red-600 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-red-700 transition-colors shadow-sm"
+              className="ml-6 bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
             >
               Digital & Mobile Banking
             </Link>
@@ -343,7 +343,7 @@ const Navbar = () => {
           <div className="lg:hidden flex items-center space-x-4">
             <Link
               to="/login"
-              className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-700 transition-colors"
+              className="bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors"
             >
               Login
             </Link>
