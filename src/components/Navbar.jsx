@@ -27,7 +27,6 @@ const Navbar = () => {
     { 
       label: "Banking", 
       dropdown: [
-        // { label: " Digital & Mobile Banking", link: true },
         { label: "Remittance & Money Transfer", link: true },
         { 
           label: "Savings Products",
@@ -163,9 +162,11 @@ const Navbar = () => {
       .replace(/—/g, '')
       .toLowerCase()
       .replace(/\s*&\s*/g, "-and-")
+      .replace(/\s*\/\s*/g, '')  // Remove slashes with spaces
       .replace(/[^a-z0-9-]/g, '')
       .replace(/\s+/g, "-")
-      .replace(/-+/g, '-');
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     return `/${cleanItem}`;
   };
 

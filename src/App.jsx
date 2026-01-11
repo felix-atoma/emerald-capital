@@ -49,11 +49,11 @@ const WomensEmpowermentLoanPage = lazy(() => import("./pages/WomensEmpowermentLo
 const MicroEnterpriseExpansionPage = lazy(() => import("./pages/MicroEnterpriseExpansionPage"));
 const TransportAndEquipmentLoanPage = lazy(() => import("./pages/TransportAndEquipmentLoanPage"));
 const SeasonalBusinessLoanPage = lazy(() => import("./pages/SeasonalBusinessLoanPage"));
-const MicrofinanceLoanProductsPage= lazy(() => import("./pages/MicrofinanceLoanProductsPage"));
-const SpecializedLoanProductsPage= lazy(() => import("./pages/SpecializedLoanProductsPage"));
+const MicrofinanceLoanProductsPage = lazy(() => import("./pages/MicrofinanceLoanProductsPage"));
+const SpecializedLoanProductsPage = lazy(() => import("./pages/SpecializedLoanProductsPage"));
 const FuneralLoanPage = lazy(() => import("./pages/FuneralLoanPage"));
 const EducationLoanPage = lazy(() => import("./pages/EducationLoanPage"));
-const  PersonalLoanPage = lazy(() => import("./pages/PersonalLoanPage"));
+const PersonalLoanPage = lazy(() => import("./pages/PersonalLoanPage"));
 const BusinessLoanPage = lazy(() => import("./pages/BusinessLoanPage"));
 const InvestmentWealthManagementPage = lazy(() => import("./pages/InvestmentWealthManagementPage"));  
 const EmeraldBusinessPage = lazy(() => import("./pages/EmeraldBusinessPage"));
@@ -67,6 +67,8 @@ const OrganizationalStructurePage = lazy(() => import("./pages/OrganizationalStr
 const LeadershipOwnershipPage = lazy(() => import("./pages/LeadershipOwnershipPage"));
 const BoardOfDirectorsPage = lazy(() => import("./pages/BoardOfDirectorsPage"));
 const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPage"));
+const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage"));
+
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"));
@@ -130,14 +132,43 @@ function App() {
                 <Route path="emeraldbusiness" element={<EmeraldBusinessPage/>} />
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
+                
+                {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
                 <Route path="ownership-and-shareholders" element={<OwnershipAndShareholdersPage/>} />
                 <Route path="boardofdirectors" element={<BoardAndExecutiveLeadershipPage/>} />
                 <Route path="executiveleadershipteam" element={<ExecutiveManagementPage/>} />
                 <Route path="governanceframework" element={<OrganizationalStructurePage/>} />
+                
+                {/* Organizational Structure Routes - All using same component pattern */}
                 <Route path="shareholdersowners" element={<LeadershipOwnershipPage/>} />
                 <Route path="boardofdirectorsstructure" element={<BoardOfDirectorsPage/>} />
                 <Route path="executivemanagementc-suite" element={<ExecutiveLeadershipPage/>} />
+                <Route path="chiefexecutiveofficerceo" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefoperatingofficercoo" element={<RegionalBranchManagersPage/>} />
+                <Route path="chieffinancialofficercfo" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefriskofficerc ro" element={<RegionalBranchManagersPage/>} />
+                <Route path="chieftechnologyofficercto" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefmarketing-and-businessdevelopmentofficercmobdo" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefcompliance-and-legalofficercccclo" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefinvestmentofficercio" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefinsuranceofficercinso" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefhumanresourcesofficerchro" element={<RegionalBranchManagersPage/>} />
+                <Route path="operationalstructureandorganogram" element={<RegionalBranchManagersPage/>} />
+                
+                {/* Regional Management Routes - All using same component */}
+                <Route path="greateraccraregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="ashantiregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="ahaforegion" element={<RegionalBranchManagersPage/>} />
+                <Route path="westernnorthregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="westernregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="centralregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="easternregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="volta-and-otiregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="bono-and-bonoeastregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="northernsavannah-and-northeast" element={<RegionalBranchManagersPage/>} />
+                <Route path="upperwest-and-uppereastregion" element={<RegionalBranchManagersPage/>} />
+                <Route path="diasporaservices" element={<RegionalBranchManagersPage/>} />
               </Route>
               
               <Route path="form" element={<Form />} />
