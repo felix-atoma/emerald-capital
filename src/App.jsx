@@ -59,6 +59,14 @@ const InvestmentWealthManagementPage = lazy(() => import("./pages/InvestmentWeal
 const EmeraldBusinessPage = lazy(() => import("./pages/EmeraldBusinessPage"));
 const EmeraldPayPage = lazy(() => import("./pages/EmeraldPayPage"));
 const InsuranceProductsPage = lazy(() => import("./pages/InsuranceProductsPage"));
+const LeadershipPage = lazy(() => import("./pages/LeadershipPage"));
+const OwnershipAndShareholdersPage = lazy(() => import("./pages/OwnershipAndShareholdersPage"));
+const BoardAndExecutiveLeadershipPage = lazy(() => import("./pages/BoardAndExecutiveLeadershipPage"));
+const ExecutiveManagementPage = lazy(() => import("./pages/ExecutiveManagementPage"));
+const OrganizationalStructurePage = lazy(() => import("./pages/OrganizationalStructurePage"));
+const LeadershipOwnershipPage = lazy(() => import("./pages/LeadershipOwnershipPage"));
+const BoardOfDirectorsPage = lazy(() => import("./pages/BoardOfDirectorsPage"));
+const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPage"));
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"));
@@ -122,6 +130,14 @@ function App() {
                 <Route path="emeraldbusiness" element={<EmeraldBusinessPage/>} />
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
+                <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
+                <Route path="ownership-and-shareholders" element={<OwnershipAndShareholdersPage/>} />
+                <Route path="boardofdirectors" element={<BoardAndExecutiveLeadershipPage/>} />
+                <Route path="executiveleadershipteam" element={<ExecutiveManagementPage/>} />
+                <Route path="governanceframework" element={<OrganizationalStructurePage/>} />
+                <Route path="shareholdersowners" element={<LeadershipOwnershipPage/>} />
+                <Route path="boardofdirectorsstructure" element={<BoardOfDirectorsPage/>} />
+                <Route path="executivemanagementc-suite" element={<ExecutiveLeadershipPage/>} />
               </Route>
               
               <Route path="form" element={<Form />} />
