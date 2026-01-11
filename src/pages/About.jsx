@@ -9,7 +9,7 @@ export default function AboutPage() {
     <div className="w-full">
       <BankingHero />
       <WhoWeAre />
-      <HowItStarted imageUrl="/path-to-relaxed-person.jpg" />
+      {/* <HowItStarted imageUrl="/path-to-relaxed-person.jpg" /> */}
       <FinancialSolutions imageUrl="/path-to-professional.jpg" />
     </div>
   );
