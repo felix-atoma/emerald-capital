@@ -51,6 +51,14 @@ const TransportAndEquipmentLoanPage = lazy(() => import("./pages/TransportAndEqu
 const SeasonalBusinessLoanPage = lazy(() => import("./pages/SeasonalBusinessLoanPage"));
 const MicrofinanceLoanProductsPage= lazy(() => import("./pages/MicrofinanceLoanProductsPage"));
 const SpecializedLoanProductsPage= lazy(() => import("./pages/SpecializedLoanProductsPage"));
+const FuneralLoanPage = lazy(() => import("./pages/FuneralLoanPage"));
+const EducationLoanPage = lazy(() => import("./pages/EducationLoanPage"));
+const  PersonalLoanPage = lazy(() => import("./pages/PersonalLoanPage"));
+const BusinessLoanPage = lazy(() => import("./pages/BusinessLoanPage"));
+const InvestmentWealthManagementPage = lazy(() => import("./pages/InvestmentWealthManagementPage"));  
+const EmeraldBusinessPage = lazy(() => import("./pages/EmeraldBusinessPage"));
+const EmeraldPayPage = lazy(() => import("./pages/EmeraldPayPage"));
+const InsuranceProductsPage = lazy(() => import("./pages/InsuranceProductsPage"));
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard"));
@@ -77,7 +85,7 @@ function App() {
                 <Route path="mtplus-loans" element={<MTplus />} />
                 <Route path="smeloan" element={<SMELoan />} />
                 <Route path="treasury-note" element={<TreasuryNotesPage />} />
-                <Route path="fixed-deposit" element={<FixedDepositPage />} />
+                <Route path="fixeddeposit" element={<FixedDepositPage />} />
                 <Route path="mudurabah" element={<MudarabahPage />} />
                 <Route path="mt-green-solar" element={<MTGreenSolar />} />
                 <Route path="agriculturalloan" element={<Agric />} />
@@ -106,6 +114,14 @@ function App() {
                 <Route path="seasonalbusinessloan" element={<SeasonalBusinessLoanPage/>} />
                 <Route path="microfinanceloanproducts" element={<MicrofinanceLoanProductsPage/>} />
                 <Route path="specializedloanproducts" element={<SpecializedLoanProductsPage/>} />
+                <Route path="educationloan" element={<EducationLoanPage/>} />
+                <Route path="funeralloans" element={<FuneralLoanPage/>} />
+                <Route path="personalloan" element={<PersonalLoanPage/>} />
+                <Route path="businessloan" element={<BusinessLoanPage/>} />
+                <Route path="investment-and-wealthmanagement" element={<InvestmentWealthManagementPage/>} />
+                <Route path="emeraldbusiness" element={<EmeraldBusinessPage/>} />
+                <Route path="emeraldpay" element={<EmeraldPayPage/>} />
+                <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
               </Route>
               
               <Route path="form" element={<Form />} />

@@ -1,83 +1,141 @@
 import React from 'react';
+import { Users, TrendingUp, Shield, Target } from 'lucide-react';
 
-const HeroSection = () => {
+const FixedDepositHero = () => {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 overflow-hidden">
-      {/* Binary code background pattern */}
-      <div className="absolute inset-0 opacity-20 font-mono text-xs text-white/30 leading-relaxed p-8">
-        {Array(20).fill(null).map((_, i) => (
-          <div key={i}>
-            {Array(100).fill(null).map((_, j) => (
-              <span key={j}>{Math.random() > 0.5 ? '1' : '0'} </span>
-            ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-navy-900 flex items-center px-8 md:px-16 lg:px-24">
+      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-12">
+        {/* Left Content */}
+        <div className="flex-1 text-white">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full px-6 py-3 mb-8 shadow-xl">
+            <Shield className="w-5 h-5" />
+            <span className="font-bold">FIXED DEPOSIT</span>
           </div>
-        ))}
-      </div>
 
-      {/* Floating decorative circles */}
-      <div className="absolute top-1/4 right-1/3 w-8 h-8 rounded-full border-2 border-white/30"></div>
-      <div className="absolute top-1/3 right-1/4 w-3 h-3 rounded-full bg-purple-400"></div>
-      <div className="absolute top-1/2 left-1/2 w-20 h-20 rounded-full bg-white/10"></div>
-      <div className="absolute top-2/3 left-1/3 w-4 h-4 rounded-full bg-purple-300"></div>
-      <div className="absolute bottom-1/3 right-1/2 w-3 h-3 rounded-full bg-cyan-400"></div>
-      <div className="absolute top-1/4 right-1/2 w-5 h-5 rounded-full bg-purple-500/50"></div>
-
-      {/* Content container */}
-      <div className="relative z-10 container mx-auto px-8 py-16 flex items-center justify-between min-h-screen">
-        {/* Left side - Text content */}
-        <div className="max-w-2xl">
-          <h1 className="text-6xl font-bold text-white mb-6">
-            Grow Your<br />
-            Wealth <span className="italic font-light">with Us</span>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            Guaranteed <br />
+            <span className="text-indigo-300">Returns</span> <br />
+            <span className="italic font-light">with Complete Security</span>
           </h1>
-          <div className="h-0.5 w-32 bg-purple-400 mb-6"></div>
-          <p className="text-xl text-slate-300">
-            Secure your future with our competitive fixed<br />
-            deposit rates
+          <p className="text-lg md:text-xl text-white/90 max-w-xl mb-10">
+            Grow your savings with confidence through our fixed deposit accounts. 
+            Enjoy competitive interest rates, guaranteed returns, and the peace of 
+            mind that comes with a secure, low-risk investment option.
           </p>
-        </div>
 
-        {/* Right side - Image with coins and tree */}
-        <div className="relative">
-          <div className="w-80 h-80 rounded-full bg-white flex items-center justify-center shadow-2xl">
-            {/* Tree illustration */}
-            <div className="relative">
-              {/* Trunk */}
-              <div className="w-8 h-32 bg-gradient-to-b from-amber-800 to-amber-900 mx-auto rounded-sm"></div>
-              
-              {/* Foliage */}
-              <div className="absolute -top-24 left-1/2 transform -translate-x-1/2">
-                <div className="w-32 h-32 bg-gradient-to-br from-lime-400 to-green-600 rounded-full"></div>
-                <div className="absolute top-4 left-4 w-24 h-24 bg-gradient-to-br from-lime-300 to-green-500 rounded-full"></div>
-                <div className="absolute top-8 left-8 w-16 h-16 bg-gradient-to-br from-lime-500 to-green-700 rounded-full"></div>
+          {/* Key Features */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-5 h-5" />
               </div>
-
-              {/* Coins at base */}
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex flex-wrap justify-center w-40">
-                {Array(15).fill(null).map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-amber-600 border-2 border-amber-700 m-0.5"
-                    style={{
-                      transform: `rotate(${i * 15}deg) translateY(${Math.random() * 10}px)`
-                    }}
-                  ></div>
-                ))}
+              <div>
+                <div className="font-bold text-lg">₵1K Min.</div>
+                <div className="text-white/80 text-sm">Deposit</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="font-bold text-lg">12-25%</div>
+                <div className="text-white/80 text-sm">Interest Rate</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="font-bold text-lg">100%</div>
+                <div className="text-white/80 text-sm">Secure</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="text-xl">🔒</span>
+              </div>
+              <div>
+                <div className="font-bold text-lg">Fixed</div>
+                <div className="text-white/80 text-sm">Returns</div>
               </div>
             </div>
           </div>
 
-          {/* Guaranteed ROI badge */}
-          <div className="absolute bottom-8 right-0 bg-white rounded-lg shadow-lg p-4 flex items-center gap-3">
-            <div>
-              <div className="text-xs font-semibold text-gray-800 whitespace-nowrap">Guaranteed ROI</div>
-              <svg className="w-12 h-12" viewBox="0 0 50 50" fill="none">
-                <path d="M10 35 L10 25 L20 30 L20 20 L30 25 L30 15 L40 20" stroke="#06b6d4" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                <rect x="8" y="33" width="4" height="4" fill="#06b6d4" rx="1"/>
-                <rect x="18" y="28" width="4" height="9" fill="#06b6d4" rx="1"/>
-                <rect x="28" y="23" width="4" height="14" fill="#22d3ee" rx="1"/>
-                <rect x="38" y="18" width="4" height="19" fill="#22d3ee" rx="1"/>
+          {/* CTA Button */}
+          <button className="bg-indigo-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+            Open Fixed Deposit
+          </button>
+        </div>
+
+        {/* Right Content - Image with Badge */}
+        <div className="flex-1 flex justify-center lg:justify-end relative">
+          <div className="relative">
+            {/* Decorative dots */}
+            <div className="absolute -left-20 top-1/3 flex gap-4">
+              <div className="w-3 h-3 bg-indigo-400 rounded-full opacity-80"></div>
+              <div className="w-3 h-3 bg-indigo-400 rounded-full opacity-40"></div>
+            </div>
+            <div className="absolute -right-16 top-1/2 flex flex-col gap-4">
+              <div className="w-3 h-3 bg-indigo-400 rounded-full opacity-80"></div>
+              <div className="w-3 h-3 bg-indigo-400 rounded-full opacity-40"></div>
+            </div>
+
+            {/* Circular Image */}
+            <div className="relative">
+              <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-indigo-300 shadow-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=800&h=800&fit=crop&crop=center"
+                  alt="Secure savings and guaranteed investment returns"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=800&fit=crop&crop=center";
+                  }}
+                />
+              </div>
+
+              {/* Badge 1 - Depositors */}
+              <div className="absolute top-8 -right-4 bg-white rounded-full px-6 py-3 shadow-xl">
+                <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  Active Depositors
+                </div>
+                <div className="text-lg font-bold text-blue-600">
+                  18,500+
+                </div>
+              </div>
+
+              {/* Badge 2 - Interest Rate */}
+              <div className="absolute bottom-8 -left-4 bg-indigo-400 rounded-full px-6 py-3 shadow-xl">
+                <div className="text-xs font-semibold text-gray-800 mb-1">
+                  Interest Rates
+                </div>
+                <div className="text-lg font-bold text-gray-900">
+                  Up to 25% p.a.
+                </div>
+              </div>
+
+              {/* Decorative curved line */}
+              <svg
+                className="absolute -bottom-4 -right-8 w-32 h-32"
+                viewBox="0 0 100 100"
+                fill="none"
+              >
+                <path
+                  d="M 20 80 Q 50 20 80 60"
+                  stroke="#818CF8"
+                  strokeWidth="3"
+                  fill="none"
+                />
               </svg>
+
+              {/* Security decoration */}
+              <div className="absolute -top-4 left-1/4 bg-indigo-600 rounded-full p-4 shadow-xl border-4 border-indigo-300">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
             </div>
           </div>
         </div>
@@ -86,4 +144,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default FixedDepositHero;

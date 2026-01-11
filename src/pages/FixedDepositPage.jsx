@@ -1,6 +1,6 @@
 import React from "react";
 import FixedDepositHero from "../components/FixedDepositHero";
-import FixedDepositSection from "../components/FixedDepositSection";
+import FixedDepositDetails from "../components/FixedDepositDetails";
 import DownloadAppSection from "../components/DownloadAppSection";
 import FAQsSection from "../components/FAQsSection";
 import LoanCalculator from "../components/LoanCalculator";
@@ -10,7 +10,7 @@ const FixedDepositPage = () => {
   return (
     <div>
       <FixedDepositHero/>
-      <FixedDepositSection/>
+      <FixedDepositDetails/>
         <DownloadAppSection />
         <FAQsSection />
         <LoanCalculator />
