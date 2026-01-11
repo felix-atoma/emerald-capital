@@ -11,7 +11,7 @@ const SMELoan = () => {
     <div>
       <DarkHeroSection/>       {/* ✅ Fixed capitalization */}
       <LightDetailsSection />
-      <DownloadAppSection />
+      {/* <DownloadAppSection /> */}
       <FAQsSection />
       <LoanCalculator />
       <BusinessCTABanner />

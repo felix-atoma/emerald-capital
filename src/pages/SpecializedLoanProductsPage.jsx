@@ -13,7 +13,7 @@ export default function SavingsAccountPage() {
     <div className="min-h-screen">
       <SpecializedLoanProductsHero/>
       <SpecializedLoanProductsDetails />
-      {<DownloadAppSection /> }
+      {/* {<DownloadAppSection /> } */}
       <FAQsSection />
       {/* <BusinessCTABanner /> */}
     </div>

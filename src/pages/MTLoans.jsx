@@ -11,7 +11,7 @@ const MTLoan = () => {
     <div>
       <HeroSectionMTL />
       <MTLoansSection />
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FAQsSection />
         <LoanCalculator />
         <BusinessCTABanner />

@@ -13,7 +13,7 @@ export default function SavingsAccountPage() {
     <div className="min-h-screen">
       <EmeraldBusinessHero/>
       <EmeraldBusinessDetails />
-      <DownloadAppSection />
+      {/* <DownloadAppSection /> */}
       <FAQsSection />
       {/* <BusinessCTABanner /> */}
     </div>

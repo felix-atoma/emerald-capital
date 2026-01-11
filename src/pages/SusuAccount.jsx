@@ -9,7 +9,7 @@ function SusuAccount() {
   return (
     <div className="min-h-screen">
       <HeroSection />
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FAQsSection />
         <LoanCalculator />
         <BusinessCTABanner />

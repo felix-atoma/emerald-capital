@@ -11,7 +11,7 @@ const Car4CashPage = () => {
     <div>
       <Car4CashHero/>
       <Car4CashLoanDetails/>
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FAQsSection />
         <LoanCalculator />
         <BusinessCTABanner />

@@ -12,7 +12,7 @@ export default function MicrofinanceLoanProductsPage() {
     <div className="min-h-screen">
       <MicrofinanceLoanProductsHero/>
       <MicroEnterpriseExpansionLoanDetails />
-      <DownloadAppSection />
+      {/* <DownloadAppSection /> */}
       <FAQsSection />
       {/* <BusinessCTABanner /> */}
     </div>

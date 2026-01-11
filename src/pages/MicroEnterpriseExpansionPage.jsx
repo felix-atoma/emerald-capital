@@ -13,7 +13,7 @@ const MicroEnterpriseExpansionPage = () => {
       <MicroEnterpriseExpansionLoanHero/>
       <MicroEnterpriseExpansionLoanDetails/>
         <DownloadAppSection />
-        <FAQsSection />
+        {/* <FAQsSection /> */}
         {/* <LoanCalculator /> */}
         {/* <BusinessCTABanner /> */}
     </div>

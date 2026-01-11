@@ -12,7 +12,7 @@ const FixedDepositPage = () => {
       <EmergencyPersonalLoanHero/>
       <EmergencyPersonalLoanDetails/>
         <DownloadAppSection />
-        <FAQsSection />
+        {/* <FAQsSection /> */}
         <LoanCalculator />
         <BusinessCTABanner />
     </div>

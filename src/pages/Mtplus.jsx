@@ -12,7 +12,7 @@ const MTplus = () => {
       <LoanHero />       {/* ✅ Fixed capitalization */}
       <LoanDetailsSection />
       <DownloadAppSection />
-      <FAQsSection />
+      {/* <FAQsSection /> */}
       <LoanCalculator />
       <BusinessCTABanner />
     </div>

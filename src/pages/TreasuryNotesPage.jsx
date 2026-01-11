@@ -11,7 +11,7 @@ const TreasureNotesPage = () => {
     <div>
       <TreasuryNotesHero/>       {/* ✅ Fixed capitalization */}
       <TreasuryNoteDetails/>
-      <DownloadAppSection />
+      {/* <DownloadAppSection /> */}
       <FAQsSection />
       <LoanCalculator />
       <BusinessCTABanner />

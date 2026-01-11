@@ -12,7 +12,7 @@ const FixedDepositPage = () => {
       <EmeraldPayHero/>
       <EmeraldPayDetails/>
         <DownloadAppSection />
-        <FAQsSection />
+        {/* <FAQsSection /> */}
         {/* <LoanCalculator /> */}
         <BusinessCTABanner />
     </div>

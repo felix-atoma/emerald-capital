@@ -11,7 +11,7 @@ const Agric = () => {
     <div>
       <PersonalLoanHero/>
       <PersonalLoanDetails/>
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FAQsSection />
         <LoanCalculator />
         <BusinessCTABanner />

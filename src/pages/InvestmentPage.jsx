@@ -13,7 +13,7 @@ export default function SavingsAccountPage() {
       <InvestmentHero/>
       <InvestmentDetails />
       <DownloadAppSection />
-      <FAQsSection />
+      {/* <FAQsSection /> */}
       {/* <BusinessCTABanner /> */}
     </div>
   );

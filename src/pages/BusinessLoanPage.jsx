@@ -11,7 +11,7 @@ const FixedDepositPage = () => {
     <div>
       <BusinessLoanHero/>
       <BusinessLoanDetails/>
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FAQsSection />
         {/* <LoanCalculator /> */}
         <BusinessCTABanner />
