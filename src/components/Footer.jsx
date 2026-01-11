@@ -1,26 +1,100 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Shield, Clock, MessageCircle, Globe } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Shield, 
+  Clock, 
+  MessageCircle, 
+  Globe, 
+  Send,
+  ArrowUpRight,
+  ShieldCheck,
+  Lock,
+  CheckCircle,
+  AlertCircle,
+  Twitter,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Building,
+  PhoneCall,
+  MailCheck,
+  Headphones,
+  CreditCard,
+  TrendingUp,
+  Briefcase,
+  Zap,
+  Sparkles,
+  Target,
+  Award,
+  ChevronRight,
+  Globe as GlobeIcon,
+  User,
+  Download,
+  Play,
+  Star,
+  Award as AwardIcon,
+  Target as TargetIcon,
+  TrendingUp as TrendingUpIcon,
+  Hexagon,
+  Diamond,
+  Circle,
+  Triangle,
+  Square,
+  Octagon,
+  Cloud,
+  Waves,
+  Droplets,
+  Wind,
+  Moon,
+  Sun,
+  Activity,
+  Battery,
+  Cpu,
+  Database,
+  Server,
+  Wifi,
+  GitBranch
+} from 'lucide-react';
 import { newsletterAPI } from '../services/api';
 import { useToast } from '../components/CustomToast';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [bubbles, setBubbles] = useState([]);
   const toast = useToast();
+
+  // Generate bubbles
+  useEffect(() => {
+    const generatedBubbles = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 50 + 15,
+      speed: Math.random() * 2 + 1,
+      opacity: Math.random() * 0.2 + 0.05,
+      shape: Math.floor(Math.random() * 4),
+      delay: Math.random() * 5,
+      color: `rgba(16, 185, 129, ${Math.random() * 0.2 + 0.05})`,
+    }));
+    setBubbles(generatedBubbles);
+  }, []);
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
     
     if (!email) {
-      setSubscriptionStatus('Please enter your email address');
       toast.error('Please enter your email address', 3000);
       return;
     }
 
     if (!validateEmail(email)) {
-      setSubscriptionStatus('Please enter a valid email address');
       toast.error('Please enter a valid email address', 3000);
       return;
     }
@@ -32,31 +106,11 @@ const Footer = () => {
       const response = await newsletterAPI.subscribe({ email });
       
       if (response.data.success) {
-        setSubscriptionStatus('Successfully subscribed to our newsletter!');
+        toast.success('Welcome to our exclusive financial circle! 🚀', 3000);
         setEmail('');
-        toast.success('Successfully subscribed to our newsletter!', 4000);
-        
-        setTimeout(() => {
-          setSubscriptionStatus('');
-        }, 5000);
       }
     } catch (error) {
-      let errorMessage = 'Subscription failed. Please try again later.';
-      
-      if (error.response?.status === 400) {
-        if (error.response?.data?.message?.includes('already subscribed')) {
-          errorMessage = 'This email is already subscribed to our newsletter.';
-        } else {
-          errorMessage = error.response?.data?.message || 'Invalid email address.';
-        }
-      }
-      
-      setSubscriptionStatus(errorMessage);
-      toast.error(errorMessage, 4000);
-      
-      setTimeout(() => {
-        setSubscriptionStatus('');
-      }, 5000);
+      toast.error('Subscription failed. Please try again.', 3000);
     } finally {
       setIsSubmitting(false);
     }
@@ -67,311 +121,494 @@ const Footer = () => {
     return re.test(email);
   };
 
+  const QuickLink = ({ to, children, icon: Icon }) => (
+    <motion.li
+      whileHover={{ x: 8 }}
+      onMouseEnter={() => setHoveredCard(to)}
+      onMouseLeave={() => setHoveredCard(null)}
+    >
+      <Link 
+        to={to} 
+        className="flex items-center gap-3 text-gray-200 hover:text-white transition-colors text-sm py-2 group relative overflow-hidden"
+      >
+        <motion.div 
+          className="relative"
+          whileHover={{ rotate: 180 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur-md opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+          {Icon ? (
+            <Icon className="w-4 h-4 relative z-10 text-emerald-400 group-hover:text-white transition-colors" />
+          ) : (
+            <div className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 relative z-10"></div>
+          )}
+        </motion.div>
+        <span className="relative z-10 font-medium">{children}</span>
+        <motion.div
+          initial={{ opacity: 0, x: -15, scale: 0.8 }}
+          whileHover={{ opacity: 1, x: 0, scale: 1 }}
+          className="absolute right-0 w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg"
+        >
+          <ChevronRight className="w-3 h-3 text-white" />
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      </Link>
+    </motion.li>
+  );
+
+  const SocialIcon = ({ href, icon: Icon, label, color }) => (
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ y: -6, scale: 1.15 }}
+      whileTap={{ scale: 0.9 }}
+      className="relative group"
+      aria-label={label}
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
+      <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700/50 flex items-center justify-center group-hover:border-emerald-500/50 transition-all duration-500 backdrop-blur-sm overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+        <Icon className={`w-5 h-5 ${color} transition-colors relative z-10`} />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 border-2 border-emerald-400/20 border-t-emerald-400/50 rounded-2xl"
+        />
+      </div>
+    </motion.a>
+  );
+
+  const StatCard = ({ value, label, icon: Icon, delay }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay, type: "spring" }}
+      whileHover={{ y: -6, scale: 1.03 }}
+      className="relative group"
+    >
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-700"></div>
+      <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 backdrop-blur-xl rounded-2xl p-4 border-2 border-gray-700/50 group-hover:border-emerald-500/40 transition-all duration-500 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="flex items-center justify-between mb-3 relative z-10">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+              <Icon className="w-5 h-5 text-white" />
+            </div>
+          </div>
+          <Sparkles className="w-4 h-4 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </div>
+        <div className="text-2xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent relative z-10">
+          {value}
+        </div>
+        <div className="text-xs text-gray-400 mt-1 relative z-10">{label}</div>
+      </div>
+    </motion.div>
+  );
+
   return (
-    <footer className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white overflow-hidden">
-      {/* Circuit Board Background with Emerald Theme */}
-      <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="circuit" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
-            {/* Horizontal lines */}
-            <line x1="0" y1="40" x2="60" y2="40" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="80" y1="40" x2="200" y2="40" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            <line x1="0" y1="120" x2="40" y2="120" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="60" y1="120" x2="140" y2="120" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="160" y1="120" x2="200" y2="120" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            <line x1="0" y1="160" x2="100" y2="160" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="120" y1="160" x2="200" y2="160" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            {/* Vertical lines */}
-            <line x1="50" y1="0" x2="50" y2="80" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="50" y1="100" x2="50" y2="200" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            <line x1="130" y1="0" x2="130" y2="60" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="130" y1="80" x2="130" y2="140" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            <line x1="180" y1="0" x2="180" y2="100" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="180" y1="120" x2="180" y2="200" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            {/* Diagonal lines */}
-            <line x1="0" y1="80" x2="30" y2="50" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            <line x1="150" y1="20" x2="180" y2="50" stroke="#059669" strokeWidth="1" opacity="0.3"/>
-            
-            {/* Circuit nodes/dots */}
-            <circle cx="50" cy="40" r="3" fill="#10b981" opacity="0.6"/>
-            <circle cx="130" cy="120" r="3" fill="#10b981" opacity="0.6"/>
-            <circle cx="180" cy="160" r="3" fill="#10b981" opacity="0.6"/>
-            <circle cx="50" cy="160" r="3" fill="#10b981" opacity="0.6"/>
-            <circle cx="180" cy="40" r="3" fill="#10b981" opacity="0.6"/>
-            
-            {/* Larger connection points */}
-            <circle cx="70" cy="40" r="2" fill="#14b8a6" opacity="0.5"/>
-            <circle cx="150" cy="120" r="2" fill="#14b8a6" opacity="0.5"/>
-            <circle cx="110" cy="160" r="2" fill="#14b8a6" opacity="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#circuit)"/>
-      </svg>
-      
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          {/* Company Info */}
-          <div className="lg:col-span-1">
-            <h3 className="text-white font-bold text-xl mb-3 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              Emerald Capital
-            </h3>
-            <p className="text-gray-300 text-sm leading-relaxed mb-4">
-              We have a value system that is passionately hinged on our professionalism,
-              ethics, integrity, core values, and superior customer service.
-            </p>
-            
-            <div className="space-y-3">
-              <div>
-                <h4 className="text-emerald-400 font-semibold text-sm mb-1.5">Head Office</h4>
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-1" />
-                  <div className="text-gray-300 text-sm">
-                    <p>Emerald Capital Building,</p>
-                    <p>Barekese Rd, Amanfrom, Kumasi</p>
-                    <p className="text-gray-400 text-xs mt-1">Post Office Box 995, Santasi, Kumasi</p>
-                    <p className="text-gray-400 text-xs">Ghana (AK-634-5480)</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Social Icons */}
-            <div className="flex gap-3 mt-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/50 group">
-                <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-                </svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/50 group">
-                <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
-                </svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/50 group">
-                <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-          
-          {/* Contact Information */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              Contact Us
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <h4 className="text-emerald-400 text-sm font-medium mb-1.5">Main Office</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <div className="text-sm">
-                      <a href="tel:+233208070000" className="text-gray-300 hover:text-emerald-400 transition-colors">+233 20 8070000</a>
-                      <span className="text-gray-500 mx-1">/</span>
-                      <a href="tel:+233244595808" className="text-gray-300 hover:text-emerald-400 transition-colors">+233 244 595808</a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <MessageCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <a href="https://wa.me/233208070000" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors">
-                      WhatsApp: 0208070000
-                    </a>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <a href="mailto:info@emeraldcapitalgh.com" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors">
-                      info@emeraldcapitalgh.com
-                    </a>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                    <a href="https://www.emeraldcapitalgh.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors">
-                      www.emeraldcapitalgh.com
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-emerald-400 text-sm font-medium mb-1.5 mt-3">Customer Support</h4>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-1" />
-                    <div className="text-gray-300 text-xs leading-relaxed">
-                      <p>0531929712 / 0537420472</p>
-                      <p>0208203653 / 0209877171 / 0240776444</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-1" />
-                    <div className="text-gray-300 text-xs">
-                      <a href="mailto:support@emeraldcapitalgh.com" className="hover:text-emerald-400 transition-colors block">
-                        support@emeraldcapitalgh.com
-                      </a>
-                      <a href="mailto:emeraldcapitalgh@gmail.com" className="hover:text-emerald-400 transition-colors block">
-                        emeraldcapitalgh@gmail.com
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-1" />
-                    <p className="text-gray-300 text-xs">
-                      Mon–Fri: 8:00 AM – 5:00 PM
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              Quick Links
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-emerald-400 text-sm font-medium mb-1.5">Company</h4>
-                <ul className="space-y-2">
-                  <li><Link to="/" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Home
-                  </Link></li>
-                  <li><Link to="/about" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>About Us
-                  </Link></li>
-                  <li><Link to="/blog" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Blog
-                  </Link></li>
-                  <li><Link to="/contact" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Contact
-                  </Link></li>
-                  <li><Link to="/privacy" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Privacy Policy
-                  </Link></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-emerald-400 text-sm font-medium mb-1.5">Products</h4>
-                <ul className="space-y-2">
-                  <li><Link to="/smeloan" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>SME Loans
-                  </Link></li>
-                  <li><Link to="/businessloan" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Business Loan
-                  </Link></li>
-                  <li><Link to="/personalloan" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Personal Loan
-                  </Link></li>
-                  <li><Link to="/funeralloans" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Funeral Loan
-                  </Link></li>
-                  <li><Link to="/educationloan" className="text-gray-300 text-sm hover:text-emerald-400 transition-colors flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>Education Loan
-                  </Link></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          {/* Newsletter */}
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-3 flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              Newsletter
-            </h3>
-            <p className="text-gray-300 text-sm mb-3">Be the first to know, subscribe to our newsletter</p>
-            
-            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-4 py-2.5 bg-gray-800/50 text-white text-sm border border-emerald-500/30 rounded-l-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors backdrop-blur-sm"
-                  required
-                  disabled={isSubmitting}
-                />
-                <button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`px-6 py-2.5 text-white text-sm font-medium rounded-r-lg transition-all duration-300 ${
-                    isSubmitting 
-                      ? 'bg-gray-600 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 hover:shadow-lg hover:shadow-emerald-500/50'
-                  }`}
-                >
-                  {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </div>
-
-              {/* Status Messages */}
-              {subscriptionStatus && (
-                <div className={`text-xs ${
-                  subscriptionStatus.includes('Successfully') || subscriptionStatus.includes('already subscribed')
-                    ? 'text-emerald-400' 
-                    : 'text-red-400'
-                }`}>
-                  {subscriptionStatus}
-                </div>
+    <footer className="relative bg-gradient-to-br from-gray-950 via-black to-emerald-950/40 text-white overflow-hidden">
+      {/* Animated Background with Bubbles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Tech Bubbles - REDUCED COUNT */}
+        <AnimatePresence>
+          {bubbles.map((bubble) => (
+            <motion.div
+              key={bubble.id}
+              className="absolute"
+              style={{
+                left: `${bubble.x}%`,
+                top: `${bubble.y}%`,
+                width: bubble.size,
+                height: bubble.size,
+                opacity: bubble.opacity,
+              }}
+              initial={{ 
+                y: 100,
+                rotate: 0,
+                scale: 0
+              }}
+              animate={{ 
+                y: [-100, -300, -100],
+                rotate: 360,
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 10 + bubble.speed * 5,
+                repeat: Infinity,
+                ease: "linear",
+                delay: bubble.delay,
+              }}
+            >
+              {bubble.shape === 0 ? (
+                <Hexagon className="w-full h-full" fill={bubble.color} stroke="none" />
+              ) : bubble.shape === 1 ? (
+                <Diamond className="w-full h-full" fill={bubble.color} stroke="none" />
+              ) : bubble.shape === 2 ? (
+                <Circle className="w-full h-full" fill={bubble.color} stroke="none" />
+              ) : (
+                <Triangle className="w-full h-full" fill={bubble.color} stroke="none" />
               )}
+            </motion.div>
+          ))}
+        </AnimatePresence>
 
-              <p className="text-gray-400 text-xs italic">
-                By subscribing, you accept our <Link to="/privacy" className="text-emerald-400 hover:text-emerald-300 transition-colors underline">Privacy Policy</Link>
-              </p>
-            </form>
+        {/* Circuit Board Lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="circuit-lines" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+              <path d="M0,20 L120,20 M20,0 L20,120 M40,80 L80,80 M80,40 L120,40" 
+                    stroke="#10b981" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 6"
+                    fill="none" />
+              <Circle cx="20" cy="20" r="3" fill="#10b981" />
+              <Circle cx="80" cy="40" r="3" fill="#10b981" />
+              <Circle cx="40" cy="80" r="3" fill="#10b981" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit-lines)" />
+        </svg>
 
-            {/* Trust Badges */}
-            <div className="mt-4 pt-4 border-t border-gray-700/50">
-              <p className="text-gray-400 text-xs mb-3">Licensed & Regulated by</p>
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-emerald-500" />
-                <span className="text-gray-300 text-xs font-medium">Bank of Ghana</span>
-              </div>
-            </div>
+        {/* Gradient Mesh */}
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-cyan-500/5"></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10">
+        {/* Stats Bar - REDUCED PADDING */}
+        <div className="border-b border-gray-800/50">
+          <div className="max-w-7xl mx-auto px-6 py-6">
+            <motion.div 
+              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <StatCard value="24/7" label="Premium Support" icon={Headphones} delay={0} />
+              <StatCard value="99.8%" label="Client Satisfaction" icon={Star} delay={0.1} />
+              <StatCard value="15K+" label="Global Clients" icon={GlobeIcon} delay={0.2} />
+              <StatCard value="5★" label="Industry Rating" icon={Award} delay={0.3} />
+            </motion.div>
           </div>
         </div>
-        
-        {/* Bottom Bar */}
-        <div className="border-t border-gray-700/50 pt-4 mt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-            <div className="text-gray-400 text-center md:text-left">
-              © 2025 <span className="text-white font-medium">Emerald Capital Microfinance Ltd.</span> All Rights Reserved
-            </div>
-            
-            <div className="flex items-center gap-6">
-              <Link 
-                to="/admin/login" 
-                className="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors text-sm group"
+
+        {/* Footer Content - REDUCED PADDING */}
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+            {/* Premium Brand Section */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 100 }}
               >
-                <Shield className="w-4 h-4 group-hover:text-emerald-500 transition-colors" />
-                <span>Staff Access</span>
-              </Link>
-              
-              <div className="text-gray-400 text-xs">
-                Developed by <a href="#" className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">FeliD Media</a>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur-2xl opacity-40 animate-pulse"></div>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                      className="absolute -inset-3 border-4 border-emerald-400/20 border-t-emerald-400 border-b-cyan-400 rounded-3xl"
+                    />
+                    <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex items-center justify-center shadow-2xl">
+                      <Building className="w-7 h-7 text-white" />
+                    </div>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full border-2 border-gray-950 flex items-center justify-center"
+                    >
+                      <Sparkles className="w-2.5 h-2.5 text-white" />
+                    </motion.div>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                      Emerald Capital
+                    </h2>
+                    <p className="text-gray-400 text-sm font-medium">Financial Mastery</p>
+                  </div>
+                </div>
+
+                <p className="text-gray-300 text-sm mb-6 leading-relaxed border-l-4 border-gradient-to-b from-emerald-500 to-cyan-500 pl-5">
+                  Where financial innovation meets unparalleled excellence. 
+                  Your journey to wealth mastery starts here.
+                </p>
+
+                <div className="flex gap-3 mb-6">
+                  <SocialIcon href="#" icon={Twitter} label="Twitter" color="text-sky-400" />
+                  <SocialIcon href="#" icon={Facebook} label="Facebook" color="text-blue-500" />
+                  <SocialIcon href="#" icon={Instagram} label="Instagram" color="text-pink-500" />
+                  <SocialIcon href="#" icon={Linkedin} label="LinkedIn" color="text-blue-400" />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Navigation - REDUCED SPACING */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className="text-xl font-bold mb-5 flex items-center gap-3">
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                  />
+                  Navigation
+                </h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <ul className="space-y-2">
+                    <QuickLink to="/" icon={Target}>Home</QuickLink>
+                    <QuickLink to="/about" icon={Building}>About</QuickLink>
+                    <QuickLink to="/blog" icon={TrendingUpIcon}>Insights</QuickLink>
+                    <QuickLink to="/contact" icon={MessageCircle}>Contact</QuickLink>
+                  </ul>
+                  <ul className="space-y-2">
+                    <QuickLink to="/loans" icon={CreditCard}>Loans</QuickLink>
+                    <QuickLink to="/investments" icon={Briefcase}>Investments</QuickLink>
+                    <QuickLink to="/digital-banking" icon={GlobeIcon}>Digital Banking</QuickLink>
+                    <QuickLink to="/careers" icon={User}>Careers</QuickLink>
+                  </ul>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Contact Cards - REDUCED PADDING */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+              >
+                <h3 className="text-xl font-bold mb-5 flex items-center gap-3">
+                  <motion.span
+                    animate={{ scale: [1, 1.5, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                  />
+                  Contact & Support
+                </h3>
+                
+                <div className="space-y-4">
+                  <motion.a 
+                    href="tel:+233208070000"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
+                  >
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                      <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                        <PhoneCall className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">Executive Line</p>
+                      <p className="text-lg font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                        +233 20 807 0000
+                      </p>
+                    </div>
+                  </motion.a>
+
+                  <motion.a 
+                    href="mailto:info@emeraldcapitalgh.com"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
+                  >
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                      <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                        <MailCheck className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">Email Support</p>
+                      <p className="text-white font-bold text-sm">info@emeraldcapitalgh.com</p>
+                    </div>
+                  </motion.a>
+                </div>
+
+                <div className="mt-6">
+                  <div className="flex items-center gap-3 text-xs text-gray-400 p-3 rounded-xl bg-gradient-to-r from-gray-900/40 to-gray-800/40 backdrop-blur-sm">
+                    <Headphones className="w-4 h-4 text-emerald-500" />
+                    <span>24/7 Emergency:</span>
+                    <a href="tel:0208203653" className="text-emerald-400 hover:text-cyan-300 transition-colors font-bold">
+                      020 820 3653
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Newsletter - REDUCED PADDING */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <h3 className="text-xl font-bold mb-5 flex items-center gap-3">
+                  <motion.span
+                    animate={{ rotate: [0, 180, 360] }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                    className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+                  />
+                  Stay Ahead
+                </h3>
+                
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 via-teal-500/20 to-cyan-500/30 rounded-2xl blur-2xl animate-pulse"></div>
+                  <div className="relative bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 backdrop-blur-2xl rounded-2xl p-5 border-2 border-gray-700/50 shadow-2xl overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-cyan-500/10 opacity-0 hover:opacity-100 transition-opacity duration-700"></div>
+                    
+                    <div className="flex items-center gap-3 mb-4 relative z-10">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl blur-md"></div>
+                        <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                          <Send className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-white">Financial Intelligence</h4>
+                        <p className="text-gray-400 text-xs">Premium insights delivered</p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleNewsletterSubmit} className="space-y-4 relative z-10">
+                      <div className="relative">
+                        <input 
+                          type="email" 
+                          placeholder="your@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full px-5 py-4 bg-gray-900/60 text-white text-sm border-2 border-gray-700 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/30 transition-all duration-300 backdrop-blur-sm"
+                          required
+                          disabled={isSubmitting}
+                        />
+                        <motion.button
+                          type="submit"
+                          disabled={isSubmitting}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`absolute right-2 top-2 px-5 py-2.5 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 text-sm ${
+                            isSubmitting 
+                              ? 'bg-gray-700 cursor-not-allowed' 
+                              : 'bg-gradient-to-r from-emerald-600 to-cyan-600 text-white hover:shadow-xl hover:shadow-emerald-500/50'
+                          }`}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Joining
+                            </>
+                          ) : (
+                            <>
+                              Subscribe
+                              <ArrowUpRight className="w-3 h-3" />
+                            </>
+                          )}
+                        </motion.button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                        <span>Secure & confidential. Unsubscribe anytime.</span>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-gray-400 p-2 rounded-lg bg-gradient-to-r from-gray-900/40 to-gray-800/40">
+                    <Lock className="w-3 h-3 text-emerald-500" />
+                    <span>256-bit Encryption</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-400 p-2 rounded-lg bg-gradient-to-r from-gray-900/40 to-gray-800/40">
+                    <Shield className="w-3 h-3 text-emerald-500" />
+                    <span>GDPR Compliant</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Bottom Bar - REDUCED PADDING */}
+          <div className="relative border-t border-gray-800/50 pt-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="text-center lg:text-left">
+                <p className="text-gray-400 text-sm">
+                  © {new Date().getFullYear()} <span className="text-white font-bold">Emerald Capital Holdings</span>
+                </p>
+                <p className="text-gray-500 text-xs mt-1">
+                  Licensed by Bank of Ghana • Registration: AK-634-5480
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-5 text-sm">
+                {['Terms of Service', 'Privacy Policy', 'Cookie Policy', 'Disclosures', 'Sitemap'].map((item) => (
+                  <Link
+                    key={item}
+                    to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="text-gray-400 hover:text-white transition-colors hover:underline hover:underline-offset-4 text-xs"
+                  >
+                    {item}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Link 
+                  to="/admin/login"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 border-2 border-gray-700 text-gray-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 group text-xs"
+                >
+                  <Shield className="w-4 h-4 group-hover:text-emerald-500 transition-colors" />
+                  <span className="font-medium">Staff Portal</span>
+                </Link>
+                
+                <a 
+                  href="#"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-900/40 to-cyan-900/40 text-emerald-300 hover:text-emerald-200 transition-colors font-medium text-xs group relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <Zap className="w-4 h-4 group-hover:animate-pulse relative z-10" />
+                  <span className="relative z-10">FeliD Media</span>
+                  <Sparkles className="w-3 h-3 relative z-10" />
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1.5, type: "spring" }}
+        whileHover={{ scale: 1.15, rotate: 90 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 right-8 z-50 w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 text-white shadow-2xl shadow-emerald-500/50 flex items-center justify-center hover:shadow-emerald-500/70 transition-all duration-300 group"
+        aria-label="Scroll to top"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/30 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+        <ArrowUpRight className="w-6 h-6 rotate-45 relative z-10" />
+        <motion.div
+          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute inset-0 border-4 border-emerald-400/30 rounded-xl"
+        />
+      </motion.button>
     </footer>
   );
 };
