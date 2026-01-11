@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Headphones, X, Check, Shield, Lock, User, Phone, MapPin, Building, Eye, EyeOff, Calendar, Mail, IdCard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -683,16 +684,13 @@ const SignupPage = () => {
   };
 
   const Logo = ({ className = '' }) => (
-    <div className={`flex items-center ${className}`}>
-      <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
-        <div className="text-white font-bold text-lg">EC</div>
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
-      </div>
-      <div className="text-gray-800 text-xl font-bold leading-tight">
-        Emerald<br />
-        <span className="text-emerald-600 font-semibold text-lg">Capital</span>
-      </div>
-    </div>
+    <Link to="/" className={`flex items-center ${className}`}>
+      <img
+        src="./emerald-logo.png"
+        alt="Emerald Capital Logo"
+        className="h-12 w-auto"
+      />
+    </Link>
   );
 
   const ProgressSteps = () => (

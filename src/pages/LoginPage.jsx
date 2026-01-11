@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Headphones, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../components/CustomToast';
@@ -214,16 +214,13 @@ const LoginPage = () => {
   }, []);
 
   const Logo = ({ className = '' }) => (
-    <div className={`flex items-center mb-10 ${className}`}>
-      <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-xl mr-3 relative flex items-center justify-center shadow-lg">
-        <div className="text-white font-bold text-lg">EC</div>
-        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full border-2 border-white"></div>
-      </div>
-      <div className="text-gray-800 text-xl font-bold leading-tight">
-        Emerald<br />
-        <span className="text-emerald-600 font-semibold text-lg">Capital</span>
-      </div>
-    </div>
+    <Link to="/" className={`flex items-center ${className}`}>
+      <img
+        src="./emerald-logo.png"
+        alt="Emerald Capital Logo"
+        className="h-12 w-auto"
+      />
+    </Link>
   );
 
   return (
@@ -232,7 +229,7 @@ const LoginPage = () => {
       
       <div className="min-h-screen bg-white flex">
         <div className="flex-1 p-8 lg:p-14 flex flex-col justify-center max-w-lg mx-auto">
-          <Logo />
+          <Logo className="mb-10" />
           
           <h1 className="text-2xl lg:text-3xl text-gray-800 mb-2 font-semibold">Log in</h1>
           <p className="text-gray-500 text-base mb-8 lg:mb-10">Welcome back! Please enter your details.</p>
