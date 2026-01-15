@@ -68,7 +68,7 @@ const LeadershipOwnershipPage = lazy(() => import("./pages/LeadershipOwnershipPa
 const BoardOfDirectorsPage = lazy(() => import("./pages/BoardOfDirectorsPage.jsx"));
 const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPage.jsx"));
 const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage.jsx"));
-const DigitalBankingPage = lazy(() => import("./pages/DigitalBankingPage.jsx"));
+const DigitalBankingPage = lazy(() => import("./pages/Digitalbankingpage.jsx"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
