@@ -157,6 +157,11 @@ const Navbar = () => {
   };
 
   const pathFor = (item) => {
+    // Special case for Digital & Mobile Banking
+    if (item === "Digital & Mobile Banking") {
+      return "/digital-banking";
+    }
+    
     const cleanItem = item
       .replace(/^Section\s+\d+:\s*/, '')
       .replace(/—/g, '')
