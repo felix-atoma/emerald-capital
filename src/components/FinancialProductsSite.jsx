@@ -167,7 +167,7 @@ const FinancialProductsSite = () => {
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                 <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                   <img
-                    src="ip.png"
+                    src="/loan-disbursement-ghana.png"
                     alt="IPPIS Loan Illustration"
                     className="w-full h-full object-cover"
                   />
@@ -270,7 +270,7 @@ const FinancialProductsSite = () => {
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
   <img
-    src="phone.png"  // ✅ put your image in /public folder OR import from /src/assets
+    src="/loan-approved-ghana.png"  // ✅ put your image in /public folder OR import from /src/assets
     alt="MT Loan Illustration"
     className="w-full h-full object-cover"
   />
@@ -386,7 +386,7 @@ const FinancialProductsSite = () => {
       <div className="md:w-1/2 relative flex justify-center">
         <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl border-4 border-gray-200">
           <img
-            src="car.png"   // ✅ put your image in /public OR import from /src/assets
+            src="/car-loan-ghana.png"   // ✅ put your image in /public OR import from /src/assets
             alt="Car Valuation Visual"
             className="w-full h-full object-cover"
           />
