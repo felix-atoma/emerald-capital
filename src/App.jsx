@@ -68,6 +68,7 @@ const LeadershipOwnershipPage = lazy(() => import("./pages/LeadershipOwnershipPa
 const BoardOfDirectorsPage = lazy(() => import("./pages/BoardOfDirectorsPage"));
 const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPage"));
 const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage"));
+const DigitalBankingPage= lazy(() => import("./pages/DigitalbankingPage"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -132,6 +133,7 @@ function App() {
                 <Route path="emeraldbusiness" element={<EmeraldBusinessPage/>} />
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
+                <Route path="/digital-banking" element={<DigitalBankingPage />} />
                 
                 {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
@@ -169,6 +171,7 @@ function App() {
                 <Route path="northernsavannah-and-northeast" element={<RegionalBranchManagersPage/>} />
                 <Route path="upperwest-and-uppereastregion" element={<RegionalBranchManagersPage/>} />
                 <Route path="diasporaservices" element={<RegionalBranchManagersPage/>} />
+                
               </Route>
               
               <Route path="form" element={<Form />} />

@@ -330,9 +330,9 @@ const Navbar = () => {
               <DesktopNavItem key={link.label} link={link} />
             ))}
             
-            {/* Internet Banking Button */}
+            {/* Digital Banking Button */}
             <Link
-              to="/login"
+              to="/digital-banking"
               className="ml-6 bg-emerald-600 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
             >
               Digital & Mobile Banking
@@ -341,12 +341,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <div className="lg:hidden flex items-center space-x-4">
-            <Link
-              to="/login"
-              className="bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors"
-            >
-              Login
-            </Link>
+            {/* Removed the mobile login button */}
             <button
               className="p-2 rounded-lg hover:bg-gray-100"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
