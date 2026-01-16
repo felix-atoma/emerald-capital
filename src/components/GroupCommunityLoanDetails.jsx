@@ -134,50 +134,7 @@ const GroupCommunityLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-teal-50 to-green-50 rounded-2xl p-8 shadow-lg border border-teal-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Group Loan Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Group Size (Members)</label>
-                  <input
-                    type="range"
-                    min="5"
-                    max="20"
-                    step="1"
-                    defaultValue="10"
-                    className="w-full h-2 bg-teal-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">5 Members</span>
-                    <span className="font-bold text-gray-900">10 Members</span>
-                    <span className="text-sm text-gray-600">20 Members</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Total Group Loan (₵)</label>
-                  <div className="border-2 border-teal-200 rounded-xl px-4 py-3">
-                    <div className="font-bold text-gray-900 text-lg">₵7,500</div>
-                    <div className="text-sm text-gray-600">₵750 average per member</div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-teal-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (per member)</span>
-                    <span className="font-bold text-gray-900">₵68/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Group Total Payment</span>
-                    <span className="font-bold text-teal-600">₵680/month</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Group Repayment</span>
-                    <span className="font-bold text-xl text-green-600">₵8,160</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Documents Required */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-teal-100">

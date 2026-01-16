@@ -149,55 +149,7 @@ const PersonalLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-sky-50 to-cyan-50 rounded-2xl p-8 shadow-lg border border-sky-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Personal Loan Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Amount Needed (₵)</label>
-                  <input
-                    type="range"
-                    min="500"
-                    max="30000"
-                    step="500"
-                    defaultValue="15000"
-                    className="w-full h-2 bg-sky-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵500</span>
-                    <span className="font-bold text-gray-900">₵15,000</span>
-                    <span className="text-sm text-gray-600">₵30,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Loan Purpose</label>
-                  <select className="w-full border-2 border-sky-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Education</option>
-                    <option>Medical Expenses</option>
-                    <option>Home Improvement</option>
-                    <option>Wedding</option>
-                    <option>Travel</option>
-                    <option>Other Personal Needs</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-sky-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (24 months)</span>
-                    <span className="font-bold text-gray-900">₵720/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Processing Fee (2%)</span>
-                    <span className="font-bold text-sky-600">₵300</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-blue-600">₵17,280</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          
             {/* Support Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-sky-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Customer Support Services</h3>

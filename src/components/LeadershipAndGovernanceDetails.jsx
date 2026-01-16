@@ -290,9 +290,7 @@ const LeadershipAndGovernanceDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Download Governance Framework PDF
-            </button>
+            
           </div>
         </div>
 
@@ -392,24 +390,7 @@ const LeadershipAndGovernanceDetails = () => {
                 </div>
               ))}
             </div>
-            <div className="mt-8 text-center">
-              <p className="text-gray-600 mb-4 max-w-2xl mx-auto">
-                This structure outlines Emerald Capital's organizational framework with clearly defined 
-                leadership roles, responsibilities, key performance indicators (KPIs), and core team 
-                functions designed to ensure strong governance, operational efficiency, regulatory 
-                compliance, and sustainable growth.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-full font-bold hover:bg-emerald-700 transition-colors">
-                  <FileText className="w-5 h-5" />
-                  Download Detailed Organogram
-                </button>
-                <button className="inline-flex items-center gap-2 bg-white border-2 border-emerald-600 text-emerald-600 px-6 py-3 rounded-full font-bold hover:bg-emerald-50 transition-colors">
-                  <BookOpen className="w-5 h-5" />
-                  View Governance Policies
-                </button>
-              </div>
-            </div>
+            
           </div>
         </div>
 
@@ -450,33 +431,7 @@ const LeadershipAndGovernanceDetails = () => {
         </div>
 
         {/* Contact Section */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl px-8 py-8 shadow-xl">
-            <div className="text-left text-white">
-              <div className="flex items-center gap-3 mb-2">
-                <Clipboard className="w-6 h-6" />
-                <p className="text-lg font-bold">Governance Documentation</p>
-              </div>
-              <p className="text-emerald-100">
-                Access our complete governance framework, policies, and organizational structure documents
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <a 
-                href="mailto:governance@emeraldcapitalgh.com" 
-                className="bg-white text-emerald-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
-              >
-                Request Documents
-              </a>
-              <a 
-                href="tel:+233208070003" 
-                className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
-              >
-                Speak to Compliance
-              </a>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </div>
   );

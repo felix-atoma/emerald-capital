@@ -134,57 +134,7 @@ const EducationSkillsLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 shadow-lg border border-indigo-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Education Loan Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tuition Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="100"
-                    max="3000"
-                    step="100"
-                    defaultValue="1500"
-                    className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵100</span>
-                    <span className="font-bold text-gray-900">₵1,500</span>
-                    <span className="text-sm text-gray-600">₵3,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Study Duration</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["6 Months", "12 Months", "24 Months"].map((term) => (
-                      <button
-                        key={term}
-                        className="border-2 border-indigo-200 rounded-lg py-2 text-sm font-medium hover:border-indigo-400 hover:bg-indigo-50"
-                      >
-                        {term}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-indigo-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment</span>
-                    <span className="font-bold text-gray-900">₵135/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Interest</span>
-                    <span className="font-bold text-indigo-600">₵120</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-indigo-600">₵1,620</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+           
             {/* Covered Expenses */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Covered Expenses</h3>

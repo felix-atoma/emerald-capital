@@ -66,9 +66,7 @@ const LeadershipAndGovernanceHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-yellow-400 text-emerald-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Download Governance Framework
-          </button>
+         
         </div>
 
         {/* Right Content - Image with Badge */}

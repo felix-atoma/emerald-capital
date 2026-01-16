@@ -11,7 +11,7 @@ const FixedDepositPage = () => {
     <div>
       <GreenSustainableLoanHero/>
       <GreenSustainableLoanDetails/>
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         {/* <FAQsSection /> */}
         <LoanCalculator />
         <BusinessCTABanner />

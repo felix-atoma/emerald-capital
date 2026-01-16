@@ -133,56 +133,7 @@ const EmergencyPersonalLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-8 shadow-lg border border-red-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Emergency Loan Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Needed Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="100"
-                    max="2500"
-                    step="100"
-                    defaultValue="1000"
-                    className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵100</span>
-                    <span className="font-bold text-gray-900">₵1,000</span>
-                    <span className="text-sm text-gray-600">₵2,500</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Repayment Period</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["3 Months", "6 Months", "12 Months"].map((term) => (
-                      <button
-                        key={term}
-                        className="border-2 border-red-200 rounded-lg py-2 text-sm font-medium hover:border-red-400 hover:bg-red-50"
-                      >
-                        {term}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-red-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment</span>
-                    <span className="font-bold text-gray-900">₵183/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Interest</span>
-                    <span className="font-bold text-red-600">₵100</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-red-600">₵1,100</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
 
             {/* Documents Required */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-red-100">

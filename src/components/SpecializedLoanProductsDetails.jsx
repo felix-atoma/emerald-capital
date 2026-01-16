@@ -148,55 +148,7 @@ const SpecializedLoanProductsDetails = () => {
               </div>
             </div>
 
-            {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-rose-50 to-pink-50 rounded-2xl p-8 shadow-lg border border-rose-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Specialized Capital Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Capital Needed (₵)</label>
-                  <input
-                    type="range"
-                    min="2000"
-                    max="50000"
-                    step="1000"
-                    defaultValue="25000"
-                    className="w-full h-2 bg-rose-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵2,000</span>
-                    <span className="font-bold text-gray-900">₵25,000</span>
-                    <span className="text-sm text-gray-600">₵50,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Industry Sector</label>
-                  <select className="w-full border-2 border-rose-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Healthcare & Medical</option>
-                    <option>Technology & IT</option>
-                    <option>Legal Services</option>
-                    <option>Hospitality</option>
-                    <option>Professional Services</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-rose-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (36 months)</span>
-                    <span className="font-bold text-gray-900">₵780/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Industry Discount</span>
-                    <span className="font-bold text-rose-600">-₵1,200</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-pink-600">₵26,880</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          
             {/* Support Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-rose-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Industry-Specific Support</h3>

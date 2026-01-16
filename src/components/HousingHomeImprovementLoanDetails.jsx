@@ -149,53 +149,7 @@ const HousingHomeImprovementLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-8 shadow-lg border border-amber-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Home Improvement Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Project Cost (₵)</label>
-                  <input
-                    type="range"
-                    min="500"
-                    max="10000"
-                    step="100"
-                    defaultValue="5000"
-                    className="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵500</span>
-                    <span className="font-bold text-gray-900">₵5,000</span>
-                    <span className="text-sm text-gray-600">₵10,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Project Type</label>
-                  <select className="w-full border-2 border-amber-200 rounded-xl px-4 py-3 outline-none">
-                    <option>New Construction</option>
-                    <option>Major Renovation</option>
-                    <option>Essential Repairs</option>
-                    <option>Cosmetic Upgrades</option>
-                    <option>Room Addition</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-amber-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (24 months)</span>
-                    <span className="font-bold text-gray-900">₵233/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Property Value Increase</span>
-                    <span className="font-bold text-amber-600">+₵2,000</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-orange-600">₵5,600</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
 
             {/* Required Documents */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-amber-100">

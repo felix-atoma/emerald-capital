@@ -153,52 +153,7 @@ const BusinessStarterLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 shadow-lg border border-emerald-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Loan Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Loan Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="200"
-                    max="5000"
-                    step="100"
-                    defaultValue="2500"
-                    className="w-full h-2 bg-emerald-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵200</span>
-                    <span className="font-bold text-gray-900">₵2,500</span>
-                    <span className="text-sm text-gray-600">₵5,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Repayment Period</label>
-                  <select className="w-full border-2 border-emerald-200 rounded-xl px-4 py-3 outline-none">
-                    <option>6 Months</option>
-                    <option>12 Months</option>
-                    <option>18 Months</option>
-                    <option>24 Months</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-emerald-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment</span>
-                    <span className="font-bold text-gray-900">₵225/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Interest</span>
-                    <span className="font-bold text-emerald-600">₵200</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-green-600">₵2,700</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Documents Required */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">

@@ -11,7 +11,7 @@ const IPloanPage = () => {
     <div>
       <IPLoanHero />
       <IPPISLoan/>
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         {/* <FAQsSection /> */}
         <LoanCalculator />
         <BusinessCTABanner />

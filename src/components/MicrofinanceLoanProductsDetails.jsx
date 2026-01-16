@@ -149,54 +149,7 @@ const MicrofinanceLoanProductsDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-violet-50 to-indigo-50 rounded-2xl p-8 shadow-lg border border-violet-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Microfinance Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Loan Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="100"
-                    max="5000"
-                    step="50"
-                    defaultValue="2500"
-                    className="w-full h-2 bg-violet-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵100</span>
-                    <span className="font-bold text-gray-900">₵2,500</span>
-                    <span className="text-sm text-gray-600">₵5,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Loan Purpose</label>
-                  <select className="w-full border-2 border-violet-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Business Capital</option>
-                    <option>Petty Trading</option>
-                    <option>Emergency Needs</option>
-                    <option>Education</option>
-                    <option>Farming</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-violet-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Weekly Payment (12 months)</span>
-                    <span className="font-bold text-gray-900">₵55/week</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Processing Fee</span>
-                    <span className="font-bold text-violet-600">₵50</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-purple-600">₵2,910</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+           
             {/* Support Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-violet-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Included Support Services</h3>

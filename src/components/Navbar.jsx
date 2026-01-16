@@ -32,10 +32,10 @@ const Navbar = () => {
           label: "Savings Products",
           nested: [
             "Emerald Capital — Savings Products",
-            "Digital & Mobile Banking",
-            "Remittance & Money Transfer",
-            "Investment & Wealth Management",
-            "Savings Products (Purple / Gold Theme)"
+            // "Digital & Mobile Banking",
+            // "Remittance & Money Transfer",
+            // "Investment & Wealth Management",
+            // "Savings Products (Purple / Gold Theme)"
           ]
         }
       ]

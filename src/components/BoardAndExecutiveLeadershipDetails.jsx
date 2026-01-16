@@ -473,53 +473,14 @@ const BoardAndExecutiveLeadershipDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg py-5 rounded-2xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              View Full Leadership Profiles
-            </button>
+            {/* <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg py-5 rounded-2xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"> */}
+              {/* View Full Leadership Profiles */}
+            {/* </button> */}
           </div>
         </div>
 
         {/* Leadership Team Excellence */}
-        <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Leadership Excellence Metrics
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                metric: "Board Effectiveness",
-                value: "95%",
-                description: "Governance assessment score",
-                icon: "👑"
-              },
-              {
-                metric: "Executive Retention",
-                value: "92%",
-                description: "Leadership team stability",
-                icon: "🤝"
-              },
-              {
-                metric: "Strategic Goals",
-                value: "98%",
-                description: "Annual target achievement",
-                icon: "🎯"
-              },
-              {
-                metric: "Stakeholder Trust",
-                value: "96%",
-                description: "Investor confidence rating",
-                icon: "⭐"
-              }
-            ].map((metric, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl mb-4">{metric.icon}</div>
-                <div className="text-3xl font-bold text-blue-600 mb-2">{metric.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{metric.metric}</h4>
-                <p className="text-gray-600 text-sm">{metric.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        
 
         {/* Leadership Philosophy */}
         <div className="mt-20">

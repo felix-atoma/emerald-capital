@@ -217,53 +217,7 @@ const FuneralLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8 shadow-lg border border-indigo-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Estimate Your Support</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Funeral Expenses (₵)</label>
-                  <input
-                    type="range"
-                    min="1000"
-                    max="20000"
-                    step="500"
-                    defaultValue="10000"
-                    className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵1,000</span>
-                    <span className="font-bold text-gray-900">₵10,000</span>
-                    <span className="text-sm text-gray-600">₵20,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Repayment Period</label>
-                  <select className="w-full border-2 border-indigo-200 rounded-xl px-4 py-3 outline-none">
-                    <option>6 months</option>
-                    <option>12 months</option>
-                    <option>18 months</option>
-                    <option>24 months</option>
-                    <option>36 months</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-indigo-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (12 months)</span>
-                    <span className="font-bold text-gray-900">₵920/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Grace Period</span>
-                    <span className="font-bold text-indigo-600">2 months</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-purple-600">₵11,040</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          
 
             {/* Support Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-indigo-100">

@@ -149,54 +149,7 @@ const WomensEmpowermentLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 shadow-lg border border-purple-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Women's Business Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Business Capital Needed (₵)</label>
-                  <input
-                    type="range"
-                    min="200"
-                    max="8000"
-                    step="100"
-                    defaultValue="4000"
-                    className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵200</span>
-                    <span className="font-bold text-gray-900">₵4,000</span>
-                    <span className="text-sm text-gray-600">₵8,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Business Type</label>
-                  <select className="w-full border-2 border-purple-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Retail Business</option>
-                    <option>Service Business</option>
-                    <option>Manufacturing</option>
-                    <option>Agriculture</option>
-                    <option>Digital Business</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-purple-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (18 months)</span>
-                    <span className="font-bold text-gray-900">₵250/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Women's Discount</span>
-                    <span className="font-bold text-purple-600">-₵720</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-fuchsia-600">₵4,500</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+         
             {/* Training Program */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-purple-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Included Training Program</h3>

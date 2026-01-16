@@ -149,53 +149,7 @@ const HealthMedicalLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl p-8 shadow-lg border border-pink-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Medical Expense Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Medical Cost (₵)</label>
-                  <input
-                    type="range"
-                    min="200"
-                    max="5000"
-                    step="100"
-                    defaultValue="2500"
-                    className="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵200</span>
-                    <span className="font-bold text-gray-900">₵2,500</span>
-                    <span className="text-sm text-gray-600">₵5,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Treatment Type</label>
-                  <select className="w-full border-2 border-pink-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Hospitalization</option>
-                    <option>Surgery</option>
-                    <option>Medications</option>
-                    <option>Diagnostic Tests</option>
-                    <option>Dental Care</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-pink-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (12 months)</span>
-                    <span className="font-bold text-gray-900">₵233/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Grace Period</span>
-                    <span className="font-bold text-pink-600">3 Months</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-rose-600">₵2,800</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Required Documents */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-pink-100">

@@ -149,53 +149,7 @@ const EducationLoanDetails = () => {
             </div>
 
             {/* Loan Calculator */}
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-8 shadow-lg border border-emerald-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Education Finance Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tuition & Fees (₵)</label>
-                  <input
-                    type="range"
-                    min="2000"
-                    max="50000"
-                    step="1000"
-                    defaultValue="25000"
-                    className="w-full h-2 bg-emerald-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵2,000</span>
-                    <span className="font-bold text-gray-900">₵25,000</span>
-                    <span className="text-sm text-gray-600">₵50,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Program Type</label>
-                  <select className="w-full border-2 border-emerald-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Undergraduate Degree</option>
-                    <option>Postgraduate Studies</option>
-                    <option>Professional Certification</option>
-                    <option>Vocational Training</option>
-                    <option>Study Abroad Program</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-emerald-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Payment (48 months)</span>
-                    <span className="font-bold text-gray-900">₵620/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Grace Period After Graduation</span>
-                    <span className="font-bold text-emerald-600">6 months</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Total Repayment</span>
-                    <span className="font-bold text-xl text-teal-600">₵29,760</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Support Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">

@@ -480,102 +480,7 @@ const Contact = () => {
         </motion.section>
 
         {/* Customer Support */}
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-24"
-        >
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
-              <Headphones className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold text-sm">CUSTOMER SUPPORT</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              24/7 <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Support</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ContactCard
-              icon={Phone}
-              title="Support Hotlines"
-              description="Dedicated customer service lines"
-              contact="0531929712 / 0537420472"
-              color="from-emerald-500 to-teal-500"
-              actionText="Call Support"
-              isPhone={true}
-            />
-
-            <ContactCard
-              icon={Smartphone}
-              title="Mobile Support"
-              description="Additional mobile contact numbers"
-              contact="0208203653 / 0209877171 / 0240776444"
-              color="from-teal-500 to-cyan-500"
-              actionText="Call Mobile"
-              isPhone={true}
-            />
-
-            <ContactCard
-              icon={Mail}
-              title="Support Email"
-              description="Email support for non-urgent inquiries"
-              contact="support@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-              actionText="Email Support"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={MailCheck}
-              title="Alternate Email"
-              description="Secondary email for support"
-              contact="emeraldcapitalgh@gmail.com"
-              color="from-teal-500 to-cyan-500"
-              actionText="Send Email"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={MessageSquare}
-              title="WhatsApp Support"
-              description="Chat with us on WhatsApp"
-              contact="0208070000"
-              color="from-emerald-500 to-teal-500"
-              actionText="Message on WhatsApp"
-              actionLink="https://wa.me/233208070000"
-            />
-
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-3xl blur-xl"></div>
-              <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/60 backdrop-blur-xl rounded-2xl p-8 border border-emerald-100/50 shadow-xl">
-                <div className="flex items-start gap-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl blur-lg opacity-50"></div>
-                    <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
-                      <Clock className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Operating Hours</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="font-semibold text-gray-800">Office Walk-in</p>
-                        <p className="text-gray-600">Mon–Fri: 8:00 AM – 5:00 PM</p>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">Online & Internet Banking</p>
-                        <p className="text-gray-600">Mon–Sun: 24/7</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.section>
+        
 
         {/* Regional Offices */}
         <motion.section
@@ -585,292 +490,35 @@ const Contact = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-24"
         >
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
-              <Globe className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold text-sm">REGIONAL OFFICES</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Regional <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Managers</span>
-            </h2>
-          </div>
+          
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <OfficeCard
-              region="Ashanti Region"
-              manager="Mr. Christian Yaw Boateng"
-              phone="+233 544860573"
-              email="ashanti@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-            />
+            
 
-            <OfficeCard
-              region="Western North Region"
-              manager="Mrs. Beatrice Bannor"
-              phone="+233 241737302"
-              email="westernnorth@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-            />
+           
 
-            <OfficeCard
-              region="Bono, Bono East & Ahafo"
-              manager="Mrs. Helena Boamah"
-              phone="+233 247051745"
-              email="bono@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-            />
+           
 
-            <OfficeCard
-              region="Central & Western"
-              manager="Ms. Amazing Nana Ekua Abbey"
-              phone="+233 591594248"
-              email="central@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-            />
+          
 
-            <OfficeCard
-              region="Greater Accra, Eastern & Volta"
-              manager="Mr. Martin Jones-Arthur"
-              phone="+233 24317070"
-              email="accra@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-            />
+           
 
-            <OfficeCard
-              region="Volta, Oti & North East"
-              manager="Ms. Esther Takyi"
-              phone="+233 557596494"
-              email="volta@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-            />
+            
 
-            <OfficeCard
-              region="Northern, Savanna, Upper East & Upper West"
-              manager="Mrs. Salma Issah"
-              phone="+233 244525034"
-              email="northern@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-            />
+            
 
-            <OfficeCard
-              region="Diaspora Services"
-              manager="Odiasempa Asamoah Koranteng"
-              phone="+44 7506181029"
-              email="diaspora@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-            />
+            
           </div>
         </motion.section>
 
         {/* Key Departments */}
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mb-24"
-        >
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
-              <Briefcase className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold text-sm">KEY DEPARTMENTS</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Departmental <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Contacts</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ContactCard
-              icon={TrendingUp}
-              title="Finance / Accounts"
-              description="Financial inquiries and account management"
-              contact="finance@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-              actionText="Email Finance"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={Users}
-              title="Human Resources"
-              description="Career opportunities and employment"
-              contact="hr@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-              actionText="Email HR"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={ShieldCheck}
-              title="Legal / Compliance"
-              description="Regulatory and legal matters"
-              contact="compliance@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-              actionText="Email Compliance"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={Target}
-              title="Marketing & Business Development"
-              description="Partnerships and business growth"
-              contact="marketing@emeraldcapitalgh.com"
-              color="from-teal-500 to-cyan-500"
-              actionText="Email Marketing"
-              isEmail={true}
-            />
-
-            <ContactCard
-              icon={Laptop}
-              title="Digital & IT Support"
-              description="Technical issues and digital services"
-              contact="techsupport@emeraldcapitalgh.com"
-              color="from-emerald-500 to-teal-500"
-              actionText="Email Tech Support"
-              isEmail={true}
-            />
-          </div>
-        </motion.section>
+       
 
         {/* Social Media */}
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-24"
-        >
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
-              <MessageCircle className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold text-sm">SOCIAL MEDIA</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Connect on <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Social Media</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <SocialCard
-              platform="LinkedIn"
-              handle="linkedin.com/company/emeraldcapital"
-              icon={Linkedin}
-              color="bg-[#0077B5]"
-              link="https://linkedin.com/company/emeraldcapital"
-            />
-
-            <SocialCard
-              platform="Twitter"
-              handle="@EmeraldCapitalGH"
-              icon={Twitter}
-              color="bg-[#1DA1F2]"
-              link="https://twitter.com/EmeraldCapitalGH"
-            />
-
-            <SocialCard
-              platform="Facebook"
-              handle="facebook.com/EmeraldCapitalGH"
-              icon={Facebook}
-              color="bg-[#1877F2]"
-              link="https://facebook.com/EmeraldCapitalGH"
-            />
-
-            <SocialCard
-              platform="Instagram"
-              handle="@EmeraldCapital"
-              icon={Instagram}
-              color="bg-gradient-to-br from-purple-500 to-pink-500"
-              link="https://instagram.com/EmeraldCapital"
-            />
-
-            <SocialCard
-              platform="WhatsApp"
-              handle="+233 208070000"
-              icon={MessageSquare}
-              color="bg-[#25D366]"
-              link="https://wa.me/233208070000"
-            />
-
-            <SocialCard
-              platform="TikTok"
-              handle="Emeraldcapita"
-              icon={MessageCircle}
-              color="bg-black"
-              link="https://tiktok.com/@Emeraldcapita"
-            />
-
-            <SocialCard
-              platform="Email"
-              handle="info@emeraldcapitalgh.com"
-              icon={Mail}
-              color="bg-gradient-to-r from-emerald-500 to-teal-500"
-              link="mailto:info@emeraldcapitalgh.com"
-            />
-
-            <SocialCard
-              platform="Website"
-              handle="emeraldcapitalgh.com"
-              icon={Globe}
-              color="bg-gradient-to-r from-teal-500 to-cyan-500"
-              link="https://www.emeraldcapitalgh.com"
-            />
-          </div>
-        </motion.section>
+       
 
         {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-center"
-        >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-cyan-500/10 rounded-3xl blur-3xl"></div>
-            <div className="relative bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 backdrop-blur-sm rounded-3xl p-12 border border-emerald-200/30">
-              <div className="max-w-3xl mx-auto">
-                <div className="relative w-24 h-24 mx-auto mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur-xl opacity-50"></div>
-                  <div className="relative w-24 h-24 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center shadow-2xl">
-                    <PhoneCall className="w-12 h-12 text-white" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center border-4 border-white">
-                    <Sparkles className="w-3 h-3 text-white" />
-                  </div>
-                </div>
-                
-                <h3 className="text-4xl font-bold text-gray-900 mb-6">
-                  Ready to <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Connect</span>?
-                </h3>
-                <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-                  Choose your preferred contact method and reach out to us today. 
-                  Our dedicated team is ready to assist with your financial needs.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                  <motion.a
-                    href="tel:+233208070000"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-10 py-5 bg-gradient-to-r from-emerald-600 to-teal-500 text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-emerald-500/40 transition-all duration-300 flex items-center justify-center gap-3"
-                  >
-                    <Phone className="w-5 h-5" />
-                    Call Now
-                  </motion.a>
-                  <motion.a
-                    href="mailto:info@emeraldcapitalgh.com"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-10 py-5 bg-white text-emerald-600 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-emerald-200/40 border-2 border-emerald-100 transition-all duration-300 flex items-center justify-center gap-3"
-                  >
-                    <Mail className="w-5 h-5" />
-                    Email Us
-                  </motion.a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        
       </div>
 
       {/* Footer */}

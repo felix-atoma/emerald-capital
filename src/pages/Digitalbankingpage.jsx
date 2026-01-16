@@ -172,7 +172,7 @@ const DigitalBankingPage = () => {
               <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">Reimagined</span>
             </h1>
             <p className="text-xl md:text-2xl text-emerald-100 max-w-4xl mx-auto leading-relaxed">
-              Experience banking without boundaries. Manage your finances 24/7 with cutting-edge security, instant transactions, and tools that grow your wealth.
+              {/* Experience banking without boundaries. Manage your finances 24/7 with cutting-edge security, instant transactions, and tools that grow your wealth. */}
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
@@ -196,7 +196,7 @@ const DigitalBankingPage = () => {
       <section className="py-24 px-4 bg-gradient-to-b from-white to-emerald-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6">Powerful Features</h2>
+            
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">Everything you need to manage your money like a pro</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -251,7 +251,7 @@ const DigitalBankingPage = () => {
               <Briefcase className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-5xl font-black text-gray-900">For Business</h2>
+              
               <p className="text-xl text-gray-600">Growth-driven solutions</p>
             </div>
           </div>
@@ -366,104 +366,7 @@ const DigitalBankingPage = () => {
         </div>
       </section>
 
-      {/* Support Information */}
-      <section className="py-24 px-4 bg-gradient-to-br from-emerald-50 to-teal-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-gray-900 mb-6">Support & Assistance</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">We're here to help you every step of the way</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-3xl blur-xl"></div>
-              <div className="relative bg-white rounded-3xl p-8 shadow-xl">
-                <div className="flex items-start gap-6 mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl blur-lg opacity-50"></div>
-                    <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
-                      <Clock className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Operating Hours</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="font-semibold text-gray-800">Office Hours</p>
-                        <p className="text-gray-600">Mon–Fri: 8:00 AM – 5:00 PM GMT</p>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">Digital Banking Support</p>
-                        <p className="text-gray-600">Mon–Sun: 24/7</p>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">Emergency Support</p>
-                        <p className="text-gray-600">Available 24/7 for urgent issues</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-3xl blur-xl"></div>
-              <div className="relative bg-white rounded-3xl p-8 shadow-xl">
-                <div className="flex items-start gap-6 mb-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-50"></div>
-                    <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                      <ShieldCheck className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Security Features</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        <span className="text-gray-700">256-bit SSL Encryption</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        <span className="text-gray-700">Biometric Authentication</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        <span className="text-gray-700">Real-time Fraud Monitoring</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        <span className="text-gray-700">Multi-factor Authentication</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <div className="inline-flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-2xl shadow-lg">
-                <MapPin className="w-5 h-5 text-emerald-600" />
-                <div className="text-left">
-                  <p className="text-sm text-gray-600">Head Office</p>
-                  <p className="font-semibold text-gray-900">Barekese Rd, Kumasi, Ghana</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 bg-white px-6 py-4 rounded-2xl shadow-lg">
-                <Globe className="w-5 h-5 text-emerald-600" />
-                <div className="text-left">
-                  <p className="text-sm text-gray-600">Website</p>
-                  <a href="https://www.emeraldcapitalgh.com" className="font-semibold text-emerald-600 hover:underline">
-                    www.emeraldcapitalgh.com
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Final CTA */}
       <section className="py-20 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600">
