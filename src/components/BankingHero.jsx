@@ -25,47 +25,100 @@ export default function BankingHero() {
   const [imageLoading, setImageLoading] = useState({});
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const currentScroll = window.scrollY;
-      setScrollProgress((currentScroll / totalScroll) * 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!isAutoPlaying || !allImagesLoaded) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % successStories.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, allImagesLoaded]);
-
-  const handleNext = () => {
-    setIsAutoPlaying(false);
-    setCurrentImageIndex((prev) => (prev + 1) % successStories.length);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  const handlePrev = () => {
-    setIsAutoPlaying(false);
-    setCurrentImageIndex((prev) => (prev - 1 + successStories.length) % successStories.length);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
-
-  const handleImageLoad = (id) => {
-    setImageLoading(prev => ({ ...prev, [id]: true }));
-    
-    // Check if all images are loaded
-    const allLoaded = successStories.every(story => imageLoading[story.id] === true);
-    if (allLoaded) {
-      setAllImagesLoaded(true);
+  // Success stories featuring Emerald Capital's services with real Ghana context
+  const successStories = [
+    {
+      id: 1,
+      title: "Digital Banking Made Simple",
+      description: "Modern mobile banking bringing financial services to urban and rural Ghana",
+      location: "Nationwide Service",
+      time: "24/7 Access",
+      impact: "10,000+ Active Users",
+      category: "Digital Banking",
+      entrepreneur: "Emerald Capital",
+      quote: "Banking should be accessible to everyone, everywhere. That's why we've built Ghana's most user-friendly digital banking platform.",
+      imageUrl: "/digital-banking-hero-ghana.png",
+      thumbnailUrl: "/digital-banking-hero-ghana.png",
+      businessType: "Digital Banking Platform"
+    },
+    {
+      id: 2,
+      title: "Loan Disbursement Success",
+      description: "Fast loan approvals and instant disbursements transforming Ghanaian businesses",
+      location: "Kumasi, Ashanti Region",
+      time: "Within 24 Hours",
+      impact: "GH₵1,000,000 Disbursed",
+      category: "Business Loans",
+      entrepreneur: "Business Owner",
+      quote: "I received my loan approval and funds within a day. Emerald Capital made expanding my business possible.",
+      imageUrl: "/loan-disbursement-ghana.png",
+      thumbnailUrl: "/loan-disbursement-ghana.png",
+      businessType: "Small Business Financing"
+    },
+    {
+      id: 3,
+      title: "Quick Loan Approval",
+      description: "Lightning-fast loan processing helping Ghanaians seize business opportunities",
+      location: "Accra, Greater Accra",
+      time: "Under 10 Minutes",
+      impact: "GH₵2,000,000 Approved",
+      category: "Personal & Business Loans",
+      entrepreneur: "Entrepreneur",
+      quote: "The loan approval came in just 5 minutes! This speed allowed me to grab a time-sensitive business opportunity.",
+      imageUrl: "/loan-approved-ghana.png",
+      thumbnailUrl: "/loan-approved-ghana.png",
+      businessType: "Fast Loan Processing"
+    },
+    {
+      id: 4,
+      title: "Asset Financing Solutions",
+      description: "Making vehicle ownership accessible with flexible payment plans",
+      location: "Takoradi, Western Region",
+      time: "6 Months to Ownership",
+      impact: "GH₵100,000,000 Value",
+      category: "Asset Financing",
+      entrepreneur: "Transport Business Owner",
+      quote: "Emerald Capital's asset financing helped me acquire a 2024 Benz for my transport business. Now I'm expanding my fleet.",
+      imageUrl: "/car-loan-ghana.png",
+      thumbnailUrl: "/car-loan-ghana.png",
+      businessType: "Vehicle & Asset Financing"
+    },
+    {
+      id: 5,
+      title: "Ama's Fashion Boutique Success",
+      description: "From a small market stall in Makola to a thriving boutique in Accra Mall with 15 employees",
+      location: "Accra, Greater Accra Region",
+      time: "3 Years Growth",
+      impact: "GH₵500K Annual Revenue",
+      category: "Fashion & Retail",
+      entrepreneur: "Ama Mensah",
+      quote: "Emerald Capital believed in my vision when others saw only a market trader. Now I employ 15 women from my community.",
+      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      thumbnailUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      businessType: "African Fashion Boutique"
+    },
+    {
+      id: 6,
+      title: "Kwame's Agri-Tech Innovation",
+      description: "Modern farming technology increasing yields for 200 smallholder farmers in Ashanti Region",
+      location: "Kumasi, Ashanti Region",
+      time: "4 Years Operation",
+      impact: "200 Farmers Supported",
+      category: "Agriculture Technology",
+      entrepreneur: "Kwame Osei",
+      quote: "With Emerald's agricultural loan, we transformed traditional farming into a sustainable tech-driven business.",
+      imageUrl: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      thumbnailUrl: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      businessType: "Agricultural Technology"
     }
+  ];
+
+  // Additional high-quality banking/finance images for other sections
+  const bankingImages = {
+    heroBg: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+    missionBg: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+    communityImpact: "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+    digitalBanking: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
   };
 
   const values = [
@@ -97,108 +150,77 @@ export default function BankingHero() {
 
   const stats = [
     { value: "10K+", label: "Clients Empowered", prefix: "Over" },
-    { value: "₵50M+", label: "Capital Deployed", prefix: "Over" },
+    { value: "GH₵50M+", label: "Capital Deployed", prefix: "Over" },
     { value: "98%", label: "Client Satisfaction", prefix: "" },
     { value: "24/7", label: "Digital Support", prefix: "" }
   ];
 
-  // High-quality Unsplash images with Ghanaian/African business themes
-  const successStories = [
-    {
-      id: 1,
-      title: "Ama's Fashion Boutique Success",
-      description: "From a small market stall in Makola to a thriving boutique in Accra Mall with 15 employees",
-      location: "Accra, Greater Accra Region",
-      time: "3 Years Growth",
-      impact: "₵500K Annual Revenue",
-      category: "Fashion & Retail",
-      entrepreneur: "Ama Mensah",
-      quote: "Emerald Capital believed in my vision when others saw only a market trader. Now I employ 15 women from my community.",
-      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "African Fashion Boutique"
-    },
-    {
-      id: 2,
-      title: "Kwame's Agri-Tech Innovation",
-      description: "Modern farming technology increasing yields for 200 smallholder farmers in Ashanti Region",
-      location: "Kumasi, Ashanti Region",
-      time: "4 Years Operation",
-      impact: "200 Farmers Supported",
-      category: "Agriculture Technology",
-      entrepreneur: "Kwame Osei",
-      quote: "With Emerald's agricultural loan, we transformed traditional farming into a sustainable tech-driven business.",
-      imageUrl: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "Agricultural Technology"
-    },
-    {
-      id: 3,
-      title: "Esi's Organic Food Processing",
-      description: "Turning local produce into packaged goods, creating 30 jobs in Northern Ghana",
-      location: "Tamale, Northern Region",
-      time: "5 Years Journey",
-      impact: "30 New Jobs Created",
-      category: "Food Processing",
-      entrepreneur: "Esi Abubakar",
-      quote: "Financial access meant I could process our harvests locally, keeping value in our community.",
-      imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "Food Processing Plant"
-    },
-    {
-      id: 4,
-      title: "Kofi's Transport Network",
-      description: "Modern transportation fleet connecting rural communities to urban economic centers",
-      location: "Takoradi, Western Region",
-      time: "6 Years Growth",
-      impact: "50 Vehicles Operating",
-      category: "Transportation Services",
-      entrepreneur: "Kofi Annan",
-      quote: "Each new vehicle meant more communities connected to markets, schools, and hospitals.",
-      imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "Transportation Company"
-    },
-    {
-      id: 5,
-      title: "Akua's Beauty Academy",
-      description: "Training young women in beauty entrepreneurship, with 8 locations across Ghana",
-      location: "Accra & Kumasi",
-      time: "7 Years Impact",
-      impact: "300+ Women Trained",
-      category: "Beauty & Education",
-      entrepreneur: "Akua Asante",
-      quote: "We're not just creating businesses; we're creating economic independence for Ghanaian women.",
-      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "Beauty Training Academy"
-    },
-    {
-      id: 6,
-      title: "Yaw's Renewable Energy Solutions",
-      description: "Solar power installations bringing electricity to remote villages across Ghana",
-      location: "Across 8 Regions",
-      time: "4 Years Operation",
-      impact: "100+ Villages Powered",
-      category: "Renewable Energy",
-      entrepreneur: "Yaw Boateng",
-      quote: "Clean energy means clean income. Emerald's green financing made this possible.",
-      imageUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      businessType: "Solar Energy Provider"
-    }
-  ];
+  const currentStory = successStories[currentImageIndex];
 
-  // Additional high-quality banking/finance images for other sections
-  const bankingImages = {
-    heroBg: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-    missionBg: "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-    communityImpact: "https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-    digitalBanking: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const currentScroll = window.scrollY;
+      setScrollProgress((currentScroll / totalScroll) * 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Enable carousel after 3 seconds even if not all images loaded
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!allImagesLoaded) {
+        console.log('Enabling carousel after timeout');
+        setAllImagesLoaded(true);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [allImagesLoaded]);
+
+  useEffect(() => {
+    if (!isAutoPlaying || !allImagesLoaded) return;
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % successStories.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, allImagesLoaded, successStories.length]);
+
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentImageIndex((prev) => (prev + 1) % successStories.length);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  const currentStory = successStories[currentImageIndex];
+  const handlePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentImageIndex((prev) => (prev - 1 + successStories.length) % successStories.length);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const handleDotClick = (index) => {
+    setIsAutoPlaying(false);
+    setCurrentImageIndex(index);
+    setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
+  const handleImageLoad = (id) => {
+    setImageLoading(prev => {
+      const updated = { ...prev, [id]: true };
+      
+      // Check if all images are now loaded
+      const allLoaded = successStories.every(story => updated[story.id] === true);
+      if (allLoaded && !allImagesLoaded) {
+        setAllImagesLoaded(true);
+      }
+      
+      return updated;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white">
@@ -518,14 +540,12 @@ export default function BankingHero() {
                 <button
                   onClick={handlePrev}
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-black/80 transition-all duration-300 hover:scale-110 hover:shadow-lg"
-                  disabled={!allImagesLoaded}
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={handleNext}
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 backdrop-blur-sm border border-white/30 flex items-center justify-center text-white hover:bg-black/80 transition-all duration-300 hover:scale-110 hover:shadow-lg"
-                  disabled={!allImagesLoaded}
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
@@ -536,17 +556,12 @@ export default function BankingHero() {
                     {successStories.map((_, idx) => (
                       <button
                         key={idx}
-                        onClick={() => {
-                          setIsAutoPlaying(false);
-                          setCurrentImageIndex(idx);
-                          setTimeout(() => setIsAutoPlaying(true), 10000);
-                        }}
+                        onClick={() => handleDotClick(idx)}
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${
                           idx === currentImageIndex 
                             ? 'bg-yellow-400 w-6' 
                             : 'bg-white/60 hover:bg-white'
                         }`}
-                        disabled={!allImagesLoaded}
                       />
                     ))}
                   </div>
@@ -596,11 +611,7 @@ export default function BankingHero() {
                       ? 'border-emerald-300 ring-2 ring-emerald-200' 
                       : 'border-gray-200 hover:border-emerald-300'
                   }`}
-                  onClick={() => {
-                    setIsAutoPlaying(false);
-                    setCurrentImageIndex(index);
-                    setTimeout(() => setIsAutoPlaying(true), 10000);
-                  }}
+                  onClick={() => handleDotClick(index)}
                 >
                   {/* Thumbnail Image */}
                   <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-emerald-900 to-teal-800">
@@ -672,14 +683,12 @@ export default function BankingHero() {
                   <button
                     onClick={handlePrev}
                     className="w-10 h-10 rounded-full bg-emerald-100 hover:bg-emerald-200 flex items-center justify-center text-emerald-700 transition-colors hover:scale-110"
-                    disabled={!allImagesLoaded}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handleNext}
                     className="w-10 h-10 rounded-full bg-emerald-100 hover:bg-emerald-200 flex items-center justify-center text-emerald-700 transition-colors hover:scale-110"
-                    disabled={!allImagesLoaded}
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -689,17 +698,12 @@ export default function BankingHero() {
                 {successStories.map((story, idx) => (
                   <button
                     key={story.id}
-                    onClick={() => {
-                      setIsAutoPlaying(false);
-                      setCurrentImageIndex(idx);
-                      setTimeout(() => setIsAutoPlaying(true), 10000);
-                    }}
+                    onClick={() => handleDotClick(idx)}
                     className={`flex-shrink-0 px-4 py-2 rounded-full text-sm transition-all duration-300 flex items-center gap-2 ${
                       idx === currentImageIndex
                         ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
                         : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:shadow-md'
                     }`}
-                    disabled={!allImagesLoaded}
                   >
                     <div className={`w-2 h-2 rounded-full ${
                       idx === currentImageIndex ? 'bg-white' : 'bg-emerald-400'
@@ -741,7 +745,7 @@ export default function BankingHero() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { value: "200+", label: "Communities Impacted" },
-                  { value: "₵15M+", label: "Community Investment" },
+                  { value: "GH₵15M+", label: "Community Investment" },
                   { value: "5000+", label: "Jobs Created" },
                   { value: "98%", label: "Retention Rate" }
                 ].map((stat, index) => (
@@ -785,9 +789,9 @@ export default function BankingHero() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
                 className="px-8 py-3 bg-white text-emerald-600 font-semibold rounded-xl hover:bg-emerald-50 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 shadow-lg"
-                onClick={() => window.location.href = '/signup'}
+                onClick={() => window.location.href = '/digital-banking'}
               >
-                Open an Account
+                Request Digital Banking
               </button>
               <button 
                 className="px-8 py-3 bg-transparent border-2 border-white/40 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 hover:shadow-xl backdrop-blur-sm hover:border-white/60"
@@ -797,7 +801,7 @@ export default function BankingHero() {
               </button>
             </div>
             <p className="text-emerald-200 text-sm mt-6">
-              Start with as little as ₵50. No hidden fees. 100% digital application.
+              Start with as little as GH₵50. No hidden fees. 100% digital application.
             </p>
           </div>
         </motion.div>
