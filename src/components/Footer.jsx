@@ -655,7 +655,7 @@ const Footer = () => {
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 border-2 border-gray-700 text-gray-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 group text-xs"
                 >
                   <Shield className="w-4 h-4 group-hover:text-emerald-500 transition-colors" />
-                  <span className="font-medium">Staff Portal</span>
+                  {/* <span className="font-medium">Staff Portal</span> */}
                 </Link>
                 
                 <a 
@@ -664,7 +664,7 @@ const Footer = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <Zap className="w-4 h-4 group-hover:animate-pulse relative z-10" />
-                  <span className="relative z-10">FeliD Media</span>
+                  {/* <span className="relative z-10">FeliD Media</span> */}
                   <Sparkles className="w-3 h-3 relative z-10" />
                 </a>
               </div>
