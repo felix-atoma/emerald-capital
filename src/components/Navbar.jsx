@@ -28,16 +28,7 @@ const Navbar = () => {
       label: "Banking", 
       dropdown: [
         { label: "Remittance & Money Transfer", link: true },
-        { 
-          label: "Savings Products",
-          nested: [
-            "Emerald Capital — Savings Products",
-            // "Digital & Mobile Banking",
-            // "Remittance & Money Transfer",
-            // "Investment & Wealth Management",
-            // "Savings Products (Purple / Gold Theme)"
-          ]
-        }
+        { label: "Emerald Capital — Savings Products", link: true },
       ]
     },
     {
@@ -49,28 +40,17 @@ const Navbar = () => {
             "Business Starter Loan",
             "Working Capital Loan",
             "Agricultural Loan",
-            
-            
             "Group/Community Loan",
             "Green & Sustainable Loan",
             "Housing & Home Improvement Loan",
             "Health & Medical Loan",
             "Women's Empowerment Loan",
             "Micro-Enterprise Expansion Loan",
-            // "Emergency Agriculture Relief Loan",
             "Transport & Equipment Loan",
             "Seasonal Business Loan"
           ]
         },
-        { 
-
-          // no more nested links
-          label: "Specialized Loans",
-          nested: [
-            
-            "Section 2: Specialized Loan Products"   
-          ]
-        },
+        { label: "Specialized Loan Products", link: true },
         { label: "SME Loan", link: true },
         { label: "Business Loan", link: true },
         { label: "Personal Loan", link: true },
@@ -89,7 +69,6 @@ const Navbar = () => {
       label: "Project Financing",
       dropdown: [
         { label: "Emerald Business", link: true },
-        // { label: "Emerald Pay", link: true },
         { label: "Insurance Products", link: true },
       ],
     },
@@ -113,23 +92,12 @@ const Navbar = () => {
             "Shareholders/Owners",
             "Board of Directors Structure",
             "Executive Management / C-Suite",
-            "Chief Executive Officer (CEO)",
-            // "Chief Operating Officer (COO)",
-            // "Chief Financial Officer (CFO)",
-            // "Chief Risk Officer (CRO)",
-            // "Chief Technology Officer (CTO)",
-            // "Chief Marketing & Business Development Officer (CMO/BDO)",
-            // "Chief Compliance & Legal Officer (CCO/CLO)",
-            // "Chief Investment Officer (CIO)",
-            // "Chief Insurance Officer (CInsO)",
-            // "Chief Human Resources Officer (CHRO)",
-            // "Operational Structure and Organogram"
+            // "Chief Executive Officer (CEO)",
           ]
         },
        { label: "Regional Management", link: true },
       ]
     },
-    // { label: "Blog", link: true },
     { label: "Contact", link: true },
   ];
 
@@ -332,7 +300,6 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <div className="lg:hidden flex items-center space-x-4">
-            {/* Removed the mobile login button */}
             <button
               className="p-2 rounded-lg hover:bg-gray-100"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

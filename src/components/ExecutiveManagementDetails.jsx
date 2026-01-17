@@ -367,40 +367,7 @@ const ExecutiveManagementDetails = () => {
             </div>
 
             {/* Performance Dashboard */}
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Performance Dashboard</h3>
-              <div className="space-y-6">
-                {selectedRoleData.kpis.map((kpi, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-900">{kpi.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-gray-900">{kpi.current}</span>
-                        <span className="text-sm text-gray-500">/ {kpi.target}</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className={`h-2.5 rounded-full ${
-                          selectedRoleData.color.includes('emerald') ? 'bg-emerald-500' :
-                          selectedRoleData.color.includes('purple') ? 'bg-purple-500' :
-                          selectedRoleData.color.includes('red') ? 'bg-red-500' :
-                          selectedRoleData.color.includes('indigo') ? 'bg-indigo-500' :
-                          selectedRoleData.color.includes('pink') ? 'bg-pink-500' :
-                          selectedRoleData.color.includes('gray') ? 'bg-gray-500' :
-                          selectedRoleData.color.includes('teal') ? 'bg-teal-500' :
-                          selectedRoleData.color.includes('amber') ? 'bg-amber-500' :
-                          'bg-blue-500'
-                        }`}
-                        style={{ 
-                          width: `${Math.min(100, (parseFloat(kpi.current) / parseFloat(kpi.target)) * 100)}%` 
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
 
           {/* Right - Executive Excellence */}
@@ -493,53 +460,12 @@ const ExecutiveManagementDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Connect with Executive Team
-            </button>
+           
           </div>
         </div>
 
         {/* Executive Impact */}
-        <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Executive Leadership Impact
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                impact: "Operational Excellence",
-                value: "96%",
-                description: "Process efficiency and quality scores",
-                icon: "⚡"
-              },
-              {
-                impact: "Financial Performance",
-                value: "19.2%",
-                description: "Return on equity achievement",
-                icon: "💰"
-              },
-              {
-                impact: "Risk Management",
-                value: "99%",
-                description: "Risk coverage effectiveness",
-                icon: "🛡️"
-              },
-              {
-                impact: "Innovation Index",
-                value: "9.2/10",
-                description: "Digital transformation progress",
-                icon: "🚀"
-              }
-            ].map((metric, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl mb-4">{metric.icon}</div>
-                <div className="text-3xl font-bold text-cyan-600 mb-2">{metric.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{metric.impact}</h4>
-                <p className="text-gray-600 text-sm">{metric.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        
 
         {/* Executive Functions Grid */}
         <div className="mt-20">

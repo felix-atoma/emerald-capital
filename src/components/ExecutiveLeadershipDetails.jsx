@@ -609,84 +609,10 @@ const ExecutiveLeadershipDetails = () => {
         </div>
 
         {/* Team Performance */}
-        <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Executive Team Performance
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                metric: 'Team Excellence',
-                value: '95%',
-                description: 'Average performance rating across executives',
-                icon: '🏆'
-              },
-              {
-                metric: 'Strategic Goals',
-                value: '98%',
-                description: 'Achievement of strategic objectives',
-                icon: '🎯'
-              },
-              {
-                metric: 'Innovation Index',
-                value: '9.2/10',
-                description: 'Digital transformation progress',
-                icon: '💡'
-              },
-              {
-                metric: 'Team Collaboration',
-                value: '94%',
-                description: 'Cross-functional cooperation rating',
-                icon: '🤝'
-              }
-            ].map((item, index) => (
-              <div key={index} className="text-center animate-bobble" style={{ animationDelay: `${index * 0.2}s` }}>
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <div className="text-3xl font-bold text-emerald-600 mb-2">{item.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{item.metric}</h4>
-                <p className="text-gray-600 text-sm">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Functional Excellence */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Functional Leadership Excellence
-          </h3>
-          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-200">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {executiveTeam.map((exec, index) => (
-                <div 
-                  key={exec.id}
-                  onClick={() => setSelectedExecutive(exec.id)}
-                  className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer animate-bobble"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 mb-3">
-                      <img
-                        src={exec.profileImage}
-                        alt={exec.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(exec.name)}&background=3b82f6&color=fff&size=150&bold=true`;
-                        }}
-                      />
-                    </div>
-                    <div className="font-bold text-gray-900 text-sm mb-1">{exec.title.split(' ')[0]}</div>
-                    <div className="text-xs text-gray-600 mb-3">{exec.name.split(' ')[0]}</div>
-                    <div className="text-xs text-gray-500 line-clamp-2">{exec.role.substring(0, 60)}...</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
+       
         {/* Contact Executive Team */}
         <div className="mt-20 text-center">
           <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl px-8 py-8 shadow-xl animate-bobble">

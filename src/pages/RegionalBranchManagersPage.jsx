@@ -7,7 +7,7 @@ const RegionalBranchManagersPage = () => {
   return (
     <div>
       <RegionalBranchManagersHero />
-      <RegionalBranchManagersDetails />
+      { <RegionalBranchManagersDetails /> }
     </div>
   );
 };

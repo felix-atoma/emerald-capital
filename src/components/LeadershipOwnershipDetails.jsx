@@ -415,72 +415,7 @@ const LeadershipOwnershipDetails = () => {
         </div>
 
         {/* Leadership Impact */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Leadership Impact & Legacy
-          </h3>
-          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-3xl p-8 border border-emerald-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                {
-                  impact: 'Strategic Vision',
-                  metric: '98%',
-                  description: 'Long-term strategic goal achievement',
-                  icon: '🎯'
-                },
-                {
-                  impact: 'Governance Excellence',
-                  metric: 'A+',
-                  description: 'Industry governance rating',
-                  icon: '👑'
-                },
-                {
-                  impact: 'Value Creation',
-                  metric: '200%',
-                  description: 'Enterprise value growth',
-                  icon: '💰'
-                },
-                {
-                  impact: 'Industry Recognition',
-                  metric: '15+',
-                  description: 'National & international awards',
-                  icon: '🏆'
-                },
-                {
-                  impact: 'Team Development',
-                  metric: '500+',
-                  description: 'Professionals mentored',
-                  icon: '👥'
-                },
-                {
-                  impact: 'Market Expansion',
-                  metric: '50+',
-                  description: 'Branches established',
-                  icon: '🌍'
-                },
-                {
-                  impact: 'Innovation',
-                  metric: '95%',
-                  description: 'Digital transformation',
-                  icon: '💡'
-                },
-                {
-                  impact: 'Sustainability',
-                  metric: '100%',
-                  description: 'ESG compliance',
-                  icon: '♻️'
-                }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  <div className="text-2xl font-bold text-emerald-600 mb-2">{item.metric}</div>
-                  <div className="font-bold text-gray-900 mb-2">{item.impact}</div>
-                  <div className="text-sm text-gray-600">{item.description}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+       
 
         {/* Contact Leadership */}
         <div className="mt-20 text-center">

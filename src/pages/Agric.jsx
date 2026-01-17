@@ -12,9 +12,9 @@ const Agric = () => {
       <AgribusinessHero/>
       <AgricFinanceDetails/>
         {/* <DownloadAppSection /> */}
-        <FAQsSection />
-        <LoanCalculator />
-        <BusinessCTABanner />
+        {/* <FAQsSection /> */}
+        {/* <LoanCalculator /> */}
+        {/* <BusinessCTABanner /> */}
     </div>
   );
 };

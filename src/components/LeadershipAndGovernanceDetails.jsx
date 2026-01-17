@@ -295,46 +295,7 @@ const LeadershipAndGovernanceDetails = () => {
         </div>
 
         {/* KPIs and Performance Metrics */}
-        <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-emerald-100">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Governance Performance Indicators
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                kpi: "Regulatory Compliance",
-                value: "100%",
-                description: "Full compliance with all regulatory requirements",
-                icon: "📋"
-              },
-              {
-                kpi: "Risk Management",
-                value: "99.5%",
-                description: "Effectiveness of risk mitigation strategies",
-                icon: "🛡️"
-              },
-              {
-                kpi: "Stakeholder Engagement",
-                value: "98%",
-                description: "Satisfaction rate among stakeholders",
-                icon: "🤝"
-              },
-              {
-                kpi: "Decision Quality",
-                value: "96%",
-                description: "Success rate of strategic decisions",
-                icon: "🎯"
-              }
-            ].map((kpi, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl mb-4">{kpi.icon}</div>
-                <div className="text-3xl font-bold text-emerald-600 mb-2">{kpi.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{kpi.kpi}</h4>
-                <p className="text-gray-600 text-sm">{kpi.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Organogram Visualization */}
         <div className="mt-20">

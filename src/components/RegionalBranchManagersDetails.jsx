@@ -588,41 +588,7 @@ const RegionalBranchManagersDetails = () => {
             </div>
 
             {/* Responsibilities & Achievements */}
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Key Responsibilities */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble" 
-                style={{ animationDelay: '0.2s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Target className="w-5 h-5 text-amber-600" />
-                  Key Responsibilities
-                </h3>
-                <div className="space-y-4">
-                  {selectedRegionData.responsibilities.map((resp, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors">
-                      <CheckCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{resp}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Major Achievements */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-                style={{ animationDelay: '0.4s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-orange-600" />
-                  Key Achievements
-                </h3>
-                <div className="space-y-4">
-                  {selectedRegionData.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors">
-                      <Award className="w-5 h-5 text-orange-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{achievement}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            
           </div>
 
           {/* Right - Regional Impact */}

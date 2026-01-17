@@ -289,37 +289,7 @@ const OrganizationalStructureDetails = () => {
             </div>
 
             {/* Structure Visualization */}
-            <div className="mt-8 bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Reporting Structure</h3>
-              <div className="space-y-4">
-                {organizationalLevels.map((level, index) => (
-                  <div key={level.id} className="flex items-center gap-4">
-                    <div className={`
-                      w-12 h-12 rounded-xl flex items-center justify-center
-                      ${selectedLevel === level.id 
-                        ? `bg-gradient-to-r ${level.color} text-white` 
-                        : 'bg-gray-100 text-gray-600'
-                      }
-                    `}>
-                      {level.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className={`font-bold ${selectedLevel === level.id ? 'text-gray-900' : 'text-gray-700'}`}>
-                            {level.title}
-                          </div>
-                          <div className="text-sm text-gray-500">{level.subtitle}</div>
-                        </div>
-                        {index < organizationalLevels.length - 1 && (
-                          <ArrowRight className="w-5 h-5 text-gray-400" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+           
           </div>
 
           {/* Right - Metrics & Details */}
@@ -408,9 +378,7 @@ const OrganizationalStructureDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Download Structure Chart
-            </button>
+          
           </div>
         </div>
 
@@ -482,103 +450,10 @@ const OrganizationalStructureDetails = () => {
         </div>
 
         {/* Structure Efficiency Metrics */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Structure Efficiency Metrics
-          </h3>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                metric: "Decision Speed",
-                value: "92%",
-                description: "Faster than industry average",
-                icon: "⚡"
-              },
-              {
-                metric: "Communication Flow",
-                value: "95%",
-                description: "Effective information transfer",
-                icon: "📡"
-              },
-              {
-                metric: "Operational Efficiency",
-                value: "94%",
-                description: "Optimal resource utilization",
-                icon: "🏭"
-              },
-              {
-                metric: "Scalability Index",
-                value: "9.2/10",
-                description: "Easy expansion capability",
-                icon: "📈"
-              }
-            ].map((metric, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl mb-4">{metric.icon}</div>
-                <div className="text-3xl font-bold text-purple-600 mb-2">{metric.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{metric.metric}</h4>
-                <p className="text-gray-600 text-sm">{metric.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Benefits of Our Structure */}
-        <div className="mt-20 bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl p-8 border border-purple-200">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Benefits of Our Organizational Structure
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                benefit: "Clear Accountability",
-                description: "Well-defined roles and responsibilities at every level",
-                icon: "🎯"
-              },
-              {
-                benefit: "Efficient Decision-Making",
-                description: "Streamlined processes for faster strategic decisions",
-                icon: "⚡"
-              },
-              {
-                benefit: "Scalable Design",
-                description: "Easy expansion without structural bottlenecks",
-                icon: "📈"
-              },
-              {
-                benefit: "Optimal Control Span",
-                description: "Balanced management ratios for effective supervision",
-                icon: "👥"
-              },
-              {
-                benefit: "Effective Communication",
-                description: "Clear information flow across all levels",
-                icon: "📡"
-              },
-              {
-                benefit: "Talent Development",
-                description: "Clear career progression paths",
-                icon: "🌟"
-              },
-              {
-                benefit: "Risk Management",
-                description: "Built-in checks and balances",
-                icon: "🛡️"
-              },
-              {
-                benefit: "Customer Focus",
-                description: "Frontline empowerment for better service",
-                icon: "💖"
-              }
-            ].map((benefit, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-                <div className="text-2xl mb-3">{benefit.icon}</div>
-                <div className="font-bold text-gray-900 mb-2">{benefit.benefit}</div>
-                <div className="text-sm text-gray-600">{benefit.description}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Contact Section */}
         <div className="mt-20 text-center">

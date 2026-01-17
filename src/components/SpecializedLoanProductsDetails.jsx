@@ -172,71 +172,12 @@ const SpecializedLoanProductsDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-rose-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Specialized Loan
-            </button>
+           
           </div>
         </div>
 
         {/* Success Stories */}
-        <div className="mt-20 bg-gradient-to-r from-rose-50 to-pink-50 rounded-3xl p-12 shadow-xl border border-rose-100">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Industry Success Stories
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Dr. Kwame Asare",
-                business: "Asare Dental Clinic",
-                loan: "₵35,000",
-                before: "Basic equipment, limited services",
-                after: "Modern equipment, 3x patients, 2 new dentists"
-              },
-              {
-                name: "Sarah Oppong",
-                business: "TechFlow Solutions",
-                loan: "₵28,000",
-                before: "Freelance work, no office",
-                after: "10 developers, corporate clients, own office"
-              },
-              {
-                name: "Barrister Adu",
-                business: "Adu & Associates",
-                loan: "₵40,000",
-                before: "Solo practice, shared office",
-                after: "4 partners, own building, 15 staff members"
-              }
-            ].map((story, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {story.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">{story.name}</h4>
-                    <div className="text-rose-600 font-medium">{story.business}</div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-rose-50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-600">Before:</div>
-                      <div className="font-medium">{story.before}</div>
-                    </div>
-                    <div className="bg-rose-50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-600">After:</div>
-                      <div className="font-medium text-pink-600">{story.after}</div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <span className="text-gray-600">Specialized Loan:</span>
-                    <span className="font-bold text-rose-700">{story.loan}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Program Components */}
         <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-rose-100">
@@ -276,61 +217,7 @@ const SpecializedLoanProductsDetails = () => {
         </div>
 
         {/* Specialized Use Cases */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Specialized Investment Areas
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { 
-                area: "Medical Equipment", 
-                impact: "Diagnostic machines, surgical tools",
-                icon: "🏥" 
-              },
-              { 
-                area: "Tech Infrastructure", 
-                impact: "Servers, software licenses",
-                icon: "💻" 
-              },
-              { 
-                area: "Office Space", 
-                impact: "Professional premises setup",
-                icon: "🏢" 
-              },
-              { 
-                area: "Certifications", 
-                impact: "Professional licenses, training",
-                icon: "📜" 
-              },
-              { 
-                area: "Specialized Tools", 
-                impact: "Industry-specific equipment",
-                icon: "🔧" 
-              },
-              { 
-                area: "Staff Expansion", 
-                impact: "Hire qualified professionals",
-                icon: "👥" 
-              },
-              { 
-                area: "Marketing", 
-                impact: "Professional branding and outreach",
-                icon: "📢" 
-              },
-              { 
-                area: "Working Capital", 
-                impact: "Operational cash flow needs",
-                icon: "💼" 
-              },
-            ].map((impact, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-rose-100">
-                <div className="text-2xl mb-3">{impact.icon}</div>
-                <div className="font-bold text-gray-900 mb-2">{impact.area}</div>
-                <div className="text-sm text-gray-600">{impact.impact}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Benefits Section */}
         <div className="mt-20 grid md:grid-cols-3 gap-8">
