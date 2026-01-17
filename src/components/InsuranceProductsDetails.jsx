@@ -148,54 +148,7 @@ const InsuranceProductsDetails = () => {
               </div>
             </div>
 
-            {/* Premium Calculator */}
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-8 shadow-lg border border-red-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Premium Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Coverage Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="5000"
-                    max="500000"
-                    step="5000"
-                    defaultValue="100000"
-                    className="w-full h-2 bg-red-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵5,000</span>
-                    <span className="font-bold text-gray-900">₵100,000</span>
-                    <span className="text-sm text-gray-600">₵500,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Insurance Type</label>
-                  <select className="w-full border-2 border-red-200 rounded-xl px-4 py-3 outline-none">
-                    <option>Life Insurance</option>
-                    <option>Health Insurance</option>
-                    <option>Property Insurance</option>
-                    <option>Auto Insurance</option>
-                    <option>Business Insurance</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-red-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Monthly Premium</span>
-                    <span className="font-bold text-gray-900">₵280/month</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Annual Premium (Save 10%)</span>
-                    <span className="font-bold text-red-600">₵3,024/year</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Coverage Amount</span>
-                    <span className="font-bold text-xl text-orange-600">₵100,000</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
 
             {/* Coverage Features */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-red-100">
@@ -220,59 +173,12 @@ const InsuranceProductsDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-red-700 hover:to-orange-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Get Insurance Quote
-            </button>
+           
           </div>
         </div>
 
         {/* Success Stories */}
-        <div className="mt-20 bg-gradient-to-r from-red-50 to-orange-50 rounded-3xl p-12 shadow-xl border border-red-100">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Claims Success Stories
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Yaw Asante",
-                policy: "Life Insurance",
-                claim: "₵200,000",
-                situation: "Provided for family after unexpected passing, children's education secured"
-              },
-              {
-                name: "Abena Mensah",
-                policy: "Health Insurance",
-                claim: "₵35,000",
-                situation: "Full coverage for surgery and recovery, no out-of-pocket expenses"
-              },
-              {
-                name: "Kofi Owusu",
-                policy: "Property Insurance",
-                claim: "₵80,000",
-                situation: "Home rebuilt after fire damage, full replacement covered"
-              }
-            ].map((story, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {story.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">{story.name}</h4>
-                    <div className="text-red-600 font-medium">{story.policy}</div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-gray-700">{story.situation}</p>
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <span className="text-gray-600">Claim Paid:</span>
-                    <span className="font-bold text-red-700">{story.claim}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      
 
         {/* Program Components */}
         <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-red-100">

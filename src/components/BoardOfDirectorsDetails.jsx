@@ -6,8 +6,14 @@ import {
   Phone, Linkedin, BookOpen, Heart, Zap, Lightbulb,
   Building, Users2, Scale, GraduationCap, ArrowRight,
   ChevronRight, Target as TargetIcon, Award as AwardIcon,
-  ShieldCheck, Users as UsersIcon
+  ShieldCheck, Users as UsersIcon, User
 } from 'lucide-react';
+
+// TEMPORARY: Using placeholder images until you add your real images to the public folder
+// TO FIX: 
+// 1. Create a "public" folder in your project root if it doesn't exist
+// 2. Add your images: picture1.jpg, picture3.jpg, picture5.jpg, picture7.jpg
+// 3. Uncomment the real paths below and comment out the placeholder paths
 
 const BoardOfDirectorsDetails = () => {
   const [selectedDirector, setSelectedDirector] = useState('chairperson');
@@ -22,7 +28,12 @@ const BoardOfDirectorsDetails = () => {
       experience: '25+ years in banking, investment, and corporate governance',
       icon: <Crown className="w-8 h-8" />,
       color: 'from-blue-600 to-indigo-500',
-      profileImage: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face',
+      // OPTION 1: Once you add images to public folder, use this:
+      // profileImage: '/picture1.jpg',
+      
+      // OPTION 2: Temporary placeholder (currently active):
+      profileImage: '\Picture1.jpg',
+      
       responsibilities: [
         'Lead Board meetings and strategic discussions',
         'Oversee corporate governance framework',
@@ -51,7 +62,8 @@ const BoardOfDirectorsDetails = () => {
       experience: '20+ years in financial services, compliance, and corporate governance',
       icon: <Shield className="w-8 h-8" />,
       color: 'from-purple-600 to-pink-500',
-      profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
+      // profileImage: '/picture7.jpg',
+      profileImage: '\Picture7.jpg',
       responsibilities: [
         'Advise on regulatory compliance matters',
         'Monitor strategic investment decisions',
@@ -80,7 +92,8 @@ const BoardOfDirectorsDetails = () => {
       experience: '30+ years in corporate law, governance, and ethical leadership',
       icon: <Scale className="w-8 h-8" />,
       color: 'from-indigo-600 to-blue-500',
-      profileImage: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face',
+      // profileImage: '/picture5.jpg',
+      profileImage: '\Picture5.jpg',
       responsibilities: [
         'Ensure legal compliance standards',
         'Review corporate governance policies',
@@ -109,7 +122,8 @@ const BoardOfDirectorsDetails = () => {
       experience: '15+ years in banking operations, digital transformation, and strategic leadership',
       icon: <Briefcase className="w-8 h-8" />,
       color: 'from-cyan-600 to-teal-500',
-      profileImage: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face',
+      // profileImage: '/picture3.jpg',
+      profileImage: '\Picture3.jpg',
       responsibilities: [
         'Lead corporate operations strategy',
         'Drive digital transformation initiatives',
@@ -133,13 +147,51 @@ const BoardOfDirectorsDetails = () => {
 
   const selectedDirectorData = boardMembers.find(director => director.id === selectedDirector);
 
+  const renderDirectorImage = (director, size = 'normal') => {
+    const sizeClasses = size === 'large' 
+      ? 'w-48 h-48' 
+      : 'w-20 h-20';
+    
+    const borderClass = selectedDirector === director.id ? 'border-white' : 'border-gray-100';
+    
+    return (
+      <div className={`
+        ${sizeClasses} ${size === 'large' ? 'rounded-2xl' : 'rounded-full'} overflow-hidden border-4 ${borderClass} flex-shrink-0 bg-gradient-to-br ${director.color}
+      `}>
+        <img
+          src={director.profileImage}
+          alt={director.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error(`Failed to load image: ${director.profileImage}`);
+            // Replace with fallback icon
+            e.target.style.display = 'none';
+            const parent = e.target.parentElement;
+            if (parent && !parent.querySelector('svg')) {
+              const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              icon.setAttribute("class", size === 'large' ? 'w-24 h-24 text-white m-auto' : 'w-10 h-10 text-white m-auto');
+              icon.setAttribute("fill", "none");
+              icon.setAttribute("stroke", "currentColor");
+              icon.setAttribute("viewBox", "0 0 24 24");
+              icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>';
+              parent.appendChild(icon);
+              parent.style.display = 'flex';
+              parent.style.alignItems = 'center';
+              parent.style.justifyContent = 'center';
+            }
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full px-6 py-3 mb-6 animate-bobble">
-            <Crown className="w-5 h-5" />
+            <Crown className="w-5 h-5 text-white" />
             <span className="font-bold text-white">DISTINGUISHED BOARD OF DIRECTORS</span>
           </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
@@ -169,16 +221,7 @@ const BoardOfDirectorsDetails = () => {
                 <div className="p-6">
                   <div className="flex items-center gap-4">
                     {/* Director Image */}
-                    <div className={`
-                      w-20 h-20 rounded-full overflow-hidden border-4 flex-shrink-0
-                      ${selectedDirector === director.id ? 'border-white' : 'border-gray-100'}
-                    `}>
-                      <img
-                        src={director.profileImage}
-                        alt={director.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    {renderDirectorImage(director)}
                     
                     <div className="text-left">
                       <div className={`
@@ -222,13 +265,7 @@ const BoardOfDirectorsDetails = () => {
               <div className="p-8 text-white">
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   {/* Director Image */}
-                  <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
-                    <img
-                      src={selectedDirectorData.profileImage}
-                      alt={selectedDirectorData.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  {renderDirectorImage(selectedDirectorData, 'large')}
                   
                   {/* Director Info */}
                   <div className="flex-1">
@@ -544,16 +581,18 @@ const BoardOfDirectorsDetails = () => {
         </div>
       </div>
 
-      {/* Add custom animation styles */}
-      <style jsx>{`
-        @keyframes bobble {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-bobble {
-          animation: bobble 3s ease-in-out infinite;
-        }
-      `}</style>
+      {/* Custom animation styles */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes bobble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+          .animate-bobble {
+            animation: bobble 3s ease-in-out infinite;
+          }
+        `
+      }} />
     </div>
   );
 };

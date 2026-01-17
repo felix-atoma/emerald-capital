@@ -22,7 +22,7 @@ const LeadershipOwnershipDetails = () => {
       experience: '25+ years in banking, investment, and corporate governance',
       icon: <Crown className="w-8 h-8" />,
       color: 'from-emerald-600 to-teal-500',
-      profileImage: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face',
+      profileImage: '/Picture1.jpg',
       responsibilities: [
         'Chair Board of Directors meetings',
         'Define long-term strategic vision',
@@ -50,7 +50,7 @@ const LeadershipOwnershipDetails = () => {
       experience: 'Extensive experience in banking, fintech, and sustainable finance',
       icon: <Briefcase className="w-8 h-8" />,
       color: 'from-teal-600 to-emerald-500',
-      profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
+      profileImage: '/Picture2.png',
       responsibilities: [
         'Lead day-to-day operations',
         'Execute strategic initiatives',

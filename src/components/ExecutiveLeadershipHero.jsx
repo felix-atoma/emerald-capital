@@ -92,7 +92,7 @@ const ExecutiveLeadershipHero = () => {
                   <div className="bg-gradient-to-br from-emerald-600 to-teal-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble">
                     <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face"
+                        src="\Picture3.jpg"
                         alt="CEO"
                         className="w-full h-full object-cover"
                       />

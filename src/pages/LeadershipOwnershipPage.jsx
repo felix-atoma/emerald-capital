@@ -11,7 +11,7 @@ const MicroEnterpriseExpansionPage = () => {
   return (
     <div>
       <LeadershipOwnershipHero/>
-      <LeadershipOwnershipHero/>
+      < LeadershipOwnershipDetails/>
         {/* <DownloadAppSection /> */}
         {/* <FAQsSection /> */}
         {/* <LoanCalculator /> */}

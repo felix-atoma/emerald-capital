@@ -155,53 +155,7 @@ const FixedDepositDetails = () => {
             </div>
 
             {/* Returns Calculator */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 shadow-lg border border-blue-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Returns Calculator</h3>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Deposit Amount (₵)</label>
-                  <input
-                    type="range"
-                    min="1000"
-                    max="100000"
-                    step="1000"
-                    defaultValue="20000"
-                    className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between mt-2">
-                    <span className="text-sm text-gray-600">₵1,000</span>
-                    <span className="font-bold text-gray-900">₵20,000</span>
-                    <span className="text-sm text-gray-600">₵100,000</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Tenure Period</label>
-                  <select className="w-full border-2 border-blue-200 rounded-xl px-4 py-3 outline-none">
-                    <option>3 Months (12% p.a.)</option>
-                    <option>6 Months (15% p.a.)</option>
-                    <option>12 Months (20% p.a.)</option>
-                    <option>24 Months (22% p.a.)</option>
-                    <option>36 Months (25% p.a.)</option>
-                  </select>
-                </div>
-
-                <div className="bg-white rounded-xl p-4 border border-blue-200">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Interest Rate</span>
-                    <span className="font-bold text-gray-900">20% p.a.</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Interest Earned (12 months)</span>
-                    <span className="font-bold text-blue-600">₵4,000</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2 pt-2 border-t">
-                    <span className="text-gray-600 font-semibold">Maturity Amount</span>
-                    <span className="font-bold text-xl text-indigo-600">₵24,000</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
 
             {/* Features */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100">
@@ -226,72 +180,12 @@ const FixedDepositDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Open Fixed Deposit Account
-            </button>
+           
           </div>
         </div>
 
         {/* Success Stories */}
-        <div className="mt-20 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-12 shadow-xl border border-blue-100">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Customer Success Stories
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Grace Appiah",
-                type: "Retirement Savings",
-                deposit: "₵50,000",
-                before: "Savings account with 2% interest",
-                after: "36-month FD earning 25% p.a., ₵37.5K gained"
-              },
-              {
-                name: "Emmanuel Dadzie",
-                type: "Education Fund",
-                deposit: "₵30,000",
-                before: "Money idle, losing value to inflation",
-                after: "24-month FD at 22%, saved ₵13.2K for son's fees"
-              },
-              {
-                name: "Lydia Asare",
-                type: "Emergency Fund",
-                deposit: "₵15,000",
-                before: "Cash at home, no returns, worried",
-                after: "12-month FD, safe & growing, peace of mind"
-              }
-            ].map((story, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {story.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">{story.name}</h4>
-                    <div className="text-blue-600 font-medium">{story.type}</div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-600">Before:</div>
-                      <div className="font-medium">{story.before}</div>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-600">After:</div>
-                      <div className="font-medium text-indigo-600">{story.after}</div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <span className="text-gray-600">Fixed Deposit:</span>
-                    <span className="font-bold text-blue-700">{story.deposit}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        
         {/* Program Components */}
         <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-blue-100">
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">

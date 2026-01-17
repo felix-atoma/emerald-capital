@@ -159,18 +159,18 @@ function App() {
                 <Route path="operationalstructureandorganogram" element={<RegionalBranchManagersPage/>} />
                 
                 {/* Regional Management Routes - All using same component */}
-                <Route path="greateraccraregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="ashantiregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="ahaforegion" element={<RegionalBranchManagersPage/>} />
-                <Route path="westernnorthregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="westernregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="centralregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="easternregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="volta-and-otiregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="bono-and-bonoeastregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="northernsavannah-and-northeast" element={<RegionalBranchManagersPage/>} />
-                <Route path="upperwest-and-uppereastregion" element={<RegionalBranchManagersPage/>} />
-                <Route path="diasporaservices" element={<RegionalBranchManagersPage/>} />
+                <Route path="regionalmanagement" element={<RegionalBranchManagersPage/>} />
+                {/* <Route path="ashantiregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="ahaforegion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="westernnorthregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="westernregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="centralregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="easternregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="volta-and-otiregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="bono-and-bonoeastregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="northernsavannah-and-northeast" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="upperwest-and-uppereastregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="diasporaservices" element={<RegionalBranchManagersPage/>} /> */}
                 
               </Route>
               

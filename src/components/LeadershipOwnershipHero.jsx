@@ -72,7 +72,7 @@ const LeadershipOwnershipHero = () => {
                   <div className="bg-gradient-to-br from-emerald-600 to-teal-500 rounded-2xl p-6 shadow-2xl transform -rotate-6 hover:rotate-0 transition-transform duration-300">
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture1.jpg"
                         alt="Founder Profile"
                         className="w-full h-full object-cover"
                       />
@@ -89,7 +89,7 @@ const LeadershipOwnershipHero = () => {
                   <div className="bg-gradient-to-br from-teal-600 to-emerald-500 rounded-2xl p-6 shadow-2xl transform rotate-6 hover:rotate-0 transition-transform duration-300">
                     <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture2.png"
                         alt="Executive Shareholder"
                         className="w-full h-full object-cover"
                       />

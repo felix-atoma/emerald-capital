@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, Users, TrendingUp, Gem, Target, Award, BookOpen, Crown, Globe } from 'lucide-react';
+import { CheckCircle, Users, TrendingUp, Gem, Target, Award, BookOpen, Lightbulb, Globe, Building2, Zap, LineChart, HandshakeIcon } from 'lucide-react';
 
 const EmeraldBusinessDetails = () => {
   return (
@@ -7,12 +7,12 @@ const EmeraldBusinessDetails = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-            Emerald Business Banking
+            Emerald Business Investment
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Elevate your business with our premium banking tier designed for established 
-            enterprises. Experience priority service, exclusive benefits, dedicated support, 
-            and financial solutions crafted for business excellence.
+            Strategic capital and expertise to fuel your business growth. We provide 
+            additional investment capital and professional guidance to support your regional 
+            expansion, strategic planning, and long-term business objectives.
           </p>
         </div>
 
@@ -26,63 +26,63 @@ const EmeraldBusinessDetails = () => {
                   <Gem className="w-8 h-8 text-emerald-900" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold">Emerald Elite Tier</h3>
-                  <p className="text-emerald-200">Premium Business Banking</p>
+                  <h3 className="text-2xl font-bold">Investment Partnership</h3>
+                  <p className="text-emerald-200">Capital & Strategic Expertise</p>
                 </div>
               </div>
 
               <div className="mb-8">
-                <div className="text-sm text-emerald-200 mb-2">Membership Requirements</div>
+                <div className="text-sm text-emerald-200 mb-2">Partnership Focus</div>
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <div className="text-3xl font-bold mb-1">₵50K Min.</div>
-                    <div className="text-emerald-200 text-sm">Account Balance</div>
+                    <div className="text-3xl font-bold mb-1">Growth</div>
+                    <div className="text-emerald-200 text-sm">Capital Injection</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold mb-1">₵5M+ p.a.</div>
-                    <div className="text-emerald-200 text-sm">Annual Turnover</div>
+                    <div className="text-3xl font-bold mb-1">Expert</div>
+                    <div className="text-emerald-200 text-sm">Strategic Guidance</div>
                   </div>
                 </div>
               </div>
 
               {/* Program Impact */}
               <div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm mb-6">
-                <div className="text-sm text-emerald-200 mb-2">Elite Community</div>
+                <div className="text-sm text-emerald-200 mb-2">Active Portfolio</div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-2xl font-bold">1,200+</div>
-                    <div className="text-emerald-200 text-sm">Emerald Members</div>
+                    <div className="text-2xl font-bold">500+</div>
+                    <div className="text-emerald-200 text-sm">Partner Businesses</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-green-300">98%</div>
-                    <div className="text-emerald-200 text-sm">Satisfaction Rate</div>
+                    <div className="text-lg font-bold text-green-300">₵2.5B+</div>
+                    <div className="text-emerald-200 text-sm">Capital Deployed</div>
                   </div>
                 </div>
               </div>
 
               {/* Key Benefits */}
               <div className="space-y-6">
-                <h4 className="font-bold text-lg">Exclusive Benefits</h4>
+                <h4 className="font-bold text-lg">What We Provide</h4>
                 {[
                   {
                     icon: <TrendingUp className="w-5 h-5" />,
-                    title: "Personal Relationship Manager",
-                    description: "Dedicated banker for all your business needs"
+                    title: "Growth Capital",
+                    description: "Strategic investment to fuel expansion"
                   },
                   {
-                    icon: <BookOpen className="w-5 h-5" />,
-                    title: "Priority Service",
-                    description: "Skip queues with express banking access"
-                  },
-                  {
-                    icon: <Award className="w-5 h-5" />,
-                    title: "Premium Lounge Access",
-                    description: "Exclusive business lounge in all branches"
+                    icon: <Lightbulb className="w-5 h-5" />,
+                    title: "Expert Advisory",
+                    description: "Business strategy and operational guidance"
                   },
                   {
                     icon: <Globe className="w-5 h-5" />,
-                    title: "Higher Transaction Limits",
-                    description: "Elevated daily and monthly limits"
+                    title: "Regional Expansion Support",
+                    description: "Market entry and growth strategies"
+                  },
+                  {
+                    icon: <LineChart className="w-5 h-5" />,
+                    title: "Investment Strategy",
+                    description: "Long-term financial planning and goals"
                   }
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start gap-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
@@ -100,17 +100,17 @@ const EmeraldBusinessDetails = () => {
 
             {/* Eligibility Card */}
             <div className="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Membership Criteria</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Partnership Criteria</h3>
               <div className="space-y-4">
                 {[
-                  "Registered business in Ghana for 2+ years",
-                  "Minimum account balance of ₵50,000",
-                  "Annual business turnover of ₵5M+",
-                  "Valid business registration certificate",
-                  "Audited financial statements",
-                  "Tax compliance certificate",
-                  "Director's valid identification",
-                  "Corporate bank references"
+                  "Registered business operating in Ghana",
+                  "Proven business model with growth potential",
+                  "Minimum 2 years of operational history",
+                  "Annual revenue of ₵5M or higher",
+                  "Clear expansion or growth plan",
+                  "Strong management team",
+                  "Valid business registration documents",
+                  "Audited or certified financial statements"
                 ].map((requirement, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -125,19 +125,19 @@ const EmeraldBusinessDetails = () => {
 
           {/* Right - Benefits Section */}
           <div className="space-y-8">
-            {/* Premium Benefits */}
+            {/* Investment Benefits */}
             <div className="bg-white rounded-3xl shadow-xl p-8 border border-emerald-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Premium Benefits Package</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Investment Benefits</h3>
               <div className="grid grid-cols-2 gap-6">
                 {[
-                  { icon: "👔", title: "Relationship Manager", desc: "Dedicated support" },
-                  { icon: "⚡", title: "Express Service", desc: "Priority processing" },
-                  { icon: "🏢", title: "Business Lounge", desc: "Exclusive access" },
-                  { icon: "💳", title: "Premium Cards", desc: "Gold/Platinum" },
-                  { icon: "📞", title: "24/7 Concierge", desc: "Personal assistance" },
-                  { icon: "✈️", title: "Travel Benefits", desc: "Airport lounge" },
-                  { icon: "💼", title: "Higher Limits", desc: "Enhanced transactions" },
-                  { icon: "🎯", title: "Waived Fees", desc: "Reduced charges" },
+                  { icon: "💰", title: "Capital Access", desc: "Growth funding" },
+                  { icon: "🎯", title: "Strategic Planning", desc: "Expert guidance" },
+                  { icon: "🌍", title: "Market Expansion", desc: "Regional growth" },
+                  { icon: "📊", title: "Financial Advisory", desc: "Investment strategy" },
+                  { icon: "🤝", title: "Partnership Network", desc: "Business connections" },
+                  { icon: "📈", title: "Performance Support", desc: "Operational efficiency" },
+                  { icon: "💡", title: "Innovation Resources", desc: "Technology access" },
+                  { icon: "🏆", title: "Competitive Edge", desc: "Market positioning" },
                 ].map((benefit, index) => (
                   <div key={index} className="flex flex-col items-center text-center p-4 bg-emerald-50 rounded-xl">
                     <div className="text-2xl mb-2">{benefit.icon}</div>
@@ -148,23 +148,23 @@ const EmeraldBusinessDetails = () => {
               </div>
             </div>
 
-            {/* Service Comparison */}
+            {/* Investment Comparison */}
             <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl p-8 shadow-lg border border-emerald-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Emerald vs Standard Banking</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-6">With vs Without Partnership</h3>
               <div className="space-y-4">
                 {[
-                  { feature: "Relationship Manager", standard: "No", emerald: "Yes" },
-                  { feature: "Queue Priority", standard: "No", emerald: "Express" },
-                  { feature: "Monthly Fees", standard: "₵50", emerald: "Waived" },
-                  { feature: "Transaction Limit", standard: "₵50K", emerald: "₵500K" },
-                  { feature: "Business Lounge", standard: "No", emerald: "Yes" },
-                  { feature: "Concierge Service", standard: "No", emerald: "24/7" },
+                  { feature: "Growth Capital", without: "Limited", with: "Available" },
+                  { feature: "Strategic Guidance", without: "Self-managed", with: "Expert Support" },
+                  { feature: "Market Expansion", without: "Challenging", with: "Facilitated" },
+                  { feature: "Business Network", without: "Basic", with: "Extensive" },
+                  { feature: "Financial Planning", without: "Internal only", with: "Professional" },
+                  { feature: "Operational Support", without: "Minimal", with: "Comprehensive" },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg">
                     <span className="text-gray-700 font-medium">{item.feature}</span>
                     <div className="flex gap-4">
-                      <span className="text-gray-500 text-sm w-16 text-center">{item.standard}</span>
-                      <span className="text-emerald-600 font-bold text-sm w-16 text-center">{item.emerald}</span>
+                      <span className="text-gray-500 text-sm w-24 text-center">{item.without}</span>
+                      <span className="text-emerald-600 font-bold text-sm w-24 text-center">{item.with}</span>
                     </div>
                   </div>
                 ))}
@@ -173,17 +173,17 @@ const EmeraldBusinessDetails = () => {
 
             {/* Additional Services */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Complimentary Services</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Value-Added Services</h3>
               <div className="space-y-3">
                 {[
-                  "Unlimited free local transfers",
-                  "Free checkbooks and statements",
-                  "Complimentary business advisory sessions",
-                  "Priority loan processing and approval",
-                  "Discounted foreign exchange rates",
-                  "Free credit and financial reports",
-                  "Invitation to exclusive networking events",
-                  "Access to business development workshops"
+                  "Quarterly business strategy sessions",
+                  "Access to industry experts and consultants",
+                  "Market research and analysis support",
+                  "Technology and digital transformation guidance",
+                  "Networking events with fellow entrepreneurs",
+                  "Financial modeling and forecasting assistance",
+                  "Introduction to potential partners and clients",
+                  "Board advisory and governance support"
                 ].map((service, index) => (
                   <div key={index} className="flex items-center gap-3 text-sm text-gray-700">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
@@ -192,88 +192,35 @@ const EmeraldBusinessDetails = () => {
                 ))}
               </div>
             </div>
-
-            {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-emerald-700 hover:to-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Emerald Business
-            </button>
           </div>
         </div>
 
-        {/* Success Stories */}
-        <div className="mt-20 bg-gradient-to-r from-emerald-50 to-green-50 rounded-3xl p-12 shadow-xl border border-emerald-100">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Emerald Member Testimonials
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Samuel Ofosu",
-                company: "Ofosu Group Ltd",
-                member: "2 years",
-                testimonial: "The relationship manager understands our business needs. Banking is now effortless and strategic."
-              },
-              {
-                name: "Elizabeth Amoako",
-                company: "Amoako Enterprises",
-                member: "3 years",
-                testimonial: "Priority service saves us hours every week. The business lounge is perfect for client meetings."
-              },
-              {
-                name: "Dr. Yaw Mensah",
-                company: "Mensah Holdings",
-                member: "4 years",
-                testimonial: "Higher limits and waived fees improved our cash flow. The advisory sessions are invaluable."
-              }
-            ].map((story, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold">
-                    <Crown className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900">{story.name}</h4>
-                    <div className="text-emerald-600 font-medium text-sm">{story.company}</div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="text-gray-700 italic">"{story.testimonial}"</p>
-                  <div className="flex justify-between items-center pt-3 border-t">
-                    <span className="text-gray-600 text-sm">Emerald Member:</span>
-                    <span className="font-bold text-emerald-700">{story.member}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Program Components */}
+        {/* Investment Focus Areas */}
         <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-emerald-100">
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Emerald Business Privileges
+            Our Investment Focus
           </h3>
           <div className="grid md:grid-cols-4 gap-8">
             {[
               {
-                component: "VIP Treatment",
-                icon: "👑",
-                description: "Priority service and express banking"
-              },
-              {
-                component: "Expert Advisory",
-                icon: "🎯",
-                description: "Dedicated relationship management"
-              },
-              {
-                component: "Premium Access",
+                component: "SME Growth",
                 icon: "🏢",
-                description: "Exclusive lounges and facilities"
+                description: "Supporting small and medium enterprises"
               },
               {
-                component: "Elite Network",
-                icon: "🤝",
-                description: "Connect with top business leaders"
+                component: "Regional Expansion",
+                icon: "🌍",
+                description: "Facilitating market penetration and growth"
+              },
+              {
+                component: "Strategic Planning",
+                icon: "📋",
+                description: "Long-term business development"
+              },
+              {
+                component: "Operational Excellence",
+                icon: "⚡",
+                description: "Efficiency and performance improvement"
               }
             ].map((component, index) => (
               <div key={index} className="text-center">
@@ -285,52 +232,49 @@ const EmeraldBusinessDetails = () => {
           </div>
         </div>
 
-        {/* Premium Services */}
+        {/* Partnership Services */}
         <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Exclusive Services & Benefits
-          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { 
-                area: "Banking Priority", 
-                impact: "Skip queues, express service",
-                icon: "⚡" 
-              },
-              { 
-                area: "Premium Cards", 
-                impact: "Gold/Platinum business cards",
-                icon: "💳" 
-              },
-              { 
-                area: "Business Lounge", 
-                impact: "Exclusive workspace in branches",
-                icon: "🏢" 
-              },
-              { 
-                area: "Concierge Service", 
-                impact: "24/7 personal assistance",
-                icon: "📞" 
-              },
-              { 
-                area: "Higher Limits", 
-                impact: "Enhanced transaction ceilings",
-                icon: "📈" 
-              },
-              { 
-                area: "Waived Fees", 
-                impact: "Reduced or zero charges",
+                area: "Capital Investment", 
+                impact: "Funding for growth initiatives",
                 icon: "💰" 
               },
               { 
-                area: "Travel Benefits", 
-                impact: "Airport lounge access",
-                icon: "✈️" 
+                area: "Strategic Advisory", 
+                impact: "Expert business guidance",
+                icon: "🎯" 
               },
               { 
-                area: "Networking Events", 
-                impact: "Exclusive business forums",
-                icon: "🎭" 
+                area: "Market Access", 
+                impact: "Regional expansion support",
+                icon: "🌍" 
+              },
+              { 
+                area: "Network Building", 
+                impact: "Industry connections",
+                icon: "🤝" 
+              },
+              { 
+                area: "Financial Planning", 
+                impact: "Investment strategy development",
+                icon: "📊" 
+              },
+              { 
+                area: "Operational Support", 
+                impact: "Process optimization",
+                icon: "⚙️" 
+              },
+              { 
+                area: "Technology Access", 
+                impact: "Digital transformation",
+                icon: "💻" 
+              },
+              { 
+                area: "Performance Monitoring", 
+                impact: "Regular business reviews",
+                icon: "📈" 
               },
             ].map((benefit, index) => (
               <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-emerald-100">
@@ -342,61 +286,100 @@ const EmeraldBusinessDetails = () => {
           </div>
         </div>
 
-        {/* Benefits Section */}
+        {/* Value Propositions */}
         <div className="mt-20 grid md:grid-cols-3 gap-8">
           <div className="bg-gradient-to-br from-emerald-600 to-green-600 rounded-3xl p-8 text-white">
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-6">
-              <Crown className="w-6 h-6" />
+              <TrendingUp className="w-6 h-6" />
             </div>
-            <h4 className="text-xl font-bold mb-4">Elite Status</h4>
+            <h4 className="text-xl font-bold mb-4">Growth Capital</h4>
             <p className="text-emerald-200">
-              Join an exclusive community of successful business leaders with premium banking privileges.
+              Access the funding you need to scale your business, enter new markets, and achieve your expansion goals.
             </p>
           </div>
           
           <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-3xl p-8 text-white">
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-6">
-              <Target className="w-6 h-6" />
+              <Lightbulb className="w-6 h-6" />
             </div>
-            <h4 className="text-xl font-bold mb-4">Dedicated Support</h4>
+            <h4 className="text-xl font-bold mb-4">Expert Guidance</h4>
             <p className="text-green-200">
-              Personal relationship manager who understands your business and provides tailored solutions.
+              Benefit from our deep industry expertise and strategic insights to make informed business decisions.
             </p>
           </div>
           
           <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-3xl p-8 text-white">
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-6">
-              <Gem className="w-6 h-6" />
+              <Globe className="w-6 h-6" />
             </div>
-            <h4 className="text-xl font-bold mb-4">Premium Benefits</h4>
+            <h4 className="text-xl font-bold mb-4">Regional Expansion</h4>
             <p className="text-emerald-200">
-              Enjoy waived fees, higher limits, express service, and exclusive access to business facilities.
+              Leverage our network and market knowledge to successfully expand into new regions and territories.
             </p>
           </div>
         </div>
 
-        {/* Emerald Support */}
+        {/* Investment Process */}
+        <div className="mt-20 bg-gradient-to-r from-emerald-50 to-green-50 rounded-3xl p-12 shadow-xl border border-emerald-100">
+          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Partnership Process
+          </h3>
+          <div className="grid md:grid-cols-4 gap-8">
+            {[
+              {
+                step: "1",
+                title: "Initial Contact",
+                description: "Reach out to discuss your business and growth plans"
+              },
+              {
+                step: "2",
+                title: "Due Diligence",
+                description: "We review your business model and financials"
+              },
+              {
+                step: "3",
+                title: "Partnership Agreement",
+                description: "Define terms, capital, and support structure"
+              },
+              {
+                step: "4",
+                title: "Growth Execution",
+                description: "Deploy capital and begin strategic collaboration"
+              }
+            ].map((item, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg text-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                  {item.step}
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">{item.title}</h4>
+                <p className="text-gray-600 text-sm">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact CTA */}
         <div className="mt-20 text-center">
           <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl px-8 py-8 shadow-xl">
             <div className="text-left text-white">
               <div className="flex items-center gap-3 mb-2">
-                <Gem className="w-6 h-6" />
-                <p className="text-lg font-bold">Ready for Premium Business Banking?</p>
+                <HandshakeIcon className="w-6 h-6" />
+                <p className="text-lg font-bold">Ready to Partner for Growth?</p>
               </div>
-              <p className="text-emerald-100">Join the Emerald Business elite today</p>
+              <p className="text-emerald-100">Let's discuss how we can support your business objectives</p>
             </div>
             <div className="flex items-center gap-4">
               <a 
                 href="tel:+233208070000" 
                 className="bg-white text-emerald-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
               >
-                Call Emerald Desk
+                Call Investment Team
               </a>
               <a 
-                href="mailto:emerald@emeraldcapitalgh.com" 
+                href="mailto:invest@emeraldcapitalgh.com" 
                 className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
               >
-                Apply Now
+                Submit Proposal
               </a>
             </div>
           </div>

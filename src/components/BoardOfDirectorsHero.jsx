@@ -84,7 +84,7 @@ const BoardOfDirectorsHero = () => {
                   <div className="bg-gradient-to-br from-blue-600 to-indigo-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble">
                     <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture1.jpg"
                         alt="Chairperson"
                         className="w-full h-full object-cover"
                       />
@@ -102,7 +102,7 @@ const BoardOfDirectorsHero = () => {
                     style={{ animationDelay: '0.5s' }}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture7.jpg"
                         alt="Non-Executive Director"
                         className="w-full h-full object-cover"
                       />
@@ -120,7 +120,7 @@ const BoardOfDirectorsHero = () => {
                     style={{ animationDelay: '1s' }}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture5.jpg"
                         alt="Non-Executive Director"
                         className="w-full h-full object-cover"
                       />
@@ -138,7 +138,7 @@ const BoardOfDirectorsHero = () => {
                     style={{ animationDelay: '1.5s' }}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=face"
+                        src="/Picture3.jpg"
                         alt="Executive Director"
                         className="w-full h-full object-cover"
                       />

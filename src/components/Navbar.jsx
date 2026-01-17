@@ -49,24 +49,26 @@ const Navbar = () => {
             "Business Starter Loan",
             "Working Capital Loan",
             "Agricultural Loan",
-            "Education & Skills Loan",
-            "Emergency & Personal Loan",
+            
+            
             "Group/Community Loan",
             "Green & Sustainable Loan",
             "Housing & Home Improvement Loan",
             "Health & Medical Loan",
             "Women's Empowerment Loan",
             "Micro-Enterprise Expansion Loan",
-            "Emergency Agriculture Relief Loan",
+            // "Emergency Agriculture Relief Loan",
             "Transport & Equipment Loan",
             "Seasonal Business Loan"
           ]
         },
         { 
+
+          // no more nested links
           label: "Specialized Loans",
           nested: [
-            "Section 1: Microfinance Loan Products",
-            "Section 2: Specialized Loan Products"
+            
+            "Section 2: Specialized Loan Products"   
           ]
         },
         { label: "SME Loan", link: true },
@@ -87,7 +89,7 @@ const Navbar = () => {
       label: "Project Financing",
       dropdown: [
         { label: "Emerald Business", link: true },
-        { label: "Emerald Pay", link: true },
+        // { label: "Emerald Pay", link: true },
         { label: "Insurance Products", link: true },
       ],
     },
@@ -112,38 +114,22 @@ const Navbar = () => {
             "Board of Directors Structure",
             "Executive Management / C-Suite",
             "Chief Executive Officer (CEO)",
-            "Chief Operating Officer (COO)",
-            "Chief Financial Officer (CFO)",
-            "Chief Risk Officer (CRO)",
-            "Chief Technology Officer (CTO)",
-            "Chief Marketing & Business Development Officer (CMO/BDO)",
-            "Chief Compliance & Legal Officer (CCO/CLO)",
-            "Chief Investment Officer (CIO)",
-            "Chief Insurance Officer (CInsO)",
-            "Chief Human Resources Officer (CHRO)",
-            "Operational Structure and Organogram"
+            // "Chief Operating Officer (COO)",
+            // "Chief Financial Officer (CFO)",
+            // "Chief Risk Officer (CRO)",
+            // "Chief Technology Officer (CTO)",
+            // "Chief Marketing & Business Development Officer (CMO/BDO)",
+            // "Chief Compliance & Legal Officer (CCO/CLO)",
+            // "Chief Investment Officer (CIO)",
+            // "Chief Insurance Officer (CInsO)",
+            // "Chief Human Resources Officer (CHRO)",
+            // "Operational Structure and Organogram"
           ]
         },
-        { 
-          label: "Regional Management",
-          nested: [
-            "Greater Accra Region",
-            "Ashanti Region",
-            "Ahafo Region",
-            "Western North Region",
-            "Western Region",
-            "Central Region",
-            "Eastern Region",
-            "Volta & Oti Region",
-            "Bono & Bono East Region",
-            "Northern, Savannah & North East",
-            "Upper West & Upper East Region",
-            "Diaspora Services"
-          ]
-        },
+       { label: "Regional Management", link: true },
       ]
     },
-    { label: "Blog", link: true },
+    // { label: "Blog", link: true },
     { label: "Contact", link: true },
   ];
 
