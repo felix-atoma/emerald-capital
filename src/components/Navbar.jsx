@@ -39,7 +39,7 @@ const Navbar = () => {
           nested: [
             "Business Starter Loan",
             "Working Capital Loan",
-            "Agricultural Loan",
+            // "Agricultural Loan",
             "Group/Community Loan",
             "Green & Sustainable Loan",
             "Housing & Home Improvement Loan",
