@@ -9,14 +9,46 @@ import {
   ShieldCheck, Users as UsersIcon, User
 } from 'lucide-react';
 
-// TEMPORARY: Using placeholder images until you add your real images to the public folder
-// TO FIX: 
-// 1. Create a "public" folder in your project root if it doesn't exist
-// 2. Add your images: picture1.jpg, picture3.jpg, picture5.jpg, picture7.jpg
-// 3. Uncomment the real paths below and comment out the placeholder paths
-
 const BoardOfDirectorsDetails = () => {
   const [selectedDirector, setSelectedDirector] = useState('chairperson');
+  const [imageErrors, setImageErrors] = useState({});
+
+  // Function to get director image from public folder
+  const getDirectorImage = (directorId, directorName) => {
+    // Map director IDs to actual image filenames in your public folder
+    const imageMap = {
+      'chairperson': 'DR. ASAMOAH KORANTENG EVANS.jpg',
+      'nonexecutive1': 'DR. OPHILIA OSEI.jpg',
+      'nonexecutive2': 'REV. FREDERICK APPIAH.jpg',
+      'executive': 'MRS. GERTRUDE ASAMOAH.jpg'
+    };
+    
+    // Get the actual image filename for this director
+    const imageFilename = imageMap[directorId];
+    const imageUrl = `/${imageFilename}`;
+    
+    // Create a fallback avatar URL in case image is missing
+    const colorMap = {
+      'chairperson': '3b82f6', // blue
+      'nonexecutive1': '8b5cf6', // purple
+      'nonexecutive2': '6366f1', // indigo
+      'executive': '06b6d4'    // cyan
+    };
+    
+    const bgColor = colorMap[directorId] || '3b82f6';
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(directorName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
+    
+    return { imageUrl, fallbackUrl };
+  };
+
+  // Handle image error
+  const handleImageError = (directorId, e) => {
+    console.warn(`Image failed to load for director ${directorId}:`, e.target.src);
+    setImageErrors(prev => ({ ...prev, [directorId]: true }));
+    const { fallbackUrl } = getDirectorImage(directorId, '');
+    e.target.src = fallbackUrl;
+    e.target.className = e.target.className + ' bg-gray-200 p-2';
+  };
 
   const boardMembers = [
     {
@@ -28,12 +60,6 @@ const BoardOfDirectorsDetails = () => {
       experience: '25+ years in banking, investment, and corporate governance',
       icon: <Crown className="w-8 h-8" />,
       color: 'from-blue-600 to-indigo-500',
-      // OPTION 1: Once you add images to public folder, use this:
-      // profileImage: '/picture1.jpg',
-      
-      // OPTION 2: Temporary placeholder (currently active):
-      profileImage: '\Picture1.jpg',
-      
       responsibilities: [
         'Lead Board meetings and strategic discussions',
         'Oversee corporate governance framework',
@@ -62,8 +88,6 @@ const BoardOfDirectorsDetails = () => {
       experience: '20+ years in financial services, compliance, and corporate governance',
       icon: <Shield className="w-8 h-8" />,
       color: 'from-purple-600 to-pink-500',
-      // profileImage: '/picture7.jpg',
-      profileImage: '\Picture7.jpg',
       responsibilities: [
         'Advise on regulatory compliance matters',
         'Monitor strategic investment decisions',
@@ -92,8 +116,6 @@ const BoardOfDirectorsDetails = () => {
       experience: '30+ years in corporate law, governance, and ethical leadership',
       icon: <Scale className="w-8 h-8" />,
       color: 'from-indigo-600 to-blue-500',
-      // profileImage: '/picture5.jpg',
-      profileImage: '\Picture5.jpg',
       responsibilities: [
         'Ensure legal compliance standards',
         'Review corporate governance policies',
@@ -122,8 +144,6 @@ const BoardOfDirectorsDetails = () => {
       experience: '15+ years in banking operations, digital transformation, and strategic leadership',
       icon: <Briefcase className="w-8 h-8" />,
       color: 'from-cyan-600 to-teal-500',
-      // profileImage: '/picture3.jpg',
-      profileImage: '\Picture3.jpg',
       responsibilities: [
         'Lead corporate operations strategy',
         'Drive digital transformation initiatives',
@@ -147,146 +167,149 @@ const BoardOfDirectorsDetails = () => {
 
   const selectedDirectorData = boardMembers.find(director => director.id === selectedDirector);
 
+  // Render director image with proper handling
   const renderDirectorImage = (director, size = 'normal') => {
+    const { imageUrl, fallbackUrl } = getDirectorImage(director.id, director.name);
+    const hasError = imageErrors[director.id];
+    
     const sizeClasses = size === 'large' 
-      ? 'w-48 h-48' 
-      : 'w-20 h-20';
+      ? 'w-32 h-32 md:w-48 md:h-48' 
+      : 'w-16 h-16 md:w-20 md:h-20';
     
     const borderClass = selectedDirector === director.id ? 'border-white' : 'border-gray-100';
     
     return (
       <div className={`
-        ${sizeClasses} ${size === 'large' ? 'rounded-2xl' : 'rounded-full'} overflow-hidden border-4 ${borderClass} flex-shrink-0 bg-gradient-to-br ${director.color}
+        ${sizeClasses} ${size === 'large' ? 'rounded-xl md:rounded-2xl' : 'rounded-full'} 
+        overflow-hidden border-4 ${borderClass} flex-shrink-0 bg-gray-100
       `}>
         <img
-          src={director.profileImage}
+          src={hasError ? fallbackUrl : imageUrl}
           alt={director.name}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            console.error(`Failed to load image: ${director.profileImage}`);
-            // Replace with fallback icon
-            e.target.style.display = 'none';
-            const parent = e.target.parentElement;
-            if (parent && !parent.querySelector('svg')) {
-              const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-              icon.setAttribute("class", size === 'large' ? 'w-24 h-24 text-white m-auto' : 'w-10 h-10 text-white m-auto');
-              icon.setAttribute("fill", "none");
-              icon.setAttribute("stroke", "currentColor");
-              icon.setAttribute("viewBox", "0 0 24 24");
-              icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>';
-              parent.appendChild(icon);
-              parent.style.display = 'flex';
-              parent.style.alignItems = 'center';
-              parent.style.justifyContent = 'center';
+          className={`
+            w-full h-full transition-all duration-300
+            ${hasError 
+              ? 'object-contain p-1' 
+              : 'object-cover'
             }
+          `}
+          style={{
+            objectPosition: size === 'large' ? 'center 30%' : 'center top',
           }}
+          loading="lazy"
+          onError={(e) => handleImageError(director.id, e)}
         />
       </div>
     );
   };
 
   return (
-    <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
+    <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full px-6 py-3 mb-6 animate-bobble">
             <Crown className="w-5 h-5 text-white" />
             <span className="font-bold text-white">DISTINGUISHED BOARD OF DIRECTORS</span>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Governance & Strategic Leadership
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Our Board brings diverse expertise in governance, finance, law, and operations 
             to provide strategic oversight and ensure sustainable growth.
           </p>
         </div>
 
         {/* Board Navigation */}
-        <div className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {boardMembers.map((director) => (
-              <button
-                key={director.id}
-                onClick={() => setSelectedDirector(director.id)}
-                className={`
-                  group relative overflow-hidden rounded-2xl transition-all duration-300 transform hover:scale-[1.02]
-                  ${selectedDirector === director.id 
-                    ? `bg-gradient-to-r ${director.color} shadow-2xl text-white` 
-                    : 'bg-white border-2 border-gray-200 shadow-lg hover:shadow-xl text-gray-900'
-                  }
-                `}
-              >
-                <div className="p-6">
-                  <div className="flex items-center gap-4">
-                    {/* Director Image */}
-                    {renderDirectorImage(director)}
-                    
-                    <div className="text-left">
-                      <div className={`
-                        font-bold text-lg mb-1
-                        ${selectedDirector === director.id ? 'text-white' : 'text-gray-900'}
-                      `}>
-                        {director.name.split(' ')[0]}
-                      </div>
-                      <div className={`
-                        text-sm
-                        ${selectedDirector === director.id ? 'text-white/80' : 'text-gray-600'}
-                      `}>
-                        {director.title}
-                      </div>
-                      {selectedDirector === director.id && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <ChevronRight className="w-4 h-4 animate-pulse" />
-                          <span className="text-sm font-medium">View Profile</span>
+        <div className="mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {boardMembers.map((director) => {
+              const hasError = imageErrors[director.id];
+              
+              return (
+                <button
+                  key={director.id}
+                  onClick={() => setSelectedDirector(director.id)}
+                  className={`
+                    group relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-300 
+                    transform hover:scale-[1.02] active:scale-[0.98]
+                    ${selectedDirector === director.id 
+                      ? `bg-gradient-to-r ${director.color} shadow-xl md:shadow-2xl text-white` 
+                      : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg text-gray-900'
+                    }
+                  `}
+                >
+                  <div className="p-4 md:p-6">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      {/* Director Image */}
+                      {renderDirectorImage(director)}
+                      
+                      <div className="text-left flex-1 min-w-0">
+                        <div className={`
+                          font-bold text-sm md:text-lg mb-1 truncate
+                          ${selectedDirector === director.id ? 'text-white' : 'text-gray-900'}
+                        `}>
+                          {director.name.split(' ')[0]}
                         </div>
-                      )}
+                        <div className={`
+                          text-xs md:text-sm truncate
+                          ${selectedDirector === director.id ? 'text-white/80' : 'text-gray-600'}
+                        `}>
+                          {director.title}
+                        </div>
+                        {selectedDirector === director.id && (
+                          <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2">
+                            <ChevronRight className="w-3 h-3 md:w-4 md:h-4 animate-pulse" />
+                            <span className="text-xs md:text-sm font-medium">View Profile</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Hover Effect */}
-                <div className={`
-                  absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
-                  ${director.color}
-                `}></div>
-              </button>
-            ))}
+                  
+                  {/* Hover Effect */}
+                  <div className={`
+                    absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
+                    ${director.color}
+                  `}></div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Main Director Details */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
           {/* Left - Director Overview */}
           <div className="lg:col-span-2">
             {/* Director Card */}
-            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-3xl overflow-hidden shadow-2xl mb-8 animate-bobble`}>
-              <div className="p-8 text-white">
-                <div className="flex flex-col md:flex-row items-start gap-8">
+            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8 animate-bobble`}>
+              <div className="p-6 md:p-8 text-white">
+                <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
                   {/* Director Image */}
                   {renderDirectorImage(selectedDirectorData, 'large')}
                   
                   {/* Director Info */}
-                  <div className="flex-1">
-                    <div className="mb-6">
-                      <h3 className="text-3xl font-bold mb-2">{selectedDirectorData.name}</h3>
-                      <div className="text-xl mb-4 text-white/90">{selectedDirectorData.title}</div>
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                        <Award className="w-4 h-4" />
-                        <span className="text-sm font-medium">{selectedDirectorData.subtitle}</span>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="mb-4 md:mb-6">
+                      <h3 className="text-2xl md:text-3xl font-bold mb-2">{selectedDirectorData.name}</h3>
+                      <div className="text-lg md:text-xl mb-4 text-white/90">{selectedDirectorData.title}</div>
+                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2">
+                        <Award className="w-3 h-3 md:w-4 md:h-4" />
+                        <span className="text-xs md:text-sm font-medium">{selectedDirectorData.subtitle}</span>
                       </div>
                     </div>
                     
                     {/* Role Description */}
-                    <p className="text-lg mb-6 text-white/95 leading-relaxed">
+                    <p className="text-base md:text-lg mb-4 md:mb-6 text-white/95 leading-relaxed">
                       {selectedDirectorData.role}
                     </p>
                     
                     {/* Experience Badge */}
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-3 mb-6">
-                      <Clock className="w-5 h-5" />
-                      <span className="font-medium">{selectedDirectorData.experience}</span>
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2 md:px-4 md:py-3">
+                      <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                      <span className="text-sm md:text-base font-medium">{selectedDirectorData.experience}</span>
                     </div>
                   </div>
                 </div>
@@ -294,14 +317,14 @@ const BoardOfDirectorsDetails = () => {
               
               {/* Board Committees */}
               <div className="bg-white/10 backdrop-blur-sm border-t border-white/20">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Users className="w-5 h-5 text-white" />
-                    <span className="font-bold text-white">Board Committees</span>
+                <div className="p-4 md:p-6">
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <Users className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    <span className="font-bold text-white text-sm md:text-base">Board Committees</span>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start">
                     {selectedDirectorData.boardCommittees.map((committee, index) => (
-                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-white">
+                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:text-sm text-white">
                         {committee}
                       </div>
                     ))}
@@ -311,36 +334,36 @@ const BoardOfDirectorsDetails = () => {
             </div>
 
             {/* Responsibilities & Achievements */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {/* Key Responsibilities */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble" 
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble" 
                 style={{ animationDelay: '0.2s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Target className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                  <Target className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                   Board Responsibilities
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {selectedDirectorData.responsibilities.map((resp, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                      <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{resp}</span>
+                    <div key={index} className="flex items-start gap-2 md:gap-3 p-3 md:p-4 bg-blue-50 rounded-lg md:rounded-xl hover:bg-blue-100 transition-colors">
+                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-blue-600 flex-shrink-0 mt-1" />
+                      <span className="text-sm md:text-base text-gray-700">{resp}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Major Achievements */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
                 style={{ animationDelay: '0.4s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-amber-600" />
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                  <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
                   Key Achievements
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {selectedDirectorData.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors">
-                      <Award className="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{achievement}</span>
+                    <div key={index} className="flex items-start gap-2 md:gap-3 p-3 md:p-4 bg-amber-50 rounded-lg md:rounded-xl hover:bg-amber-100 transition-colors">
+                      <Award className="w-4 h-4 md:w-5 md:h-5 text-amber-600 flex-shrink-0 mt-1" />
+                      <span className="text-sm md:text-base text-gray-700">{achievement}</span>
                     </div>
                   ))}
                 </div>
@@ -349,32 +372,32 @@ const BoardOfDirectorsDetails = () => {
           </div>
 
           {/* Right - Expertise & Contact */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             {/* Expertise & Education */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '0.6s' }}>
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Expertise & Education</h3>
-              <div className="space-y-6">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Expertise & Education</h3>
+              <div className="space-y-4 md:space-y-6">
                 {/* Education */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-blue-700 font-medium">
-                    <GraduationCap className="w-5 h-5" />
-                    <span>Education</span>
+                    <GraduationCap className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Education</span>
                   </div>
-                  <p className="text-gray-700 bg-blue-50 rounded-xl p-4">
+                  <p className="text-sm md:text-base text-gray-700 bg-blue-50 rounded-lg md:rounded-xl p-3 md:p-4">
                     {selectedDirectorData.education}
                   </p>
                 </div>
 
                 {/* Areas of Expertise */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-blue-700 font-medium">
-                    <Lightbulb className="w-5 h-5" />
-                    <span>Areas of Expertise</span>
+                    <Lightbulb className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Areas of Expertise</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {selectedDirectorData.expertise.split(', ').map((area, index) => (
-                      <div key={index} className="bg-gray-100 rounded-lg px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-blue-100 transition-colors">
+                      <div key={index} className="bg-gray-100 rounded-lg px-2 py-1.5 md:px-3 md:py-2 text-center text-xs md:text-sm font-medium text-gray-700 hover:bg-blue-100 transition-colors">
                         {area}
                       </div>
                     ))}
@@ -382,12 +405,12 @@ const BoardOfDirectorsDetails = () => {
                 </div>
 
                 {/* Board Philosophy */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-blue-700 font-medium">
-                    <Heart className="w-5 h-5" />
-                    <span>Governance Philosophy</span>
+                    <Heart className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Governance Philosophy</span>
                   </div>
-                  <p className="text-sm text-gray-600 italic">
+                  <p className="text-xs md:text-sm text-gray-600 italic bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4">
                     "Ethical governance, strategic oversight, and sustainable value creation for all stakeholders."
                   </p>
                 </div>
@@ -395,44 +418,44 @@ const BoardOfDirectorsDetails = () => {
             </div>
 
             {/* Contact & Network */}
-            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-2xl p-8 text-white hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
+            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
               style={{ animationDelay: '0.8s' }}>
-              <h3 className="text-lg font-bold mb-4">Contact & Network</h3>
-              <div className="space-y-4">
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Mail className="w-5 h-5" />
-                  <span className="font-medium">Send Email</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Contact & Network</h3>
+              <div className="space-y-3 md:space-y-4">
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">Send Email</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Linkedin className="w-5 h-5" />
-                  <span className="font-medium">LinkedIn Profile</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">LinkedIn Profile</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <FileText className="w-5 h-5" />
-                  <span className="font-medium">Download Bio</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">Download Bio</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               </div>
             </div>
 
             {/* Board Impact */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '1s' }}>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Board Impact</h3>
-              <div className="space-y-3">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Board Impact</h3>
+              <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Governance Score</span>
-                  <span className="font-bold text-blue-600">A+ Rating</span>
+                  <span className="text-xs md:text-sm text-gray-600">Governance Score</span>
+                  <span className="font-bold text-blue-600 text-sm md:text-base">A+ Rating</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Strategic Decisions</span>
-                  <span className="font-bold text-blue-600">98% Success</span>
+                  <span className="text-xs md:text-sm text-gray-600">Strategic Decisions</span>
+                  <span className="font-bold text-blue-600 text-sm md:text-base">98% Success</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Board Meetings</span>
-                  <span className="font-bold text-blue-600">100% Attendance</span>
+                  <span className="text-xs md:text-sm text-gray-600">Board Meetings</span>
+                  <span className="font-bold text-blue-600 text-sm md:text-base">100% Attendance</span>
                 </div>
               </div>
             </div>
@@ -440,11 +463,11 @@ const BoardOfDirectorsDetails = () => {
         </div>
 
         {/* Board Composition */}
-        <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+        <div className="mt-12 md:mt-20 bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-2xl p-6 md:p-8 border border-gray-200">
+          <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8 md:mb-12">
             Board Composition & Expertise
           </h3>
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             {[
               {
                 category: 'Governance Expertise',
@@ -472,22 +495,22 @@ const BoardOfDirectorsDetails = () => {
               }
             ].map((item, index) => (
               <div key={index} className="text-center animate-bobble" style={{ animationDelay: `${index * 0.2}s` }}>
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <div className="text-3xl font-bold text-blue-600 mb-2">{item.value}</div>
-                <h4 className="font-bold text-gray-900 mb-2">{item.category}</h4>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <div className="text-3xl md:text-4xl mb-3 md:mb-4">{item.icon}</div>
+                <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-1 md:mb-2">{item.value}</div>
+                <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">{item.category}</h4>
+                <p className="text-gray-600 text-xs md:text-sm">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Board Functions */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+        <div className="mt-12 md:mt-20">
+          <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8 md:mb-12">
             Board Committees & Functions
           </h3>
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-blue-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {[
                 {
                   committee: 'Governance Committee',
@@ -538,12 +561,12 @@ const BoardOfDirectorsDetails = () => {
                   icon: '⚡'
                 }
               ].map((item, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow animate-bobble"
+                <div key={index} className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-md hover:shadow-lg transition-shadow animate-bobble"
                   style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  <div className="font-bold text-gray-900 mb-2">{item.committee}</div>
-                  <div className="text-sm text-gray-600 mb-3">{item.role}</div>
-                  <div className="text-sm text-blue-600 font-medium">Chair: {item.chair}</div>
+                  <div className="text-xl md:text-2xl mb-2 md:mb-3">{item.icon}</div>
+                  <div className="font-bold text-gray-900 text-sm md:text-base mb-1 md:mb-2">{item.committee}</div>
+                  <div className="text-xs md:text-sm text-gray-600 mb-2 md:mb-3">{item.role}</div>
+                  <div className="text-xs md:text-sm text-blue-600 font-medium">Chair: {item.chair}</div>
                 </div>
               ))}
             </div>
@@ -551,28 +574,28 @@ const BoardOfDirectorsDetails = () => {
         </div>
 
         {/* Contact Board */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl px-8 py-8 shadow-xl animate-bobble">
-            <div className="text-left text-white">
-              <div className="flex items-center gap-3 mb-2">
-                <Crown className="w-6 h-6" />
-                <p className="text-lg font-bold">Board Secretariat</p>
+        <div className="mt-12 md:mt-20 text-center">
+          <div className="inline-flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl md:rounded-3xl px-6 md:px-8 py-6 md:py-8 shadow-xl animate-bobble">
+            <div className="text-center md:text-left text-white">
+              <div className="flex items-center gap-2 md:gap-3 mb-2 justify-center md:justify-start">
+                <Crown className="w-5 h-5 md:w-6 md:h-6" />
+                <p className="text-base md:text-lg font-bold">Board Secretariat</p>
               </div>
-              <p className="text-blue-100">
+              <p className="text-blue-100 text-sm md:text-base">
                 For board-related inquiries, governance matters, or strategic partnerships, 
                 contact our Board Secretariat.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4">
               <a 
                 href="mailto:board@emeraldcapitalgh.com" 
-                className="bg-white text-blue-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                className="bg-white text-blue-700 px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base"
               >
                 Email Board Secretariat
               </a>
               <a 
                 href="tel:+233208070009" 
-                className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
+                className="bg-transparent border-2 border-white text-white px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-white/10 transition-colors text-sm md:text-base"
               >
                 Call Board Office
               </a>
@@ -586,7 +609,7 @@ const BoardOfDirectorsDetails = () => {
         __html: `
           @keyframes bobble {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-5px); }
           }
           .animate-bobble {
             animation: bobble 3s ease-in-out infinite;

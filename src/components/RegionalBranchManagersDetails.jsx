@@ -11,26 +11,60 @@ import {
 
 const RegionalBranchManagersDetails = () => {
   const [selectedRegion, setSelectedRegion] = useState('greater-accra');
+  const [imageErrors, setImageErrors] = useState({});
 
-  // Function to generate consistent avatar URLs
-  const getAvatarUrl = (name, region) => {
-    const colorMap = {
-      'Greater Accra': '10b981',
-      'Ashanti': '3b82f6',
-      'Ahafo': '8b5cf6',
-      'Western North': 'ec4899',
-      'Western': 'f43f5e',
-      'Central': '6366f1',
-      'Eastern': '14b8a6',
-      'Volta & Oti': '06b6d4',
-      'Bono & Bono East': 'f59e0b',
-      'Northern & Savannah': 'ef4444',
-      'Upper West & Upper East': '8b5cf6',
-      'Diaspora': '475569'
+  // Function to get manager image from public folder
+  const getManagerImage = (regionId, managerName) => {
+    // Map region IDs to actual image filenames in your public folder
+    // These match the EXACT filenames from your public folder
+    const imageMap = {
+      'greater-accra': 'MR. MARTIN JONES-ARTHUR.jpg',
+      'ashanti': 'MR. CHARLES BINNEY ESQ.jpg',
+      'ahafo': 'MRS. HELENA BOAMAH.jpg',
+      'western-north': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'western': 'MISS. MERCY AHIANOR.jpg',
+      'central': 'MISS. AMAZING N. EKUA ABBEY.jpg',
+      'eastern': 'MR. SOLOMON AMANKWAH.jpg',
+      'volta-oti': 'MRS. ABENA KONADU ASAMOAH-KORANTENG.jpg',
+      'bono': 'MR. JUSTIN CUDJOE.png',
+      'northern': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'upper-west-east': 'MR. ABASS MOHAIDEEN.jpg',
+      'diaspora': 'DR. GABRIEL AMOAKO.png'
     };
     
-    const bgColor = colorMap[region] || '3b82f6';
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bgColor}&color=fff&size=400&bold=true&length=2`;
+    // Get the actual image filename for this region
+    const imageFilename = imageMap[regionId];
+    const imageUrl = `/${imageFilename}`;
+    
+    // Create a fallback avatar URL in case image is missing
+    const colorMap = {
+      'greater-accra': '10b981',
+      'ashanti': '3b82f6',
+      'ahafo': '8b5cf6',
+      'western-north': 'ec4899',
+      'western': 'f43f5e',
+      'central': '6366f1',
+      'eastern': '14b8a6',
+      'volta-oti': '06b6d4',
+      'bono': 'f59e0b',
+      'northern': 'ef4444',
+      'upper-west-east': '8b5cf6',
+      'diaspora': '475569'
+    };
+    
+    const bgColor = colorMap[regionId] || '3b82f6';
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(managerName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
+    
+    return { imageUrl, fallbackUrl };
+  };
+
+  // Handle image error
+  const handleImageError = (regionId, e) => {
+    console.warn(`Image failed to load for region ${regionId}:`, e.target.src);
+    setImageErrors(prev => ({ ...prev, [regionId]: true }));
+    const { fallbackUrl } = getManagerImage(regionId, '');
+    e.target.src = fallbackUrl;
+    e.target.className = e.target.className + ' bg-gray-200 p-2'; // Add padding for avatar
   };
 
   const regionalManagers = [
@@ -44,7 +78,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '15+ years in urban banking operations and digital transformation',
       icon: <Building className="w-8 h-8" />,
       color: 'from-emerald-600 to-teal-500',
-      profileImage: getAvatarUrl('Martin Jones-Arthur', 'Greater Accra'),
       responsibilities: [
         'Manage urban branch network operations',
         'Drive digital banking adoption initiatives',
@@ -74,7 +107,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '12+ years in regional banking and community development',
       icon: <ShieldCheck className="w-8 h-8" />,
       color: 'from-blue-600 to-cyan-500',
-      profileImage: getAvatarUrl('Christian Boateng', 'Ashanti'),
       responsibilities: [
         'Ensure regional compliance standards',
         'Implement operational efficiency measures',
@@ -104,7 +136,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '10+ years in rural banking and inclusive finance',
       icon: <Heart className="w-8 h-8" />,
       color: 'from-purple-600 to-pink-500',
-      profileImage: getAvatarUrl('Helena Boamah', 'Ahafo'),
       responsibilities: [
         'Oversee rural branch performance',
         'Drive mobile banking adoption in rural areas',
@@ -134,7 +165,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '8+ years in branch operations and team leadership',
       icon: <Zap className="w-8 h-8" />,
       color: 'from-pink-600 to-rose-500',
-      profileImage: getAvatarUrl('Beatrice Bannor', 'Western North'),
       responsibilities: [
         'Oversee regional branch operations',
         'Improve transaction processing efficiency',
@@ -164,7 +194,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '9+ years in revenue management and community banking',
       icon: <TrendingUp className="w-8 h-8" />,
       color: 'from-rose-600 to-red-500',
-      profileImage: getAvatarUrl('Mercy Ahianor', 'Western'),
       responsibilities: [
         'Manage revenue targets and growth',
         'Oversee staff training and development',
@@ -194,7 +223,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '7+ years in operations and training management',
       icon: <Award className="w-8 h-8" />,
       color: 'from-indigo-600 to-violet-500',
-      profileImage: getAvatarUrl('Amazing Abbey', 'Central'),
       responsibilities: [
         'Oversee operational excellence',
         'Lead comprehensive staff training',
@@ -224,7 +252,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '11+ years in revenue management and talent development',
       icon: <Users2 className="w-8 h-8" />,
       color: 'from-teal-600 to-cyan-500',
-      profileImage: getAvatarUrl('Emmanuel Mensah', 'Eastern'),
       responsibilities: [
         'Drive revenue growth strategies',
         'Lead talent development programs',
@@ -254,7 +281,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '9+ years in rural development and inclusive finance',
       icon: <Globe className="w-8 h-8" />,
       color: 'from-cyan-600 to-blue-500',
-      profileImage: getAvatarUrl('Esther Takyi', 'Volta & Oti'),
       responsibilities: [
         'Oversee rural branch performance',
         'Drive mobile banking adoption',
@@ -284,7 +310,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '10+ years in operations and community banking',
       icon: <Briefcase className="w-8 h-8" />,
       color: 'from-amber-600 to-yellow-500',
-      profileImage: getAvatarUrl('Justin Cobbold', 'Bono & Bono East'),
       responsibilities: [
         'Manage regional operations',
         'Lead staff training programs',
@@ -314,7 +339,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '12+ years in northern region banking and development',
       icon: <MapPin className="w-8 h-8" />,
       color: 'from-red-600 to-orange-500',
-      profileImage: getAvatarUrl('Salma Adams', 'Northern & Savannah'),
       responsibilities: [
         'Oversee northern region branches',
         'Drive rural banking initiatives',
@@ -344,7 +368,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '11+ years in northern development banking',
       icon: <Target className="w-8 h-8" />,
       color: 'from-violet-600 to-purple-500',
-      profileImage: getAvatarUrl('Abass Mohaideen', 'Upper West & Upper East'),
       responsibilities: [
         'Manage northernmost regions',
         'Drive financial inclusion',
@@ -374,7 +397,6 @@ const RegionalBranchManagersDetails = () => {
       experience: '15+ years in international banking and diaspora relations',
       icon: <Globe className="w-8 h-8" />,
       color: 'from-slate-600 to-gray-500',
-      profileImage: getAvatarUrl('Gabriel Amoako', 'Diaspora'),
       responsibilities: [
         'Manage diaspora banking relations',
         'Oversee foreign client services',
@@ -398,147 +420,141 @@ const RegionalBranchManagersDetails = () => {
 
   const selectedRegionData = regionalManagers.find(region => region.id === selectedRegion);
 
-  const branchAgents = [
-    {
-      name: 'Mr. Kwame Ofori',
-      qualification: 'MBA in Finance, Banking Certification',
-      experience: '8 years branch operations',
-      role: 'Senior Branch Manager',
-      achievements: 'Improved customer service scores by 35%'
-    },
-    {
-      name: 'Ms. Abena Serwaa',
-      qualification: 'BSc Economics, Customer Service Certification',
-      experience: '6 years client relations',
-      role: 'Client Relations Manager',
-      achievements: 'Increased client retention by 25%'
-    },
-    {
-      name: 'Mr. Kofi Mensah',
-      qualification: 'Diploma in Banking, Operations Certification',
-      experience: '5 years operations',
-      role: 'Operations Supervisor',
-      achievements: 'Reduced processing errors by 40%'
-    },
-    {
-      name: 'Mrs. Efua Addo',
-      qualification: 'BA Business Admin, Sales Certification',
-      experience: '7 years sales leadership',
-      role: 'Sales Team Lead',
-      achievements: 'Exceeded sales targets by 30%'
-    }
-  ];
-
   return (
-    <div className="bg-gradient-to-b from-white to-amber-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
+    <div className="bg-gradient-to-b from-white to-amber-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-400 rounded-full px-6 py-3 mb-6 animate-bobble">
             <MapPin className="w-5 h-5" />
             <span className="font-bold text-white">REGIONAL & BRANCH LEADERSHIP</span>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Grassroots Financial Leadership
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Our regional and branch managers bring Emerald Capital's excellence to communities 
             across Ghana, driving financial inclusion and operational excellence at every level.
           </p>
         </div>
 
         {/* Regional Navigation */}
-        <div className="mb-12">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {regionalManagers.map((region) => (
-              <button
-                key={region.id}
-                onClick={() => setSelectedRegion(region.id)}
-                className={`
-                  group relative overflow-hidden rounded-2xl transition-all duration-300 transform hover:scale-[1.02]
-                  ${selectedRegion === region.id 
-                    ? `bg-gradient-to-r ${region.color} shadow-2xl text-white` 
-                    : 'bg-white border-2 border-gray-200 shadow-lg hover:shadow-xl text-gray-900'
-                  }
-                `}
-              >
-                <div className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    {/* Region Icon/Image */}
-                    <div className={`
-                      w-14 h-14 rounded-full overflow-hidden border-2 mb-3 flex-shrink-0
-                      ${selectedRegion === region.id ? 'border-white' : 'border-gray-200'}
-                    `}>
-                      <img
-                        src={region.profileImage}
-                        alt={region.manager}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(region.manager)}&background=3b82f6&color=fff&size=150&bold=true`;
-                        }}
-                      />
-                    </div>
-                    
-                    <div className={`
-                      font-bold text-sm mb-1
-                      ${selectedRegion === region.id ? 'text-white' : 'text-gray-900'}
-                    `}>
-                      {region.region.split(' ')[0]}
-                    </div>
-                    <div className={`
-                      text-xs
-                      ${selectedRegion === region.id ? 'text-white/80' : 'text-gray-600'}
-                    `}>
-                      {region.manager.split(' ')[0]}
-                    </div>
-                    
-                    {selectedRegion === region.id && (
-                      <div className="mt-2">
-                        <div className="w-2 h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+        <div className="mb-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {regionalManagers.map((region) => {
+              const { imageUrl, fallbackUrl } = getManagerImage(region.id, region.manager);
+              const hasError = imageErrors[region.id];
+              
+              return (
+                <button
+                  key={region.id}
+                  onClick={() => setSelectedRegion(region.id)}
+                  className={`
+                    group relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-300 
+                    transform hover:scale-[1.02] active:scale-[0.98]
+                    ${selectedRegion === region.id 
+                      ? `bg-gradient-to-r ${region.color} shadow-xl md:shadow-2xl text-white` 
+                      : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg text-gray-900'
+                    }
+                  `}
+                >
+                  <div className="p-3 md:p-4">
+                    <div className="flex flex-col items-center text-center">
+                      {/* Region Image - FIXED CONTAINER */}
+                      <div className={`
+                        w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 mb-2 md:mb-3 
+                        flex-shrink-0 flex items-center justify-center
+                        ${selectedRegion === region.id ? 'border-white' : 'border-gray-200'}
+                        ${hasError ? 'bg-gray-100 p-1' : ''}
+                      `}>
+                        <img
+                          src={hasError ? fallbackUrl : imageUrl}
+                          alt={region.manager}
+                          className={`
+                            w-full h-full transition-all duration-300
+                            ${hasError 
+                              ? 'object-contain p-1' 
+                              : 'object-cover'
+                            }
+                          `}
+                          style={{
+                            objectPosition: 'center top', // Show faces at the top
+                          }}
+                          loading="lazy"
+                          onError={(e) => handleImageError(region.id, e)}
+                        />
                       </div>
-                    )}
+                      
+                      {/* Region Name */}
+                      <div className={`
+                        font-bold text-xs md:text-sm mb-1 truncate w-full
+                        ${selectedRegion === region.id ? 'text-white' : 'text-gray-900'}
+                      `}>
+                        {region.region.split(' ')[0]}
+                      </div>
+                      
+                      {/* Manager First Name */}
+                      <div className={`
+                        text-xs truncate w-full
+                        ${selectedRegion === region.id ? 'text-white/80' : 'text-gray-600'}
+                      `}>
+                        {region.manager.split(' ')[0]}
+                      </div>
+                      
+                      {/* Active Indicator */}
+                      {selectedRegion === region.id && (
+                        <div className="mt-1 md:mt-2">
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                
-                {/* Hover Effect */}
-                <div className={`
-                  absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
-                  ${region.color}
-                `}></div>
-              </button>
-            ))}
+                  
+                  {/* Hover Effect */}
+                  <div className={`
+                    absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
+                    ${region.color}
+                  `}></div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Main Regional Details */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
           {/* Left - Regional Overview */}
           <div className="lg:col-span-2">
-            {/* Regional Card */}
-            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-3xl overflow-hidden shadow-2xl mb-8 animate-bobble`}>
-              <div className="p-8 text-white">
-                <div className="flex flex-col md:flex-row items-start gap-8">
-                  {/* Manager Image */}
-                  <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
+            {/* Regional Card - FIXED IMAGE CONTAINER */}
+            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8 animate-bobble`}>
+              <div className="p-6 md:p-8 text-white">
+                <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
+                  {/* Manager Image - FIXED: Now shows full face */}
+                  <div className="
+                    w-32 h-32 md:w-48 md:h-48 rounded-xl md:rounded-2xl overflow-hidden 
+                    border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 
+                    bg-gray-100 mx-auto md:mx-0
+                  ">
                     <img
-                      src={selectedRegionData.profileImage}
+                      src={getManagerImage(selectedRegionData.id, selectedRegionData.manager).imageUrl}
                       alt={selectedRegionData.manager}
                       className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedRegionData.manager)}&background=10b981&color=fff&size=400&bold=true`;
+                      style={{
+                        objectPosition: 'center 30%', // This focuses on the face area
+                        objectFit: 'cover',
+                        width: '100%',
+                        height: '100%',
                       }}
+                      loading="lazy"
+                      onError={(e) => handleImageError(selectedRegionData.id, e)}
                     />
                   </div>
                   
                   {/* Manager Info */}
-                  <div className="flex-1">
-                    <div className="mb-6">
-                      <h3 className="text-3xl font-bold mb-2">{selectedRegionData.region}</h3>
-                      <div className="text-xl mb-4 text-white/90">{selectedRegionData.manager}</div>
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="mb-4 md:mb-6">
+                      <h3 className="text-2xl md:text-3xl font-bold mb-2">{selectedRegionData.region}</h3>
+                      <div className="text-lg md:text-xl mb-4 text-white/90">{selectedRegionData.manager}</div>
                       <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
                         <Award className="w-4 h-4" />
                         <span className="text-sm font-medium">{selectedRegionData.title}</span>
@@ -546,23 +562,23 @@ const RegionalBranchManagersDetails = () => {
                     </div>
                     
                     {/* Bio */}
-                    <p className="text-lg mb-6 text-white/95 leading-relaxed">
+                    <p className="text-base md:text-lg mb-4 md:mb-6 text-white/95 leading-relaxed">
                       {selectedRegionData.bio}
                     </p>
                     
                     {/* Regional Stats */}
-                    <div className="flex flex-wrap gap-4">
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-3">
-                        <Building className="w-5 h-5" />
-                        <span className="font-medium">{selectedRegionData.branchCount}</span>
+                    <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2">
+                        <Building className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-sm md:text-base font-medium">{selectedRegionData.branchCount}</span>
                       </div>
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-3">
-                        <MapPin className="w-5 h-5" />
-                        <span className="font-medium">{selectedRegionData.coverage}</span>
+                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2">
+                        <MapPin className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-sm md:text-base font-medium">{selectedRegionData.coverage}</span>
                       </div>
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-3">
-                        <Clock className="w-5 h-5" />
-                        <span className="font-medium">{selectedRegionData.experience}</span>
+                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2">
+                        <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                        <span className="text-sm md:text-base font-medium">{selectedRegionData.experience}</span>
                       </div>
                     </div>
                   </div>
@@ -571,14 +587,14 @@ const RegionalBranchManagersDetails = () => {
               
               {/* Focus Areas */}
               <div className="bg-white/10 backdrop-blur-sm border-t border-white/20">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Target className="w-5 h-5 text-white" />
-                    <span className="font-bold text-white">Focus Areas</span>
+                <div className="p-4 md:p-6">
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <Target className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    <span className="font-bold text-white text-sm md:text-base">Focus Areas</span>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start">
                     {selectedRegionData.focusAreas.map((area, index) => (
-                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-white">
+                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:text-sm text-white">
                         {area}
                       </div>
                     ))}
@@ -588,99 +604,197 @@ const RegionalBranchManagersDetails = () => {
             </div>
 
             {/* Responsibilities & Achievements */}
-            
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
+              {/* Responsibilities */}
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+                style={{ animationDelay: '0.2s' }}>
+                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center">
+                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900">Key Responsibilities</h3>
+                </div>
+                <ul className="space-y-3 md:space-y-4">
+                  {selectedRegionData.responsibilities.map((item, index) => (
+                    <li key={index} className="flex items-start gap-2 md:gap-3">
+                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Achievements */}
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+                style={{ animationDelay: '0.4s' }}>
+                <div className="flex items-center gap-3 mb-4 md:mb-6">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 flex items-center justify-center">
+                    <Award className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900">Notable Achievements</h3>
+                </div>
+                <ul className="space-y-3 md:space-y-4">
+                  {selectedRegionData.achievements.map((item, index) => (
+                    <li key={index} className="flex items-start gap-2 md:gap-3">
+                      <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
 
           {/* Right - Regional Impact */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             {/* Regional Performance */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '0.6s' }}>
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Regional Performance</h3>
-              <div className="space-y-6">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Regional Performance</h3>
+              <div className="space-y-4 md:space-y-6">
                 {[
                   { metric: 'Growth Rate', value: '35%', icon: '📈', color: 'text-emerald-600' },
                   { metric: 'Customer Satisfaction', value: '96%', icon: '😊', color: 'text-blue-600' },
                   { metric: 'Operational Efficiency', value: '92%', icon: '⚡', color: 'text-amber-600' },
                   { metric: 'Team Performance', value: '94%', icon: '👥', color: 'text-purple-600' }
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">{item.icon}</div>
+                  <div key={index} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="text-xl md:text-2xl">{item.icon}</div>
                       <div>
-                        <div className="font-medium text-gray-900">{item.metric}</div>
+                        <div className="font-medium text-sm md:text-base text-gray-900">{item.metric}</div>
                       </div>
                     </div>
-                    <div className={`font-bold text-lg ${item.color}`}>{item.value}</div>
+                    <div className={`font-bold text-base md:text-lg ${item.color}`}>{item.value}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Contact & Network */}
-            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-2xl p-8 text-white hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
+            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
               style={{ animationDelay: '0.8s' }}>
-              <h3 className="text-lg font-bold mb-4">Regional Contact</h3>
-              <div className="space-y-4">
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Mail className="w-5 h-5" />
-                  <span className="font-medium">Email Regional Office</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Regional Contact</h3>
+              <div className="space-y-3 md:space-y-4">
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">Email Regional Office</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Phone className="w-5 h-5" />
-                  <span className="font-medium">Call Regional Desk</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Phone className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">Call Regional Desk</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <MapPin className="w-5 h-5" />
-                  <span className="font-medium">Visit Regional HQ</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <MapPin className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium text-sm md:text-base">Visit Regional HQ</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               </div>
             </div>
 
             {/* Branch Network */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '1s' }}>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Branch Network</h3>
-              <div className="space-y-3">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Branch Network</h3>
+              <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Total Branches</span>
-                  <span className="font-bold text-amber-600">50+ Nationwide</span>
+                  <span className="text-xs md:text-sm text-gray-600">Total Branches</span>
+                  <span className="font-bold text-amber-600 text-sm md:text-base">50+ Nationwide</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Regional Coverage</span>
-                  <span className="font-bold text-amber-600">100% Ghana</span>
+                  <span className="text-xs md:text-sm text-gray-600">Regional Coverage</span>
+                  <span className="font-bold text-amber-600 text-sm md:text-base">100% Ghana</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Staff Members</span>
-                  <span className="font-bold text-amber-600">500+ Professionals</span>
+                  <span className="text-xs md:text-sm text-gray-600">Staff Members</span>
+                  <span className="font-bold text-amber-600 text-sm md:text-base">500+ Professionals</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Branch Agents */}
-       
         {/* National Coverage */}
-        
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl md:rounded-3xl p-6 md:p-8 mb-8 md:mb-12 shadow-lg md:shadow-xl border border-blue-100 animate-bobble">
+          <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 md:mb-6">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+              <Globe className="w-6 h-6 md:w-7 md:h-7 text-white" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-900 text-center sm:text-left">Nationwide Coverage</h3>
+          </div>
+          <p className="text-gray-700 mb-4 md:mb-6 text-base md:text-lg text-center sm:text-left">
+            With regional managers strategically positioned across all 16 regions of Ghana and extending to the diaspora community, 
+            Emerald Capital ensures comprehensive financial coverage and localized expertise throughout the nation.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {[
+              { label: 'Urban Centers', value: '100%', icon: '🏙️' },
+              { label: 'Rural Coverage', value: '85%', icon: '🌾' },
+              { label: 'Digital Access', value: '95%', icon: '📱' },
+              { label: 'Diaspora Reach', value: '50+', icon: '🌍' }
+            ].map((item, index) => (
+              <div key={index} className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 text-center border border-gray-200">
+                <div className="text-2xl md:text-3xl mb-1 md:mb-2">{item.icon}</div>
+                <div className="font-bold text-gray-900 text-lg md:text-xl">{item.value}</div>
+                <div className="text-xs md:text-sm text-gray-600">{item.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Summary Statement */}
-        
+        <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">
+            Local Expertise, National Impact
+          </h3>
+          <p className="text-base md:text-xl text-gray-700 leading-relaxed">
+            Each regional manager at Emerald Capital is not just an administrator but a community leader, 
+            financial educator, and development partner. Their deep understanding of local contexts combined 
+            with our national standards ensures that every Ghanaian, from urban centers to rural villages, 
+            has access to world-class financial services tailored to their needs.
+          </p>
+        </div>
 
         {/* Contact Regional Network */}
-        
+        <div className="bg-gradient-to-r from-amber-500 to-orange-400 rounded-xl md:rounded-3xl p-6 md:p-8 text-white shadow-xl md:shadow-2xl animate-bobble">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-xl md:text-2xl font-bold mb-2">Connect with Our Regional Network</h3>
+              <p className="text-amber-100 text-sm md:text-base">
+                Ready to experience localized financial excellence? Contact your regional manager today.
+              </p>
+            </div>
+            <button className="bg-white text-amber-600 font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg md:rounded-xl hover:bg-amber-50 transition-colors transform hover:scale-105 shadow-lg">
+              Contact Regional Office
+              <ArrowRight className="inline-block ml-2 w-4 h-4 md:w-5 md:h-5" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Add custom animation styles */}
       <style jsx>{`
         @keyframes bobble {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-5px); }
         }
         .animate-bobble {
           animation: bobble 3s ease-in-out infinite;
+        }
+        
+        /* Ensure all images fit perfectly */
+        img {
+          max-width: 100%;
+          height: auto;
+          display: block;
+        }
+        
+        /* Fix for avatar fallback */
+        .avatar-fallback {
+          padding: 8px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
       `}</style>
     </div>

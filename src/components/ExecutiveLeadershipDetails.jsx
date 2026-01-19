@@ -13,8 +13,26 @@ import {
 const ExecutiveLeadershipDetails = () => {
   const [selectedExecutive, setSelectedExecutive] = useState('ceo');
 
-  // Function to generate consistent avatar URLs
-  const getAvatarUrl = (name, roleColor) => {
+  // Function to get executive image from public folder
+  const getExecutiveImage = (executiveId, name) => {
+    // Map executive IDs to actual image filenames in your public folder
+    const imageMap = {
+      'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'coo': 'MR. SOLOMON AMANKWAH.jpg',
+      'cfo': 'MR. ALBERT KWAME ACHIIFU.jpg', // Update if you have Emmanuel's photo
+      'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
+      'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
+      'cmo': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Update if you have Gladys's photo
+      'cco': 'MR. CHARLES BINNEY ESQ.jpg',
+      'cio': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Anna Frimpong - update when available
+      'chro': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Anna Frimpong - update when available
+      'cino': 'byuiutr.jpg' // Update if you have Christian's photo
+    };
+    
+    const imageFilename = imageMap[executiveId];
+    const imageUrl = `/${imageFilename}`;
+    
+    // Fallback avatar
     const colorMap = {
       'emerald': '10b981',
       'blue': '3b82f6',
@@ -24,16 +42,14 @@ const ExecutiveLeadershipDetails = () => {
       'pink': 'ec4899',
       'gray': '6b7280',
       'teal': '14b8a6',
-      'amber': 'f59e0b',
-      'cyan': '06b6d4',
-      'rose': 'f43f5e',
-      'slate': '475569'
+      'amber': 'f59e0b'
     };
     
-    const colorKey = roleColor.split('-')[1]; // Get color from gradient
+    const colorKey = executiveId === 'ceo' ? 'emerald' : 'blue';
     const bgColor = colorMap[colorKey] || '3b82f6';
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bgColor}&color=fff&size=400&bold=true&length=2`;
     
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bgColor}&color=fff&size=400&bold=true&length=2`;
+    return { imageUrl, fallbackUrl };
   };
 
   const executiveTeam = [
@@ -46,7 +62,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '20+ years in banking, fintech, and investment leadership',
       icon: <Briefcase className="w-8 h-8" />,
       color: 'from-emerald-600 to-teal-500',
-      profileImage: getAvatarUrl('Gertrude Asamoah', 'emerald'),
       responsibilities: [
         'Set corporate vision and strategic direction',
         'Lead executive team and organizational culture',
@@ -75,7 +90,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '18 years in banking operations and financial services',
       icon: <Zap className="w-8 h-8" />,
       color: 'from-blue-600 to-cyan-500',
-      profileImage: getAvatarUrl('Solomon Amankwah', 'blue'),
       responsibilities: [
         'Oversee daily operations across all departments',
         'Optimize processes for maximum efficiency',
@@ -104,7 +118,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '15+ years in corporate finance and strategic planning',
       icon: <PieChart className="w-8 h-8" />,
       color: 'from-purple-600 to-pink-500',
-      profileImage: getAvatarUrl('Emmanuel Mensah', 'purple'),
       responsibilities: [
         'Develop and execute financial strategy',
         'Oversee financial reporting and compliance',
@@ -133,7 +146,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '12+ years in risk management and compliance',
       icon: <ShieldCheck className="w-8 h-8" />,
       color: 'from-red-600 to-orange-500',
-      profileImage: getAvatarUrl('Albert Achiifu', 'red'),
       responsibilities: [
         'Develop enterprise risk management framework',
         'Ensure regulatory compliance across operations',
@@ -162,7 +174,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '15+ years in technology leadership and digital innovation',
       icon: <Cpu className="w-8 h-8" />,
       color: 'from-indigo-600 to-violet-500',
-      profileImage: getAvatarUrl('Martin Jones', 'indigo'),
       responsibilities: [
         'Lead digital transformation strategy',
         'Oversee technology infrastructure',
@@ -191,7 +202,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '10+ years in marketing and business development',
       icon: <Megaphone className="w-8 h-8" />,
       color: 'from-pink-600 to-rose-500',
-      profileImage: getAvatarUrl('Gladys Yeboah', 'pink'),
       responsibilities: [
         'Develop and execute brand strategy',
         'Lead market expansion initiatives',
@@ -220,7 +230,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '18+ years in legal and compliance leadership',
       icon: <Scale className="w-8 h-8" />,
       color: 'from-gray-600 to-slate-500',
-      profileImage: getAvatarUrl('Charles Binney', 'gray'),
       responsibilities: [
         'Ensure legal compliance and integrity',
         'Oversee corporate governance framework',
@@ -249,7 +258,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '12+ years in investment management',
       icon: <BarChart className="w-8 h-8" />,
       color: 'from-teal-600 to-cyan-500',
-      profileImage: getAvatarUrl('Anna Frimpong', 'teal'),
       responsibilities: [
         'Develop investment strategy and policy',
         'Manage portfolio allocation and performance',
@@ -278,7 +286,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '15+ years in human resources leadership',
       icon: <Users2 className="w-8 h-8" />,
       color: 'from-amber-600 to-yellow-500',
-      profileImage: getAvatarUrl('Anna Frimpong HR', 'amber'),
       responsibilities: [
         'Lead talent acquisition and retention',
         'Oversee organizational development',
@@ -307,7 +314,6 @@ const ExecutiveLeadershipDetails = () => {
       experience: '15+ years in insurance and risk management',
       icon: <Shield className="w-8 h-8" />,
       color: 'from-blue-700 to-indigo-600',
-      profileImage: getAvatarUrl('Christian Boateng', 'blue'),
       responsibilities: [
         'Lead insurance brokerage operations',
         'Develop insurance product strategy',
@@ -330,6 +336,7 @@ const ExecutiveLeadershipDetails = () => {
   ];
 
   const selectedExecutiveData = executiveTeam.find(exec => exec.id === selectedExecutive);
+  const { imageUrl, fallbackUrl } = getExecutiveImage(selectedExecutive, selectedExecutiveData.name);
 
   return (
     <div className="bg-gradient-to-b from-white to-emerald-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
@@ -352,65 +359,73 @@ const ExecutiveLeadershipDetails = () => {
         {/* Executive Navigation */}
         <div className="mb-12">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {executiveTeam.map((executive) => (
-              <button
-                key={executive.id}
-                onClick={() => setSelectedExecutive(executive.id)}
-                className={`
-                  group relative overflow-hidden rounded-2xl transition-all duration-300 transform hover:scale-[1.02]
-                  ${selectedExecutive === executive.id 
-                    ? `bg-gradient-to-r ${executive.color} shadow-2xl text-white` 
-                    : 'bg-white border-2 border-gray-200 shadow-lg hover:shadow-xl text-gray-900'
-                  }
-                `}
-              >
-                <div className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    {/* Profile Image in Navigation */}
-                    <div className={`
-                      w-14 h-14 rounded-full overflow-hidden border-2 mb-3 flex-shrink-0
-                      ${selectedExecutive === executive.id ? 'border-white' : 'border-gray-200'}
-                    `}>
-                      <img
-                        src={executive.profileImage}
-                        alt={executive.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(executive.name)}&background=3b82f6&color=fff&size=150&bold=true`;
-                        }}
-                      />
-                    </div>
-                    
-                    <div className={`
-                      font-bold text-sm mb-1
-                      ${selectedExecutive === executive.id ? 'text-white' : 'text-gray-900'}
-                    `}>
-                      {executive.title.split(' ')[0]}
-                    </div>
-                    <div className={`
-                      text-xs
-                      ${selectedExecutive === executive.id ? 'text-white/80' : 'text-gray-600'}
-                    `}>
-                      {executive.name.split(' ')[0]}
-                    </div>
-                    
-                    {selectedExecutive === executive.id && (
-                      <div className="mt-2">
-                        <div className="w-2 h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+            {executiveTeam.map((executive) => {
+              const { imageUrl: navImageUrl, fallbackUrl: navFallbackUrl } = getExecutiveImage(executive.id, executive.name);
+              
+              return (
+                <button
+                  key={executive.id}
+                  onClick={() => setSelectedExecutive(executive.id)}
+                  className={`
+                    group relative overflow-hidden rounded-2xl transition-all duration-300 transform hover:scale-[1.02]
+                    ${selectedExecutive === executive.id 
+                      ? `bg-gradient-to-r ${executive.color} shadow-2xl text-white` 
+                      : 'bg-white border-2 border-gray-200 shadow-lg hover:shadow-xl text-gray-900'
+                    }
+                  `}
+                >
+                  <div className="p-4">
+                    <div className="flex flex-col items-center text-center">
+                      {/* Profile Image in Navigation */}
+                      <div className={`
+                        w-14 h-14 rounded-full overflow-hidden border-2 mb-3 flex-shrink-0
+                        ${selectedExecutive === executive.id ? 'border-white' : 'border-gray-200'}
+                      `}>
+                        <img
+                          src={navImageUrl}
+                          alt={executive.name}
+                          className="w-full h-full object-cover object-center"
+                          style={{
+                            objectFit: 'cover',
+                            objectPosition: 'center'
+                          }}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = navFallbackUrl;
+                          }}
+                        />
                       </div>
-                    )}
+                      
+                      <div className={`
+                        font-bold text-sm mb-1
+                        ${selectedExecutive === executive.id ? 'text-white' : 'text-gray-900'}
+                      `}>
+                        {executive.title.split(' ')[0]}
+                      </div>
+                      <div className={`
+                        text-xs
+                        ${selectedExecutive === executive.id ? 'text-white/80' : 'text-gray-600'}
+                      `}>
+                        {executive.name.split(' ')[0]}
+                      </div>
+                      
+                      {selectedExecutive === executive.id && (
+                        <div className="mt-2">
+                          <div className="w-2 h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                
-                {/* Hover Effect */}
-                <div className={`
-                  absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
-                  ${executive.color}
-                `}></div>
-              </button>
-            ))}
+                  
+                  {/* Hover Effect */}
+                  <div className={`
+                    absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
+                    ${executive.color}
+                  `}></div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -423,15 +438,19 @@ const ExecutiveLeadershipDetails = () => {
               <div className="p-8 text-white">
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   {/* Executive Image */}
-                  <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
+                  <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-gray-100">
                     <img
-                      src={selectedExecutiveData.profileImage}
+                      src={imageUrl}
                       alt={selectedExecutiveData.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
+                      style={{
+                        objectFit: 'cover',
+                        objectPosition: 'center'
+                      }}
                       loading="lazy"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedExecutiveData.name)}&background=10b981&color=fff&size=400&bold=true`;
+                        e.target.src = fallbackUrl;
                       }}
                     />
                   </div>
@@ -608,11 +627,6 @@ const ExecutiveLeadershipDetails = () => {
           </div>
         </div>
 
-        {/* Team Performance */}
-       
-
-        {/* Functional Excellence */}
-       
         {/* Contact Executive Team */}
         <div className="mt-20 text-center">
           <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl px-8 py-8 shadow-xl animate-bobble">
@@ -653,15 +667,24 @@ const ExecutiveLeadershipDetails = () => {
         .animate-bobble {
           animation: bobble 3s ease-in-out infinite;
         }
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
+        
+        /* Ensure all images fit perfectly */
+        img {
+          max-width: 100%;
+          height: auto;
+        }
+        
+        /* Specific styling for executive images */
+        .w-48.h-48 img,
+        .w-14.h-14 img {
+          object-fit: cover !important;
+          object-position: center !important;
+          width: 100% !important;
+          height: 100% !important;
         }
       `}</style>
     </div>
   );
 };
 
-export default ExecutiveLeadershipDetails;+3
+export default ExecutiveLeadershipDetails;

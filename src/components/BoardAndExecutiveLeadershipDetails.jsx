@@ -11,6 +11,56 @@ import {
 const BoardAndExecutiveLeadershipDetails = () => {
   const [selectedRole, setSelectedRole] = useState('board');
 
+  // Function to get leader image from public folder
+  const getLeaderImage = (roleId, roleName) => {
+    // Map role IDs to actual image filenames in your public folder
+    const imageMap = {
+      'board': 'DR. ASAMOAH KORANTENG EVANS.jpg', // Board Chairperson
+      'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'coo': 'MR. SOLOMON AMANKWAH.jpg',
+      'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
+      'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
+      'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
+      'cmo': 'MISS GLADYS ABENA YEBOAH.jpg',
+      'cco': 'MR. CHARLES BINNEY ESQ.jpg',
+      'cio': 'MISS ANNA FRIMPONG.jpg',
+      'cino': 'MR. CHRISTIAN YAW BOATENG.jpg',
+      'chro': 'MISS ANNA FRIMPONG HR.jpg'
+    };
+    
+    // Get the actual image filename for this role
+    const imageFilename = imageMap[roleId];
+    const imageUrl = `/${imageFilename}`;
+    
+    // Create a fallback avatar URL in case image is missing
+    const colorMap = {
+      'board': '3b82f6',     // blue
+      'ceo': 'f59e0b',      // amber
+      'coo': '10b981',      // emerald
+      'cfo': '8b5cf6',      // purple
+      'cro': 'ef4444',      // red
+      'cto': '6366f1',      // indigo
+      'cmo': 'ec4899',      // pink
+      'cco': '6b7280',      // gray
+      'cio': '14b8a6',      // teal
+      'cino': '3b82f6',     // blue
+      'chro': 'f59e0b'      // amber
+    };
+    
+    const bgColor = colorMap[roleId] || '3b82f6';
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(roleName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
+    
+    return { imageUrl, fallbackUrl };
+  };
+
+  // Handle image error
+  const handleImageError = (roleId, e, roleName) => {
+    console.warn(`Image failed to load for role ${roleId}:`, e.target.src);
+    const { fallbackUrl } = getLeaderImage(roleId, roleName);
+    e.target.src = fallbackUrl;
+    e.target.className = e.target.className + ' bg-gray-200 p-2 object-contain';
+  };
+
   const leadershipRoles = [
     {
       id: 'board',
@@ -19,6 +69,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Provides strategic direction, oversight, and accountability for Emerald Capital.',
       icon: <Crown className="w-6 h-6" />,
       color: 'from-blue-600 to-cyan-500',
+      leaderName: 'Dr. Asamoah Koranteng Evans',
       responsibilities: [
         'Define corporate strategy and vision',
         'Oversee executive performance',
@@ -39,6 +90,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Leads Emerald Capital with overall strategic direction, performance management, and stakeholder relations.',
       icon: <Building className="w-6 h-6" />,
       color: 'from-amber-600 to-orange-500',
+      leaderName: 'Mrs. Gertrude Asamoah',
       responsibilities: [
         'Set company vision and strategy',
         'Lead executive team',
@@ -59,6 +111,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Oversees day-to-day operations ensuring efficiency, quality, and service delivery excellence.',
       icon: <Zap className="w-6 h-6" />,
       color: 'from-emerald-600 to-green-500',
+      leaderName: 'Mr. Solomon Amankwah',
       responsibilities: [
         'Optimize operational processes',
         'Service delivery excellence',
@@ -79,6 +132,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Manages finance, treasury, financial planning, and ensures financial sustainability.',
       icon: <PieChart className="w-6 h-6" />,
       color: 'from-purple-600 to-pink-500',
+      leaderName: 'Mr. Emmanuel Osei Mensah',
       responsibilities: [
         'Financial strategy development',
         'Capital allocation',
@@ -99,6 +153,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Oversees comprehensive risk management framework across all business operations.',
       icon: <Shield className="w-6 h-6" />,
       color: 'from-red-600 to-rose-500',
+      leaderName: 'Mr. Albert Kwame Achiifu',
       responsibilities: [
         'Risk assessment framework',
         'Compliance monitoring',
@@ -119,6 +174,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Leads technology strategy, digital platforms development, and IT infrastructure.',
       icon: <Cpu className="w-6 h-6" />,
       color: 'from-indigo-600 to-violet-500',
+      leaderName: 'Mr. Martin Jones-Arthur',
       responsibilities: [
         'Technology strategy',
         'Digital transformation',
@@ -139,6 +195,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Drives business growth, brand visibility, customer acquisition, and market positioning.',
       icon: <Megaphone className="w-6 h-6" />,
       color: 'from-pink-600 to-rose-500',
+      leaderName: 'Miss Gladys Abena Yeboah',
       responsibilities: [
         'Brand strategy',
         'Market research',
@@ -159,6 +216,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Ensures legal integrity, regulatory compliance, and ethical standards across operations.',
       icon: <Scale className="w-6 h-6" />,
       color: 'from-gray-600 to-slate-500',
+      leaderName: 'Mr. Charles Binney Esq',
       responsibilities: [
         'Regulatory compliance',
         'Legal oversight',
@@ -179,6 +237,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Leads investment strategy development and portfolio performance optimization.',
       icon: <BarChart className="w-6 h-6" />,
       color: 'from-teal-600 to-cyan-500',
+      leaderName: 'Miss Anna Frimpong',
       responsibilities: [
         'Investment strategy',
         'Portfolio management',
@@ -199,6 +258,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Leads insurance brokerage business ensuring profitable growth and strong relationships.',
       icon: <Shield className="w-6 h-6" />,
       color: 'from-blue-700 to-indigo-600',
+      leaderName: 'Mr. Christian Yaw Boateng',
       responsibilities: [
         'Insurance strategy',
         'Brokerage operations',
@@ -219,6 +279,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
       description: 'Manages talent acquisition, development, organizational culture, and employee engagement.',
       icon: <Users2 className="w-6 h-6" />,
       color: 'from-amber-700 to-yellow-600',
+      leaderName: 'Miss Anna Frimpong',
       responsibilities: [
         'Talent strategy',
         'Organizational development',
@@ -235,85 +296,118 @@ const BoardAndExecutiveLeadershipDetails = () => {
   ];
 
   const selectedRoleData = leadershipRoles.find(role => role.id === selectedRole);
+  const { imageUrl, fallbackUrl } = getLeaderImage(selectedRole, selectedRoleData.leaderName);
 
   return (
-    <div className="bg-gradient-to-b from-white to-slate-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
+    <div className="bg-gradient-to-b from-white to-slate-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Executive Leadership Structure
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Meet the visionary leaders who guide Emerald Capital with expertise, 
             integrity, and strategic excellence across all functional areas.
           </p>
         </div>
 
         {/* Leadership Roles Navigation */}
-        <div className="mb-12">
-          <div className="flex overflow-x-auto pb-4 gap-3 scrollbar-hide">
-            {leadershipRoles.map((role) => (
-              <button
-                key={role.id}
-                onClick={() => setSelectedRole(role.id)}
-                className={`
-                  flex-shrink-0 flex items-center gap-3 px-6 py-4 rounded-2xl transition-all duration-300
-                  ${selectedRole === role.id 
-                    ? `bg-gradient-to-r ${role.color} text-white shadow-xl scale-105`
-                    : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-lg'
-                  }
-                `}
-              >
-                <div className={`p-2 rounded-lg ${selectedRole === role.id ? 'bg-white/20' : 'bg-gray-100'}`}>
-                  {role.icon}
-                </div>
-                <div className="text-left">
-                  <div className="font-bold text-sm">{role.title.split(' ')[0]}</div>
-                  <div className="text-xs opacity-80">{role.title.split(' ').slice(1).join(' ')}</div>
-                </div>
-                {selectedRole === role.id && (
-                  <ChevronRight className="w-5 h-5 ml-2 animate-pulse" />
-                )}
-              </button>
-            ))}
+        <div className="mb-10">
+          <div className="flex overflow-x-auto pb-4 gap-2 md:gap-3 scrollbar-hide">
+            {leadershipRoles.map((role) => {
+              const { imageUrl: navImageUrl } = getLeaderImage(role.id, role.leaderName);
+              
+              return (
+                <button
+                  key={role.id}
+                  onClick={() => setSelectedRole(role.id)}
+                  className={`
+                    flex-shrink-0 flex flex-col items-center justify-center gap-2 px-4 py-3 md:px-6 md:py-4 rounded-xl md:rounded-2xl transition-all duration-300 min-w-[100px] md:min-w-[120px]
+                    ${selectedRole === role.id 
+                      ? `bg-gradient-to-r ${role.color} text-white shadow-lg md:shadow-xl scale-105`
+                      : 'bg-white border border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md'
+                    }
+                  `}
+                >
+                  {/* Leader Image Thumbnail */}
+                  <div className={`
+                    w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2
+                    ${selectedRole === role.id ? 'border-white' : 'border-gray-200'}
+                  `}>
+                    <img
+                      src={navImageUrl}
+                      alt={role.leaderName}
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: 'center top' }}
+                      loading="lazy"
+                      onError={(e) => handleImageError(role.id, e, role.leaderName)}
+                    />
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="font-bold text-xs md:text-sm leading-tight">{role.title.split(' ')[0]}</div>
+                  </div>
+                  {selectedRole === role.id && (
+                    <ChevronRight className="w-3 h-3 md:w-4 md:h-4 animate-pulse mt-1" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Main Leadership Details */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
           {/* Left - Role Details */}
           <div className="lg:col-span-2">
-            <div className={`bg-gradient-to-r ${selectedRoleData.color} rounded-3xl p-8 text-white shadow-2xl mb-8`}>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  {selectedRoleData.icon}
+            <div className={`bg-gradient-to-r ${selectedRoleData.color} rounded-2xl md:rounded-3xl p-6 md:p-8 text-white shadow-lg md:shadow-2xl mb-6 md:mb-8`}>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 mb-6 md:mb-8">
+                {/* Leader Image */}
+                <div className="
+                  w-20 h-20 md:w-32 md:h-32 rounded-xl md:rounded-2xl overflow-hidden 
+                  border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 mx-auto md:mx-0
+                  bg-gray-100
+                ">
+                  <img
+                    src={imageUrl}
+                    alt={selectedRoleData.leaderName}
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: 'center 30%' }}
+                    loading="lazy"
+                    onError={(e) => handleImageError(selectedRole, e, selectedRoleData.leaderName)}
+                  />
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold">{selectedRoleData.title}</h3>
-                  <p className="text-white/80">{selectedRoleData.subtitle}</p>
+                
+                <div className="text-center md:text-left flex-1">
+                  <h3 className="text-xl md:text-2xl font-bold mb-2">{selectedRoleData.title}</h3>
+                  <p className="text-sm md:text-base text-white/80 mb-3 md:mb-4">{selectedRoleData.subtitle}</p>
+                  <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2">
+                    <Award className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="text-xs md:text-sm font-medium">{selectedRoleData.leaderName}</span>
+                  </div>
                 </div>
               </div>
 
-              <p className="text-lg mb-8 opacity-95">{selectedRoleData.description}</p>
+              <p className="text-base md:text-lg mb-6 md:mb-8 opacity-95">{selectedRoleData.description}</p>
 
               {/* Experience Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
-                <Clock className="w-5 h-5" />
-                <span className="font-bold">{selectedRoleData.experience}</span>
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 md:px-6 md:py-3 mb-6 md:mb-8">
+                <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="text-sm md:text-base font-bold">{selectedRoleData.experience}</span>
               </div>
 
               {/* Key Responsibilities */}
-              <div className="mb-8">
-                <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <Target className="w-5 h-5" />
+              <div className="mb-6 md:mb-8">
+                <h4 className="font-bold text-lg mb-3 md:mb-4 flex items-center gap-2">
+                  <Target className="w-4 h-4 md:w-5 md:h-5" />
                   Key Responsibilities
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   {selectedRoleData.responsibilities.map((resp, index) => (
-                    <div key={index} className="flex items-start gap-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                      <CheckCircle className="w-5 h-5 text-amber-300 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">{resp}</span>
+                    <div key={index} className="flex items-start gap-2 md:gap-3 bg-white/10 rounded-lg md:rounded-xl p-3 md:p-4 backdrop-blur-sm">
+                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-amber-300 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs md:text-sm">{resp}</span>
                     </div>
                   ))}
                 </div>
@@ -321,13 +415,13 @@ const BoardAndExecutiveLeadershipDetails = () => {
 
               {/* Performance KPIs */}
               <div>
-                <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
+                <h4 className="font-bold text-lg mb-3 md:mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
                   Performance Indicators
                 </h4>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 md:gap-3">
                   {selectedRoleData.kpis.map((kpi, index) => (
-                    <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm">
+                    <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm">
                       {kpi}
                     </div>
                   ))}
@@ -336,38 +430,38 @@ const BoardAndExecutiveLeadershipDetails = () => {
             </div>
 
             {/* Leadership Impact */}
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Leadership Impact</h3>
-              <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Leadership Impact</h3>
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                 {[
                   {
-                    icon: <Brain className="w-8 h-8 text-blue-600" />,
+                    icon: <Brain className="w-6 h-6 md:w-8 md:h-8 text-blue-600" />,
                     title: "Strategic Vision",
                     description: "Driving long-term strategic initiatives and market positioning"
                   },
                   {
-                    icon: <Lightbulb className="w-8 h-8 text-amber-600" />,
+                    icon: <Lightbulb className="w-6 h-6 md:w-8 md:h-8 text-amber-600" />,
                     title: "Innovation",
                     description: "Fostering innovation and digital transformation across operations"
                   },
                   {
-                    icon: <Users2 className="w-8 h-8 text-emerald-600" />,
+                    icon: <Users2 className="w-6 h-6 md:w-8 md:h-8 text-emerald-600" />,
                     title: "Team Development",
                     description: "Building high-performance teams and leadership pipeline"
                   },
                   {
-                    icon: <Star className="w-8 h-8 text-purple-600" />,
+                    icon: <Star className="w-6 h-6 md:w-8 md:h-8 text-purple-600" />,
                     title: "Excellence",
                     description: "Maintaining excellence in service delivery and operations"
                   }
                 ].map((impact, index) => (
-                  <div key={index} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-                    <div className="p-3 bg-white rounded-xl shadow-sm">
+                  <div key={index} className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl">
+                    <div className="p-2 md:p-3 bg-white rounded-lg md:rounded-xl shadow-sm">
                       {impact.icon}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 mb-1">{impact.title}</h4>
-                      <p className="text-gray-600 text-sm">{impact.description}</p>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 text-sm md:text-base mb-1">{impact.title}</h4>
+                      <p className="text-gray-600 text-xs md:text-sm">{impact.description}</p>
                     </div>
                   </div>
                 ))}
@@ -376,56 +470,56 @@ const BoardAndExecutiveLeadershipDetails = () => {
           </div>
 
           {/* Right - Leadership Excellence */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             {/* Leadership Excellence Card */}
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Leadership Excellence</h3>
-              <div className="space-y-6">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Leadership Excellence</h3>
+              <div className="space-y-4 md:space-y-6">
                 {[
                   {
                     metric: "Industry Experience",
                     value: "22+ Years",
-                    icon: <Clock className="w-5 h-5 text-blue-600" />,
+                    icon: <Clock className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />,
                     color: "bg-blue-100"
                   },
                   {
                     metric: "Education Level",
                     value: "Advanced Degrees",
-                    icon: <Award className="w-5 h-5 text-purple-600" />,
+                    icon: <Award className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />,
                     color: "bg-purple-100"
                   },
                   {
                     metric: "Global Exposure",
                     value: "Multi-market",
-                    icon: <Globe className="w-5 h-5 text-emerald-600" />,
+                    icon: <Globe className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />,
                     color: "bg-emerald-100"
                   },
                   {
                     metric: "Board Diversity",
                     value: "40% Women",
-                    icon: <Users className="w-5 h-5 text-pink-600" />,
+                    icon: <Users className="w-4 h-4 md:w-5 md:h-5 text-pink-600" />,
                     color: "bg-pink-100"
                   }
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                    <div className="flex items-center gap-3">
+                  <div key={index} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl">
+                    <div className="flex items-center gap-2 md:gap-3">
                       <div className={`p-2 rounded-lg ${item.color}`}>
                         {item.icon}
                       </div>
                       <div>
-                        <div className="font-medium text-gray-900">{item.metric}</div>
+                        <div className="font-medium text-gray-900 text-sm md:text-base">{item.metric}</div>
                       </div>
                     </div>
-                    <div className="font-bold text-gray-900">{item.value}</div>
+                    <div className="font-bold text-gray-900 text-sm md:text-base">{item.value}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Governance Structure */}
-            <div className="bg-gradient-to-r from-slate-800 to-gray-900 rounded-2xl p-8 text-white">
-              <h3 className="text-lg font-bold mb-4">Governance Structure</h3>
-              <div className="space-y-4">
+            <div className="bg-gradient-to-r from-slate-800 to-gray-900 rounded-xl md:rounded-2xl p-6 md:p-8 text-white">
+              <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Governance Structure</h3>
+              <div className="space-y-3 md:space-y-4">
                 {[
                   "Independent Board Chairman",
                   "Majority Independent Directors",
@@ -436,8 +530,8 @@ const BoardAndExecutiveLeadershipDetails = () => {
                   "Audit Committee Independence",
                   "Shareholder Engagement"
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                  <div key={index} className="flex items-center gap-2 md:gap-3 text-xs md:text-sm">
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-amber-400 rounded-full"></div>
                     <span>{item}</span>
                   </div>
                 ))}
@@ -445,50 +539,42 @@ const BoardAndExecutiveLeadershipDetails = () => {
             </div>
 
             {/* Contact Leadership */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Leadership Contact</h3>
-              <div className="space-y-4">
-                <button className="w-full flex items-center justify-between p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-blue-600" />
-                    <span className="font-medium text-gray-900">Email Leadership</span>
+            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Leadership Contact</h3>
+              <div className="space-y-3 md:space-y-4">
+                <button className="w-full flex items-center justify-between p-3 md:p-4 bg-blue-50 rounded-lg md:rounded-xl hover:bg-blue-100 transition-colors group">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Mail className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                    <span className="font-medium text-gray-900 text-sm md:text-base">Email Leadership</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                 </button>
-                <button className="w-full flex items-center justify-between p-4 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <FileText className="w-5 h-5 text-emerald-600" />
-                    <span className="font-medium text-gray-900">Leadership Bios</span>
+                <button className="w-full flex items-center justify-between p-3 md:p-4 bg-emerald-50 rounded-lg md:rounded-xl hover:bg-emerald-100 transition-colors group">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <FileText className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
+                    <span className="font-medium text-gray-900 text-sm md:text-base">Leadership Bios</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-emerald-600 transition-colors" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-emerald-600 transition-colors" />
                 </button>
-                <button className="w-full flex items-center justify-between p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <Eye className="w-5 h-5 text-purple-600" />
-                    <span className="font-medium text-gray-900">Annual Report</span>
+                <button className="w-full flex items-center justify-between p-3 md:p-4 bg-purple-50 rounded-lg md:rounded-xl hover:bg-purple-100 transition-colors group">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Eye className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
+                    <span className="font-medium text-gray-900 text-sm md:text-base">Annual Report</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
                 </button>
               </div>
             </div>
-
-            {/* CTA Button */}
-            {/* <button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg py-5 rounded-2xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"> */}
-              {/* View Full Leadership Profiles */}
-            {/* </button> */}
           </div>
         </div>
 
-        {/* Leadership Team Excellence */}
-        
-
         {/* Leadership Philosophy */}
-        <div className="mt-20">
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+        <div className="mt-12 md:mt-20">
+          <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8 md:mb-12">
             Leadership Philosophy
           </h3>
-          <div className="bg-gradient-to-r from-slate-50 to-gray-100 rounded-3xl p-8 border border-gray-300">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-r from-slate-50 to-gray-100 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               {[
                 {
                   principle: "Integrity First",
@@ -531,10 +617,10 @@ const BoardAndExecutiveLeadershipDetails = () => {
                   icon: "💎"
                 }
               ].map((principle, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-                  <div className="text-2xl mb-3">{principle.icon}</div>
-                  <div className="font-bold text-gray-900 mb-2">{principle.principle}</div>
-                  <div className="text-sm text-gray-600">{principle.description}</div>
+                <div key={index} className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-md hover:shadow-lg transition-shadow">
+                  <div className="text-2xl mb-2 md:mb-3">{principle.icon}</div>
+                  <div className="font-bold text-gray-900 text-sm md:text-base mb-1 md:mb-2">{principle.principle}</div>
+                  <div className="text-gray-600 text-xs md:text-sm">{principle.description}</div>
                 </div>
               ))}
             </div>
@@ -542,28 +628,28 @@ const BoardAndExecutiveLeadershipDetails = () => {
         </div>
 
         {/* Leadership Contact Section */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl px-8 py-8 shadow-xl">
-            <div className="text-left text-white">
-              <div className="flex items-center gap-3 mb-2">
-                <Building2 className="w-6 h-6" />
-                <p className="text-lg font-bold">Leadership Contact</p>
+        <div className="mt-12 md:mt-20 text-center">
+          <div className="inline-flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl px-6 md:px-8 py-6 md:py-8 shadow-xl">
+            <div className="text-center md:text-left text-white">
+              <div className="flex items-center gap-2 md:gap-3 mb-2 justify-center md:justify-start">
+                <Building2 className="w-5 h-5 md:w-6 md:h-6" />
+                <p className="text-base md:text-lg font-bold">Leadership Contact</p>
               </div>
-              <p className="text-blue-100">
+              <p className="text-blue-100 text-sm md:text-base">
                 Connect with our executive leadership team for strategic inquiries, 
                 partnership opportunities, or governance matters.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4">
               <a 
                 href="mailto:leadership@emeraldcapitalgh.com" 
-                className="bg-white text-blue-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                className="bg-white text-blue-700 px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base"
               >
                 Email Leadership Team
               </a>
               <a 
                 href="tel:+233208070005" 
-                className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
+                className="bg-transparent border-2 border-white text-white px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-white/10 transition-colors text-sm md:text-base"
               >
                 Call Executive Office
               </a>
