@@ -37,7 +37,7 @@ export default function BankingHero() {
       category: "Digital Banking",
       entrepreneur: "Emerald Capital",
       quote: "Banking should be accessible to everyone, everywhere. That's why we've built Ghana's most user-friendly digital banking platform.",
-      imageUrl: "/digital-banking-hero-ghana.png",
+      imageUrl: "/loan approval.png",
       thumbnailUrl: "/digital-banking-hero-ghana.png",
       businessType: "Digital Banking Platform"
     },
@@ -51,7 +51,7 @@ export default function BankingHero() {
       category: "Business Loans",
       entrepreneur: "Business Owner",
       quote: "I received my loan approval and funds within a day. Emerald Capital made expanding my business possible.",
-      imageUrl: "/loan-disbursement-ghana.png",
+      imageUrl: "/emerals capital.jpg",
       thumbnailUrl: "/loan-disbursement-ghana.png",
       businessType: "Small Business Financing"
     },
@@ -65,7 +65,7 @@ export default function BankingHero() {
       category: "Personal & Business Loans",
       entrepreneur: "Entrepreneur",
       quote: "The loan approval came in just 5 minutes! This speed allowed me to grab a time-sensitive business opportunity.",
-      imageUrl: "/loan-approved-ghana.png",
+      imageUrl: "/New SME Loan.png",
       thumbnailUrl: "/loan-approved-ghana.png",
       businessType: "Fast Loan Processing"
     },
