@@ -41,7 +41,7 @@ export default function MicrofinanceHero() {
                   className="text-gray-900 font-medium flex items-center gap-2"
                 >
                   <Mail className="w-4 h-4" />
-                  info@emeraldcapital.com
+                  info@emeraldcapitalgh.com
                 </a>
               </div>
             </div>
