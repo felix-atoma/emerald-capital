@@ -92,7 +92,7 @@ const EducationLoanHero = () => {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=800&fit=crop&crop=center";
+                    e.target.src = "/EduFund.jpg";
                   }}
                 />
               </div>

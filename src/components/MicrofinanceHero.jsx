@@ -62,9 +62,9 @@ export default function MicrofinanceHero() {
 
           {/* Right Content - Image Section */}
           <div className="relative flex justify-center">
-            <div className="w-full max-w-lg">
+            <div className="w-full max-w-lg p-5">
               <img
-                src="/digital-banking-hero-ghana.png" // ✅ place `hero.png` inside `public/`
+                src="/New hero.png" // ✅ place `hero.png` inside `public/`
                 alt="Microfinance illustration"
                 className="w-full h-auto object-contain"
               />

@@ -167,7 +167,7 @@ const FinancialProductsSite = () => {
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                 <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                   <img
-                    src="/loan-disbursement-ghana.png"
+                    src="/loans img.jpg"
                     alt="IPPIS Loan Illustration"
                     className="w-full h-full object-cover"
                   />
@@ -270,7 +270,7 @@ const FinancialProductsSite = () => {
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
   <img
-    src="/loan-approved-ghana.png"  // ✅ put your image in /public folder OR import from /src/assets
+    src="/loan approval.png"  // ✅ put your image in /public folder OR import from /src/assets
     alt="MT Loan Illustration"
     className="w-full h-full object-cover"
   />
@@ -357,7 +357,7 @@ const FinancialProductsSite = () => {
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
   <img
-    src="lady.png"  // ✅ put sme.png in /public folder, or import from /src/assets
+    src="New SME Loan.png"  // ✅ put sme.png in /public folder, or import from /src/assets
     alt="SME Loan Illustration"
     className="w-full h-full object-cover"
   />

@@ -92,7 +92,7 @@ const WomensEmpowermentLoanHero = () => {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=800&fit=crop&crop=center";
+                    e.target.src = "/Women Empowerment.png";
                   }}
                 />
               </div>
