@@ -269,21 +269,12 @@ const FinancialProductsSite = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
-<<<<<<< HEAD
-  <img
-    src="/loan approval.png"  // ✅ put your image in /public folder OR import from /src/assets
-    alt="MT Loan Illustration"
-    className="w-full h-full object-cover"
-  />
-</div>
-=======
                 <img
-                  src="/loan-approved-ghana.png"  // ✅ put your image in /public folder OR import from /src/assets
+                  src="/loan-approved-ghana.png"  // ✅ Fixed: Kept the new version, removed conflict markers
                   alt="MT Loan Illustration"
                   className="w-full h-full object-cover"
                 />
               </div>
->>>>>>> 48c7dba (add blog page)
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-4 rounded-2xl shadow-lg">
                 <p className="text-green-600 text-2xl mb-1">✓</p>
@@ -365,21 +356,12 @@ const FinancialProductsSite = () => {
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
-<<<<<<< HEAD
-  <img
-    src="New SME Loan.png"  // ✅ put sme.png in /public folder, or import from /src/assets
-    alt="SME Loan Illustration"
-    className="w-full h-full object-cover"
-  />
-</div>
-=======
                 <img
                   src="lady.png"  // ✅ put sme.png in /public folder, or import from /src/assets
                   alt="SME Loan Illustration"
                   className="w-full h-full object-cover"
                 />
               </div>
->>>>>>> 48c7dba (add blog page)
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
                 <p className="text-sm font-semibold">Funeral Loan</p>
