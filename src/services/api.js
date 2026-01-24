@@ -24,6 +24,7 @@ const api = axios.create({
 
 const adminApi = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 30000,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -75,226 +76,226 @@ adminApi.interceptors.response.use(
 );
 
 /* ===============================
+   HEALTH CHECK
+================================ */
+export const healthAPI = {
+  check: () => api.get("/api/health"),
+  systemInfo: () => api.get("/api/system-info"),
+};
+
+/* ===============================
    AUTH API
 ================================ */
 export const authAPI = {
-  login: (data) => api.post("/auth/login", data),
-  register: (data) => api.post("/auth/register", data),
-  getProfile: () => api.get("/auth/profile"),
-  updateProfile: (data) => api.put("/auth/profile", data),
-  changePassword: (data) => api.put("/auth/change-password", data),
-  healthCheck: () => api.get("/health"),
+  login: (data) => api.post("/api/auth/login", data),
+  register: (data) => api.post("/api/auth/register", data),
+  getProfile: () => api.get("/api/auth/profile"),
+  updateProfile: (data) => api.put("/api/auth/profile", data),
+  changePassword: (data) => api.put("/api/auth/change-password", data),
+  forgotPassword: (data) => api.post("/api/auth/forgot-password", data),
+  resetPassword: (data) => api.post("/api/auth/reset-password", data),
 };
 
 /* ===============================
-   ADMIN AUTH
+   ADMIN AUTH API
 ================================ */
 export const adminAuthAPI = {
-  login: (data) => adminApi.post("/admin/login", data),
-  getProfile: () => adminApi.get("/admin/profile"),
-  changePassword: (data) =>
-    adminApi.put("/admin/change-password", data),
-};
-
-/* ===============================
-   NEWSLETTER API - UPDATED WITH ALL ENDPOINTS
-================================ */
-export const newsletterAPI = {
-  // Public routes - anyone can subscribe/unsubscribe
-  subscribe: (data) => {
-    console.log("📧 Subscribing to newsletter:", data.email);
-    return api.post("/api/newsletter/subscribe", data);
-  },
-  
-  unsubscribe: (data) => {
-    console.log("📧 Unsubscribing from newsletter:", data.email);
-    return api.post("/api/newsletter/unsubscribe", data);
-  },
-  
-  // Protected routes - user can manage their subscription
-  getMySubscription: () => {
-    console.log("📧 Getting user subscription");
-    return api.get("/api/newsletter/my-subscription");
-  },
-  
-  updateSubscription: (data) => {
-    console.log("📧 Updating subscription preferences");
-    return api.put("/api/newsletter/update", data);
-  },
-  
-  // Admin routes
-  getAllSubscribers: (params = {}) => {
-    console.log("📧 Getting all subscribers (admin)");
-    return adminApi.get("/api/newsletter/subscribers", { params });
-  },
-  
-  getSubscriber: (id) => {
-    console.log(`📧 Getting subscriber ${id} (admin)`);
-    return adminApi.get(`/api/newsletter/subscribers/${id}`);
-  },
-  
-  updateSubscriber: (id, data) => {
-    console.log(`📧 Updating subscriber ${id} (admin)`);
-    return adminApi.put(`/api/newsletter/subscribers/${id}`, data);
-  },
-  
-  deleteSubscriber: (id) => {
-    console.log(`📧 Deleting subscriber ${id} (admin)`);
-    return adminApi.delete(`/api/newsletter/subscribers/${id}`);
-  },
-  
-  getNewsletterStats: () => {
-    console.log("📧 Getting newsletter statistics (admin)");
-    return adminApi.get("/api/newsletter/stats");
-  },
-  
-  sendNewsletter: (data) => {
-    console.log("📧 Sending newsletter to subscribers (admin)");
-    return adminApi.post("/api/newsletter/send", data);
+  login: (data) => adminApi.post("/api/admin/login", data),
+  getProfile: () => adminApi.get("/api/admin/profile"),
+  changePassword: (data) => adminApi.put("/api/admin/change-password", data),
+  logout: () => {
+    localStorage.removeItem("adminAuthToken");
+    localStorage.removeItem("adminUser");
   }
 };
 
 /* ===============================
-   LOANS
+   LOAN API
 ================================ */
 export const loanAPI = {
-  createApplication: (data) =>
-    api.post("/api/loans/applications", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }),
-  getMyApplications: (params) =>
-    api.get("/api/loans/applications", { params }),
-  getApplication: (id) =>
-    api.get(`/api/loans/applications/${id}`),
-  updateApplication: (id, data) =>
-    api.put(`/api/loans/applications/${id}`, data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }),
-  deleteApplication: (id) =>
-    api.delete(`/api/loans/applications/${id}`),
+  // User loan applications
+  createApplication: (data) => api.post("/api/loans/applications", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
+  getMyApplications: (params) => api.get("/api/loans/applications", { params }),
+  getApplication: (id) => api.get(`/api/loans/applications/${id}`),
+  updateApplication: (id, data) => api.put(`/api/loans/applications/${id}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
+  deleteApplication: (id) => api.delete(`/api/loans/applications/${id}`),
+  
+  // Admin loan management
+  getAllApplications: (params) => adminApi.get("/api/admin/loans/applications", { params }),
+  updateApplicationStatus: (id, data) => adminApi.put(`/api/admin/loans/applications/${id}/status`, data),
+  getLoanStats: () => adminApi.get("/api/admin/loans/stats"),
 };
 
 /* ===============================
-   CONTACT
+   CONTACT API
 ================================ */
 export const contactAPI = {
+  // Public contact form
   submitMessage: (data) => api.post("/api/contact", data),
-};
-
-export const adminContactAPI = {
-  getMessages: (params) =>
-    adminApi.get("/api/contact", { params }),
-  getMessage: (id) =>
-    adminApi.get(`/api/contact/${id}`),
-  updateMessageStatus: (id, data) =>
-    adminApi.put(`/api/contact/${id}/status`, data),
-  deleteMessage: (id) =>
-    adminApi.delete(`/api/contact/${id}`),
+  
+  // Admin contact management
+  getMessages: (params) => adminApi.get("/api/admin/contact", { params }),
+  getMessage: (id) => adminApi.get(`/api/admin/contact/${id}`),
+  updateMessageStatus: (id, data) => adminApi.put(`/api/admin/contact/${id}/status`, data),
+  deleteMessage: (id) => adminApi.delete(`/api/admin/contact/${id}`),
+  getContactStats: () => adminApi.get("/api/admin/contact/stats"),
 };
 
 /* ===============================
-   ADMIN DASHBOARD
+   NEWSLETTER API
 ================================ */
-export const adminAPI = {
-  getDashboardStats: () =>
-    adminApi.get("/api/admin/dashboard"),
-  getUsers: (params) =>
-    adminApi.get("/api/admin/users", { params }),
-  getUser: (id) =>
-    adminApi.get(`/api/admin/users/${id}`),
-  updateUser: (id, data) =>
-    adminApi.put(`/api/admin/users/${id}`, data),
-  deleteUser: (id) =>
-    adminApi.delete(`/api/admin/users/${id}`),
-  getAllLoanApplications: (params) =>
-    adminApi.get("/api/admin/loans/applications", { params }),
+export const newsletterAPI = {
+  // Public subscription
+  subscribe: (data) => api.post("/api/newsletter/subscribe", data),
+  unsubscribe: (data) => api.post("/api/newsletter/unsubscribe", data),
+  
+  // User subscription management
+  getMySubscription: () => api.get("/api/newsletter/my-subscription"),
+  updateSubscription: (data) => api.put("/api/newsletter/update", data),
+  
+  // Admin newsletter management
+  getAllSubscribers: (params = {}) => adminApi.get("/api/admin/newsletter/subscribers", { params }),
+  getSubscriber: (id) => adminApi.get(`/api/admin/newsletter/subscribers/${id}`),
+  updateSubscriber: (id, data) => adminApi.put(`/api/admin/newsletter/subscribers/${id}`, data),
+  deleteSubscriber: (id) => adminApi.delete(`/api/admin/newsletter/subscribers/${id}`),
+  getNewsletterStats: () => adminApi.get("/api/admin/newsletter/stats"),
+  sendNewsletter: (data) => adminApi.post("/api/admin/newsletter/send", data),
 };
 
 /* ===============================
-   ACCOUNT
+   ACCOUNT API
 ================================ */
 export const accountAPI = {
+  // User account operations
   getBalance: () => api.get("/api/account/balance"),
   getDetails: () => api.get("/api/account/details"),
-  getTransactions: (params) =>
-    api.get("/api/account/transactions", { params }),
-  getTransaction: (id) =>
-    api.get(`/api/account/transactions/${id}`),
-  transferFunds: (data) =>
-    api.post("/api/account/transfer", data),
-  updateStatus: (data) =>
-    api.patch("/api/account/status", data),
+  getTransactions: (params) => api.get("/api/account/transactions", { params }),
+  getTransaction: (id) => api.get(`/api/account/transactions/${id}`),
+  transferFunds: (data) => api.post("/api/account/transfer", data),
+  updateStatus: (data) => api.patch("/api/account/status", data),
+  
+  // Admin account management
+  getAllAccounts: (params) => adminApi.get("/api/admin/accounts", { params }),
+  getAccountDetails: (id) => adminApi.get(`/api/admin/accounts/${id}`),
+  updateAccount: (id, data) => adminApi.put(`/api/admin/accounts/${id}`, data),
+  getAccountStats: () => adminApi.get("/api/admin/accounts/stats"),
 };
 
 /* ===============================
    BLOG API
 ================================ */
 export const blogAPI = {
-  getBlogs: (params = {}) => {
-    console.log("🔍 Fetching blogs from:", `${API_BASE_URL}/api/blogs`);
-    return api.get("/api/blogs", { 
-      params,
-      timeout: 15000
-    });
-  },
-  
+  // Public blog access
+  getBlogs: (params = {}) => api.get("/api/blogs", { 
+    params,
+    timeout: 15000
+  }),
   getBlog: (slug) => api.get(`/api/blogs/${slug}`),
-  
   getPopularBlogs: (limit = 5) => api.get("/api/blogs/popular", { params: { limit } }),
+  getFeaturedBlogs: (limit = 3) => api.get("/api/blogs/featured", { params: { limit } }),
+  searchBlogs: (query) => api.get("/api/blogs/search", { params: { q: query } }),
   
+  // User interactions (authenticated)
   likeBlog: (id) => api.put(`/api/blogs/${id}/like`),
-  
+  unlikeBlog: (id) => api.put(`/api/blogs/${id}/unlike`),
   bookmarkBlog: (id) => api.put(`/api/blogs/${id}/bookmark`),
+  removeBookmark: (id) => api.put(`/api/blogs/${id}/remove-bookmark`),
   
+  // Comments
   addComment: (id, data) => api.post(`/api/blogs/${id}/comments`, data),
-  
+  updateComment: (id, commentId, data) => api.put(`/api/blogs/${id}/comments/${commentId}`, data),
   deleteComment: (id, commentId) => api.delete(`/api/blogs/${id}/comments/${commentId}`),
+  getComments: (id, params) => api.get(`/api/blogs/${id}/comments`, { params }),
   
+  // User content
   getMyBookmarks: () => api.get("/api/blogs/bookmarks/my"),
-  
   getMyLikes: () => api.get("/api/blogs/likes/my"),
+  getMyComments: () => api.get("/api/blogs/comments/my"),
   
-  createBlog: (data) => {
-    const adminToken = localStorage.getItem("adminAuthToken");
-    if (!adminToken) throw new Error("Admin token required");
-    return api.post("/api/blogs", data, {
-      headers: { Authorization: `Bearer ${adminToken}` }
-    });
-  },
-  
-  updateBlog: (id, data) => {
-    const adminToken = localStorage.getItem("adminAuthToken");
-    if (!adminToken) throw new Error("Admin token required");
-    return api.put(`/api/blogs/${id}`, data, {
-      headers: { Authorization: `Bearer ${adminToken}` }
-    });
-  },
-  
-  deleteBlog: (id) => {
-    const adminToken = localStorage.getItem("adminAuthToken");
-    if (!adminToken) throw new Error("Admin token required");
-    return api.delete(`/api/blogs/${id}`, {
-      headers: { Authorization: `Bearer ${adminToken}` }
-    });
-  },
-  
-  getBlogStats: () => {
-    const adminToken = localStorage.getItem("adminAuthToken");
-    if (!adminToken) throw new Error("Admin token required");
-    return api.get("/api/blogs/stats/summary", {
-      headers: { Authorization: `Bearer ${adminToken}` }
-    });
-  }
+  // Admin blog management
+  createBlog: (data) => adminApi.post("/api/admin/blogs", data),
+  updateBlog: (id, data) => adminApi.put(`/api/admin/blogs/${id}`, data),
+  deleteBlog: (id) => adminApi.delete(`/api/admin/blogs/${id}`),
+  getBlogStats: () => adminApi.get("/api/admin/blogs/stats"),
+  getAllComments: (params) => adminApi.get("/api/admin/blogs/comments", { params }),
+  updateCommentStatus: (id, data) => adminApi.put(`/api/admin/blogs/comments/${id}/status`, data),
 };
 
 /* ===============================
-   ADMIN BLOG API
+   CATEGORY API
 ================================ */
-export const adminBlogAPI = {
-  createBlog: (data) => adminApi.post("/api/blogs", data),
-  updateBlog: (id, data) => adminApi.put(`/api/blogs/${id}`, data),
-  deleteBlog: (id) => adminApi.delete(`/api/blogs/${id}`),
-  getBlogStats: () => adminApi.get("/api/blogs/stats/summary"),
+export const categoryAPI = {
+  // Public category access
+  getCategories: () => api.get("/api/categories"),
+  getCategory: (slug) => api.get(`/api/categories/${slug}`),
+  getCategoryBlogs: (slug, params) => api.get(`/api/categories/${slug}/blogs`, { params }),
+  
+  // Admin category management
+  createCategory: (data) => adminApi.post("/api/admin/categories", data),
+  updateCategory: (id, data) => adminApi.put(`/api/admin/categories/${id}`, data),
+  deleteCategory: (id) => adminApi.delete(`/api/admin/categories/${id}`),
+  getCategoryStats: () => adminApi.get("/api/admin/categories/stats"),
+};
+
+/* ===============================
+   UPLOAD API
+================================ */
+export const uploadAPI = {
+  // File uploads
+  uploadImage: (data) => {
+    const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
+    return api.post("/api/upload/image", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...(token && { Authorization: `Bearer ${token}` })
+      }
+    });
+  },
+  
+  uploadFile: (data) => {
+    const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
+    return api.post("/api/upload/file", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...(token && { Authorization: `Bearer ${token}` })
+      }
+    });
+  },
+  
+  // Admin upload management
+  getAllUploads: (params) => adminApi.get("/api/admin/uploads", { params }),
+  deleteUpload: (id) => adminApi.delete(`/api/admin/uploads/${id}`),
+  getUploadStats: () => adminApi.get("/api/admin/uploads/stats"),
+};
+
+/* ===============================
+   ADMIN DASHBOARD API
+================================ */
+export const adminAPI = {
+  // Dashboard statistics
+  getDashboardStats: () => adminApi.get("/api/admin/dashboard"),
+  
+  // User management
+  getUsers: (params) => adminApi.get("/api/admin/users", { params }),
+  getUser: (id) => adminApi.get(`/api/admin/users/${id}`),
+  createUser: (data) => adminApi.post("/api/admin/users", data),
+  updateUser: (id, data) => adminApi.put(`/api/admin/users/${id}`, data),
+  deleteUser: (id) => adminApi.delete(`/api/admin/users/${id}`),
+  updateUserRole: (id, data) => adminApi.put(`/api/admin/users/${id}/role`, data),
+  
+  // System management
+  getSystemInfo: () => adminApi.get("/api/admin/system-info"),
+  getActivityLogs: (params) => adminApi.get("/api/admin/activity-logs", { params }),
+  clearCache: () => adminApi.delete("/api/admin/cache"),
+  
+  // Analytics
+  getAnalytics: (period) => adminApi.get("/api/admin/analytics", { params: { period } }),
+  getRevenueStats: () => adminApi.get("/api/admin/analytics/revenue"),
+  getUserGrowth: () => adminApi.get("/api/admin/analytics/user-growth"),
 };
 
 /* ===============================

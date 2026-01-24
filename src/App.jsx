@@ -186,7 +186,7 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
 
               {/* 🔐 ADMIN ROUTES - Protected */}
-              <Route path="/admin/blog/login" element={<AdminLogin />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
               <Route 
                 path="/admin/dashboard" 
@@ -207,13 +207,65 @@ function App() {
 // 🔐 Protected Route Component - Blocks unauthorized access
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('adminAuthToken');
-  const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+  const adminUserStr = localStorage.getItem('adminUser');
   
-  // Check both token AND user role
-  if (!token || (adminUser.role !== 'admin' && adminUser.role !== 'officer')) {
+  console.log('🔐 ProtectedRoute - Checking authentication...');
+  
+  // Parse adminUser safely
+  let adminUser = null;
+  try {
+    // Check for valid string before parsing
+    if (adminUserStr && 
+        adminUserStr !== 'undefined' && 
+        adminUserStr !== 'null' && 
+        adminUserStr.trim() !== '' &&
+        adminUserStr !== '{}') {
+      
+      const parsed = JSON.parse(adminUserStr);
+      
+      // Validate the parsed object has required structure
+      if (parsed && typeof parsed === 'object') {
+        adminUser = parsed;
+        console.log('✅ Valid admin user found:', { role: adminUser.role, username: adminUser.username });
+      } else {
+        console.warn('⚠️ Invalid admin user structure');
+      }
+    } else {
+      console.warn('⚠️ No valid admin user in localStorage');
+    }
+  } catch (error) {
+    console.error('❌ Error parsing adminUser:', error);
+    console.error('❌ Problematic string:', adminUserStr);
+    
+    // Clear corrupted data
+    localStorage.removeItem('adminAuthToken');
+    localStorage.removeItem('adminUser');
+    
     return <Navigate to="/admin/login" replace />;
   }
   
+  // Check both token AND user role
+  const hasValidToken = token && token.length > 10; // Basic token validation
+  const hasValidUser = adminUser && adminUser.role && 
+                      (adminUser.role === 'admin' || adminUser.role === 'officer');
+  
+  console.log('🔐 Auth Check:', {
+    hasValidToken,
+    hasValidUser,
+    userRole: adminUser?.role,
+    shouldRedirect: !hasValidToken || !hasValidUser
+  });
+  
+  if (!hasValidToken || !hasValidUser) {
+    // Clear all auth data
+    localStorage.removeItem('adminAuthToken');
+    localStorage.removeItem('adminUser');
+    
+    console.log('🚫 Access denied. Redirecting to login.');
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  console.log('✅ Access granted to protected route');
   return children;
 }
 
