@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, RefreshCw, TrendingUp, BarChart, Shield, DollarSign, Package, Users, Clock, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom'; // ✅ Added Link import
 
 const WorkingCapitalLoanDetails = () => {
   return (
@@ -133,9 +134,6 @@ const WorkingCapitalLoanDetails = () => {
               </div>
             </div>
 
-            {/* Loan Calculator */}
-          
-
             {/* Documents Required */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-blue-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Required Documents</h3>
@@ -159,9 +157,11 @@ const WorkingCapitalLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Working Capital
-            </button>
+            <Link to="/applyforloanpage"> {/* ✅ Fixed with Link component */}
+              <button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Apply for Working Capital
+              </button>
+            </Link>
           </div>
         </div>
 

@@ -1,218 +1,304 @@
-import axios from 'axios';
+// src/services/api.js
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://emerald-capital-backend.onrender.com';
+/* ===============================
+   API CONFIG
+================================ */
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://emerald-capital-backend.onrender.com";
 
-console.log('🚀 API Configuration:', {
-  API_BASE_URL,
-  hasEnvVar: !!import.meta.env.VITE_API_BASE_URL
-});
+console.log("🚀 API BASE URL:", API_BASE_URL);
 
-// Create regular axios instance for users
+/* ===============================
+   AXIOS INSTANCES
+================================ */
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    'Content-Type': 'application/json',
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: { 
+    "Content-Type": "application/json",
+    "Accept": "application/json"
   },
 });
 
-// Create admin axios instance for admin routes
 const adminApi = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
 });
 
-// Request interceptor to add regular user auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Added user token to request:', config.url);
-    }
-    return config;
-  },
-  (error) => {
-    console.error('❌ User API request error:', error);
-    return Promise.reject(error);
-  }
-);
+/* ===============================
+   REQUEST INTERCEPTORS
+================================ */
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// Request interceptor to add ADMIN auth token
-adminApi.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('adminAuthToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Added admin token to request:', config.url);
-    }
-    return config;
-  },
-  (error) => {
-    console.error('❌ Admin API request error:', error);
-    return Promise.reject(error);
-  }
-);
+adminApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("adminAuthToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// Response interceptors
+/* ===============================
+   RESPONSE INTERCEPTORS
+================================ */
 api.interceptors.response.use(
-  (response) => {
-    console.log('✅ User API response:', response.status, response.config.url);
-    return response;
+  (res) => {
+    console.log(`✅ ${res.config.method?.toUpperCase()} ${res.config.url}: ${res.status}`);
+    return res;
   },
-  (error) => {
-    console.error('❌ User API response error:', error.response?.status, error.config?.url);
-    if (error.response?.status === 401) {
-      console.log('🔐 User token expired, redirecting to login');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  (err) => {
+    console.error(`❌ ${err.config?.method?.toUpperCase()} ${err.config?.url}: ${err.response?.status}`);
+    
+    if (err.response?.status === 401 && !window.location.pathname.includes('/login')) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 
 adminApi.interceptors.response.use(
-  (response) => {
-    console.log('✅ Admin API response:', response.status, response.config.url);
-    return response;
-  },
-  (error) => {
-    console.error('❌ Admin API response error:', error.response?.status, error.config?.url);
-    if (error.response?.status === 401) {
-      console.log('🔐 Admin token expired, redirecting to admin login');
-      localStorage.removeItem('adminAuthToken');
-      localStorage.removeItem('adminUser');
-      window.location.href = '/admin/login';
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem("adminAuthToken");
+      localStorage.removeItem("adminUser");
+      window.location.href = "/admin/login";
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 
-// Auth API
+/* ===============================
+   AUTH API
+================================ */
 export const authAPI = {
-  login: (credentials) => {
-    console.log('👤 User login attempt:', credentials.username);
-    return api.post('/auth/login', credentials);
-  },
-  register: (userData) => {
-    console.log('👤 User registration attempt:', userData.email);
-    return api.post('/auth/register', userData);
-  },
-  getProfile: () => api.get('/auth/profile'),
-  updateProfile: (userData) => api.put('/auth/profile', userData),
-  changePassword: (passwordData) => api.put('/auth/change-password', passwordData),
-  healthCheck: () => api.get('/health'),
+  login: (data) => api.post("/auth/login", data),
+  register: (data) => api.post("/auth/register", data),
+  getProfile: () => api.get("/auth/profile"),
+  updateProfile: (data) => api.put("/auth/profile", data),
+  changePassword: (data) => api.put("/auth/change-password", data),
+  healthCheck: () => api.get("/health"),
 };
 
-// Admin Auth API
+/* ===============================
+   ADMIN AUTH
+================================ */
 export const adminAuthAPI = {
-  login: (credentials) => {
-    console.log('👑 Admin login attempt:', {
-      username: credentials.username,
-      endpoint: `${API_BASE_URL}/api/admin/login`
-    });
-    return axios.post(`${API_BASE_URL}/api/admin/login`, credentials, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  },
-  getProfile: () => adminApi.get('/admin/profile'),
-  changePassword: (passwordData) => adminApi.put('/admin/change-password', passwordData),
+  login: (data) => adminApi.post("/admin/login", data),
+  getProfile: () => adminApi.get("/admin/profile"),
+  changePassword: (data) =>
+    adminApi.put("/admin/change-password", data),
 };
 
-// Loan API
-export const loanAPI = {
-  createApplication: (formData) => {
-    console.log('📄 Creating loan application');
-    return api.post('/loans/applications', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  getMyApplications: (params) => api.get('/loans/applications', { params }),
-  getApplication: (id) => api.get(`/loans/applications/${id}`),
-  updateApplication: (id, formData) => {
-    console.log('📄 Updating loan application:', id);
-    return api.put(`/loans/applications/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  deleteApplication: (id) => {
-    console.log('📄 Deleting loan application:', id);
-    return api.delete(`/loans/applications/${id}`);
-  },
-};
-
-// Contact API (Public)
-export const contactAPI = {
-  submitMessage: (messageData) => {
-    console.log('📧 Submitting contact message from:', messageData.email);
-    return api.post('/contact', messageData);
-  },
-};
-
-// Admin Contact API - FIXED: Using correct endpoints based on your backend structure
-export const adminContactAPI = {
-  getMessages: (params) => {
-    console.log('📨 Fetching contact messages');
-    return adminApi.get('/contact', { params }); // Changed from '/admin/contact' to '/contact'
-  },
-  getMessage: (id) => adminApi.get(`/contact/${id}`), // Changed from '/admin/contact' to '/contact'
-  updateMessageStatus: (id, statusData) => {
-    console.log('📨 Updating message status:', id, statusData);
-    return adminApi.put(`/contact/${id}/status`, statusData); // Changed from '/admin/contact' to '/contact'
-  },
-  deleteMessage: (id) => {
-    console.log('📨 Deleting message:', id);
-    return adminApi.delete(`/contact/${id}`); // Changed from '/admin/contact' to '/contact'
-  },
-};
-
-// Newsletter API
+/* ===============================
+   NEWSLETTER API - UPDATED WITH ALL ENDPOINTS
+================================ */
 export const newsletterAPI = {
+  // Public routes - anyone can subscribe/unsubscribe
   subscribe: (data) => {
-    console.log('📰 Newsletter subscription:', data.email);
-    return api.post('/newsletter/subscribe', data);
+    console.log("📧 Subscribing to newsletter:", data.email);
+    return api.post("/api/newsletter/subscribe", data);
   },
+  
   unsubscribe: (data) => {
-    console.log('📰 Newsletter unsubscription:', data.email);
-    return api.post('/newsletter/unsubscribe', data);
+    console.log("📧 Unsubscribing from newsletter:", data.email);
+    return api.post("/api/newsletter/unsubscribe", data);
   },
+  
+  // Protected routes - user can manage their subscription
+  getMySubscription: () => {
+    console.log("📧 Getting user subscription");
+    return api.get("/api/newsletter/my-subscription");
+  },
+  
+  updateSubscription: (data) => {
+    console.log("📧 Updating subscription preferences");
+    return api.put("/api/newsletter/update", data);
+  },
+  
+  // Admin routes
+  getAllSubscribers: (params = {}) => {
+    console.log("📧 Getting all subscribers (admin)");
+    return adminApi.get("/api/newsletter/subscribers", { params });
+  },
+  
+  getSubscriber: (id) => {
+    console.log(`📧 Getting subscriber ${id} (admin)`);
+    return adminApi.get(`/api/newsletter/subscribers/${id}`);
+  },
+  
+  updateSubscriber: (id, data) => {
+    console.log(`📧 Updating subscriber ${id} (admin)`);
+    return adminApi.put(`/api/newsletter/subscribers/${id}`, data);
+  },
+  
+  deleteSubscriber: (id) => {
+    console.log(`📧 Deleting subscriber ${id} (admin)`);
+    return adminApi.delete(`/api/newsletter/subscribers/${id}`);
+  },
+  
+  getNewsletterStats: () => {
+    console.log("📧 Getting newsletter statistics (admin)");
+    return adminApi.get("/api/newsletter/stats");
+  },
+  
+  sendNewsletter: (data) => {
+    console.log("📧 Sending newsletter to subscribers (admin)");
+    return adminApi.post("/api/newsletter/send", data);
+  }
 };
 
-// Admin API - FIXED: Updated to match your backend routes
+/* ===============================
+   LOANS
+================================ */
+export const loanAPI = {
+  createApplication: (data) =>
+    api.post("/api/loans/applications", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  getMyApplications: (params) =>
+    api.get("/api/loans/applications", { params }),
+  getApplication: (id) =>
+    api.get(`/api/loans/applications/${id}`),
+  updateApplication: (id, data) =>
+    api.put(`/api/loans/applications/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  deleteApplication: (id) =>
+    api.delete(`/api/loans/applications/${id}`),
+};
+
+/* ===============================
+   CONTACT
+================================ */
+export const contactAPI = {
+  submitMessage: (data) => api.post("/api/contact", data),
+};
+
+export const adminContactAPI = {
+  getMessages: (params) =>
+    adminApi.get("/api/contact", { params }),
+  getMessage: (id) =>
+    adminApi.get(`/api/contact/${id}`),
+  updateMessageStatus: (id, data) =>
+    adminApi.put(`/api/contact/${id}/status`, data),
+  deleteMessage: (id) =>
+    adminApi.delete(`/api/contact/${id}`),
+};
+
+/* ===============================
+   ADMIN DASHBOARD
+================================ */
 export const adminAPI = {
-  getDashboardStats: () => {
-    console.log('📊 Fetching dashboard stats');
-    return adminApi.get('/admin/dashboard');
-  },
-  getUsers: (params) => adminApi.get('/admin/users', { params }),
-  getUser: (id) => adminApi.get(`/admin/users/${id}`),
-  updateUser: (id, userData) => adminApi.put(`/admin/users/${id}`, userData),
-  deleteUser: (id) => adminApi.delete(`/admin/users/${id}`),
-  getAllLoanApplications: (params) => adminApi.get('/admin/loans/applications', { params }),
-  getLoanApplication: (id) => adminApi.get(`/admin/loans/applications/${id}`),
-  updateLoanApplication: (id, updateData) => adminApi.put(`/admin/loans/applications/${id}`, updateData),
-  deleteLoanApplication: (id) => adminApi.delete(`/admin/loans/applications/${id}`),
+  getDashboardStats: () =>
+    adminApi.get("/api/admin/dashboard"),
+  getUsers: (params) =>
+    adminApi.get("/api/admin/users", { params }),
+  getUser: (id) =>
+    adminApi.get(`/api/admin/users/${id}`),
+  updateUser: (id, data) =>
+    adminApi.put(`/api/admin/users/${id}`, data),
+  deleteUser: (id) =>
+    adminApi.delete(`/api/admin/users/${id}`),
+  getAllLoanApplications: (params) =>
+    adminApi.get("/api/admin/loans/applications", { params }),
 };
 
-// Account API
+/* ===============================
+   ACCOUNT
+================================ */
 export const accountAPI = {
-  getBalance: () => api.get('/account/balance'),
-  getDetails: () => api.get('/account/details'),
-  getTransactions: (params) => api.get('/account/transactions', { params }),
-  getTransaction: (id) => api.get(`/account/transactions/${id}`),
-  transferFunds: (transferData) => api.post('/account/transfer', transferData),
-  updateStatus: (statusData) => api.patch('/account/status', statusData),
+  getBalance: () => api.get("/api/account/balance"),
+  getDetails: () => api.get("/api/account/details"),
+  getTransactions: (params) =>
+    api.get("/api/account/transactions", { params }),
+  getTransaction: (id) =>
+    api.get(`/api/account/transactions/${id}`),
+  transferFunds: (data) =>
+    api.post("/api/account/transfer", data),
+  updateStatus: (data) =>
+    api.patch("/api/account/status", data),
 };
 
-// Add these methods to your existing authAPI
-authAPI.getAccountBalance = accountAPI.getBalance;
-authAPI.getAccountDetails = accountAPI.getDetails;
-authAPI.getTransactions = accountAPI.getTransactions;
-authAPI.getTransaction = accountAPI.getTransaction;
-authAPI.transferFunds = accountAPI.transferFunds;
-authAPI.updateAccountStatus = accountAPI.updateStatus;
+/* ===============================
+   BLOG API
+================================ */
+export const blogAPI = {
+  getBlogs: (params = {}) => {
+    console.log("🔍 Fetching blogs from:", `${API_BASE_URL}/api/blogs`);
+    return api.get("/api/blogs", { 
+      params,
+      timeout: 15000
+    });
+  },
+  
+  getBlog: (slug) => api.get(`/api/blogs/${slug}`),
+  
+  getPopularBlogs: (limit = 5) => api.get("/api/blogs/popular", { params: { limit } }),
+  
+  likeBlog: (id) => api.put(`/api/blogs/${id}/like`),
+  
+  bookmarkBlog: (id) => api.put(`/api/blogs/${id}/bookmark`),
+  
+  addComment: (id, data) => api.post(`/api/blogs/${id}/comments`, data),
+  
+  deleteComment: (id, commentId) => api.delete(`/api/blogs/${id}/comments/${commentId}`),
+  
+  getMyBookmarks: () => api.get("/api/blogs/bookmarks/my"),
+  
+  getMyLikes: () => api.get("/api/blogs/likes/my"),
+  
+  createBlog: (data) => {
+    const adminToken = localStorage.getItem("adminAuthToken");
+    if (!adminToken) throw new Error("Admin token required");
+    return api.post("/api/blogs", data, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    });
+  },
+  
+  updateBlog: (id, data) => {
+    const adminToken = localStorage.getItem("adminAuthToken");
+    if (!adminToken) throw new Error("Admin token required");
+    return api.put(`/api/blogs/${id}`, data, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    });
+  },
+  
+  deleteBlog: (id) => {
+    const adminToken = localStorage.getItem("adminAuthToken");
+    if (!adminToken) throw new Error("Admin token required");
+    return api.delete(`/api/blogs/${id}`, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    });
+  },
+  
+  getBlogStats: () => {
+    const adminToken = localStorage.getItem("adminAuthToken");
+    if (!adminToken) throw new Error("Admin token required");
+    return api.get("/api/blogs/stats/summary", {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    });
+  }
+};
 
+/* ===============================
+   ADMIN BLOG API
+================================ */
+export const adminBlogAPI = {
+  createBlog: (data) => adminApi.post("/api/blogs", data),
+  updateBlog: (id, data) => adminApi.put(`/api/blogs/${id}`, data),
+  deleteBlog: (id) => adminApi.delete(`/api/blogs/${id}`),
+  getBlogStats: () => adminApi.get("/api/blogs/stats/summary"),
+};
+
+/* ===============================
+   EXPORTS
+================================ */
 export default api;
 export { adminApi };

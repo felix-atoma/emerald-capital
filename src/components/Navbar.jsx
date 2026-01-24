@@ -23,12 +23,27 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Close mobile menu when screen size changes to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+        setOpenDropdown(null);
+        setOpenNestedDropdown(null);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const navLinks = [
     { 
       label: "Banking", 
       dropdown: [
         { label: "Remittance & Money Transfer", link: true },
         { label: "Emerald Capital — Savings Products", link: true },
+        { label: "High Purchase", link: true },
       ]
     },
     {
@@ -98,6 +113,7 @@ const Navbar = () => {
        { label: "Regional Management", link: true },
       ]
     },
+    { label: "Blog", link: true },
     { label: "Contact", link: true },
   ];
 
@@ -204,13 +220,19 @@ const Navbar = () => {
       <div className="border-b border-gray-100 last:border-b-0">
         {hasDropdown ? (
           <>
-            <div 
-              className="flex items-center justify-between py-4 px-4 text-gray-800 font-medium cursor-pointer"
-              onClick={() => handleDropdownToggle(link.label)}
+            <button 
+              type="button"
+              className="flex items-center justify-between w-full py-4 px-4 text-gray-800 font-medium text-left active:bg-gray-100 touch-manipulation"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDropdownToggle(link.label);
+              }}
+              aria-expanded={openDropdown === link.label}
             >
               <span>{link.label}</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
-            </div>
+              <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${openDropdown === link.label ? 'rotate-180' : ''}`} />
+            </button>
             
             {/* Mobile Main Dropdown */}
             {openDropdown === link.label && (
@@ -219,13 +241,19 @@ const Navbar = () => {
                   <div key={`mobile-${link.label}-${index}`}>
                     {item.nested ? (
                       <>
-                        <div 
-                          className="flex items-center justify-between py-3 px-6 text-gray-700 cursor-pointer border-t border-gray-200"
-                          onClick={() => handleNestedToggle(`${link.label}-${item.label}`)}
+                        <button 
+                          type="button"
+                          className="flex items-center justify-between w-full py-3 px-6 text-gray-700 border-t border-gray-200 text-left active:bg-gray-200 touch-manipulation"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleNestedToggle(`${link.label}-${item.label}`);
+                          }}
+                          aria-expanded={openNestedDropdown === `${link.label}-${item.label}`}
                         >
                           <span className="font-medium">{item.label}</span>
-                          <ChevronDown className={`w-4 h-4 transition-transform ${openNestedDropdown === `${link.label}-${item.label}` ? 'rotate-180' : ''}`} />
-                        </div>
+                          <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${openNestedDropdown === `${link.label}-${item.label}` ? 'rotate-180' : ''}`} />
+                        </button>
                         
                         {/* Mobile Nested Dropdown */}
                         {openNestedDropdown === `${link.label}-${item.label}` && (
@@ -234,8 +262,13 @@ const Navbar = () => {
                               <Link
                                 key={`mobile-nested-${item.label}-${nestedIndex}`}
                                 to={pathFor(nestedItem)}
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="block py-3 px-8 text-gray-600 hover:text-emerald-600 border-t border-gray-300"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsMobileMenuOpen(false);
+                                  setOpenDropdown(null);
+                                  setOpenNestedDropdown(null);
+                                }}
+                                className="block py-3 px-8 text-gray-600 hover:text-emerald-600 active:bg-emerald-100 border-t border-gray-300 touch-manipulation"
                               >
                                 {nestedItem}
                               </Link>
@@ -246,8 +279,12 @@ const Navbar = () => {
                     ) : (
                       <Link
                         to={pathFor(item.label)}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-3 px-6 text-gray-700 hover:text-emerald-600 font-medium border-t border-gray-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMobileMenuOpen(false);
+                          setOpenDropdown(null);
+                        }}
+                        className="block py-3 px-6 text-gray-700 hover:text-emerald-600 active:bg-emerald-100 font-medium border-t border-gray-200 touch-manipulation"
                       >
                         {item.label}
                       </Link>
@@ -260,8 +297,12 @@ const Navbar = () => {
         ) : (
           <Link
             to={pathFor(link.label)}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="block py-4 px-4 text-gray-800 font-medium hover:text-emerald-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMobileMenuOpen(false);
+              setOpenDropdown(null);
+            }}
+            className="block py-4 px-4 text-gray-800 font-medium hover:text-emerald-600 active:bg-emerald-100 touch-manipulation"
           >
             {link.label}
           </Link>
@@ -301,8 +342,11 @@ const Navbar = () => {
           {/* Mobile Menu Toggle */}
           <div className="lg:hidden flex items-center space-x-4">
             <button
-              className="p-2 rounded-lg hover:bg-gray-100"
+              type="button"
+              className="p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 touch-manipulation"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -316,6 +360,20 @@ const Navbar = () => {
               {navLinks.map((link) => (
                 <MobileNavItem key={`mobile-${link.label}`} link={link} />
               ))}
+              
+              {/* Digital Banking in Mobile Menu */}
+              <div className="p-4 border-t border-gray-200">
+                <Link
+                  to="/digital-banking"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setOpenDropdown(null);
+                  }}
+                  className="block w-full bg-emerald-600 text-white px-6 py-3 rounded-full text-center font-semibold hover:bg-emerald-700 active:bg-emerald-800 transition-colors touch-manipulation"
+                >
+                  Digital & Mobile Banking
+                </Link>
+              </div>
             </div>
           </div>
         )}

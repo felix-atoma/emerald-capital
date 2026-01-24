@@ -1,76 +1,167 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Search, 
-  MessageCircle, 
-  Eye, 
-  Twitter, 
-  Facebook, 
-  Instagram, 
-  Linkedin, 
-  Mail, 
-  Calendar, 
-  User, 
-  Tag,
-  TrendingUp,
-  Shield,
-  Zap,
-  Building,
-  Sprout,
-  DollarSign,
-  ArrowRight,
-  BookOpen,
-  Clock,
-  ChevronRight,
-  Star,
-  Bookmark,
-  Share2
+import React, { useState, useEffect } from 'react';
+import { blogAPI } from '../services/api'
+import {
+  Check, Award, Users, Target, Shield, ChevronDown, ChevronUp,
+  TrendingUp, Building2, Leaf, GraduationCap, Briefcase,
+  Zap, CheckCircle, Globe, Clock, Banknote, Percent, ShieldCheck,
+  BarChart, Headphones, Building, MapPin, Phone, Mail, Calendar, Key,
+  Lightbulb, Handshake, Search, Eye, MessageCircle, ArrowRight,
+  BookOpen, Tag, User, Bookmark, Share2, Twitter, Facebook, 
+  Instagram, Linkedin, Mail as MailIcon, ChevronRight, Heart,
+  Loader
 } from 'lucide-react';
 
-// Enhanced Blog Post Component with Premium Design
-const BlogPost = ({ 
-  image, 
+// Create a simple Plant icon component
+const Plant = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M7 15h10M7 19h10M12 3a6 6 0 0 1 6 6c0 2.5-2 5-6 7-4-2-6-4.5-6-7a6 6 0 0 1 6-6z" />
+    <path d="M12 3v18" />
+  </svg>
+);
+
+// Enhanced Blog Post Component with API Integration
+const BlogPostItem = ({ 
+  _id,
+  slug,
+  featuredImage,
   title, 
   excerpt, 
-  comments, 
-  views, 
-  date, 
-  author, 
+  comments = [],
+  views = 0,
+  createdAt,
+  authorId,
   category,
-  readTime,
+  likes = [],
+  isLiked: initialIsLiked = false,
+  isBookmarked: initialIsBookmarked = false,
   isFeatured = false 
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+  const [isLikedState, setIsLikedState] = useState(initialIsLiked);
+  const [likesCount, setLikesCount] = useState(likes.length || 0);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  // Calculate read time based on excerpt and content length
+  const calculateReadTime = () => {
+    const words = excerpt.split(' ').length;
+    return Math.max(1, Math.ceil(words / 200)); // Assuming 200 words per minute
+  };
+
+  // Handle like toggle
+  const handleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isProcessing) return;
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to like posts');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await blogAPI.likeBlog(_id);
+      setIsLikedState(response.data.isLiked);
+      setLikesCount(response.data.likesCount);
+    } catch (error) {
+      console.error('Error liking blog:', error);
+      alert('Failed to like post. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle bookmark toggle
+  const handleBookmark = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (isProcessing) return;
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please login to bookmark posts');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await blogAPI.bookmarkBlog(_id);
+      setIsBookmarked(response.data.isBookmarked);
+    } catch (error) {
+      console.error('Error bookmarking blog:', error);
+      alert('Failed to bookmark post. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle navigation to blog detail
+  const handleReadMore = () => {
+    window.location.href = `/blog/${slug}`;
+  };
 
   return (
     <article 
-      className={`group relative bg-gradient-to-br from-white to-emerald-50/30 rounded-2xl overflow-hidden border border-emerald-100/50 backdrop-blur-sm transition-all duration-500 ${
+      onClick={handleReadMore}
+      className={`group relative bg-gradient-to-br from-white to-emerald-50/30 rounded-2xl overflow-hidden border border-emerald-100/50 backdrop-blur-sm transition-all duration-500 cursor-pointer ${
         isHovered ? 'shadow-2xl shadow-emerald-200/30 -translate-y-2' : 'shadow-lg shadow-emerald-100/20'
       } ${isFeatured ? 'lg:col-span-2' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Premium Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       
-      {/* Image Container */}
       <div className="relative h-64 md:h-72 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 via-transparent to-transparent z-10"></div>
-        {image}
+        {featuredImage ? (
+          <img 
+            src={featuredImage} 
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gradient-to-br from-emerald-500 to-teal-500">
+            <div className="text-7xl text-white/90">📝</div>
+          </div>
+        )}
         
-        {/* Category Badge */}
         <div className="absolute top-4 left-4 z-20">
           <span className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-semibold rounded-full flex items-center gap-2 backdrop-blur-sm">
             <Tag className="w-3 h-3" />
-            {category}
+            {category || 'Uncategorized'}
           </span>
         </div>
         
-        {/* Action Buttons */}
         <div className="absolute top-4 right-4 z-20 flex gap-2">
           <button 
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110"
+            onClick={handleBookmark}
+            disabled={isProcessing}
+            className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-300 hover:scale-110 disabled:opacity-50"
           >
             <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-emerald-500 text-emerald-500' : 'text-gray-600'}`} />
           </button>
@@ -80,51 +171,48 @@ const BlogPost = ({
         </div>
       </div>
       
-      {/* Content */}
       <div className="p-6 md:p-8">
-        {/* Meta Info */}
-        <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+        <div className="flex items-center gap-4 mb-4 text-sm text-gray-500 flex-wrap">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            <span className="font-medium">{author}</span>
+            <span className="font-medium">{authorId?.name || 'Admin'}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
-            <span>{date}</span>
+            <span>{formatDate(createdAt)}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4" />
-            <span>{readTime} min read</span>
+            <span>{calculateReadTime()} min read</span>
           </div>
         </div>
         
-        {/* Title */}
-        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-emerald-700 transition-colors duration-300">
+        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-emerald-700 transition-colors duration-300 line-clamp-2">
           {title}
         </h3>
         
-        {/* Excerpt */}
-        <p className="text-gray-600 leading-relaxed mb-6">
+        <p className="text-gray-600 leading-relaxed mb-6 line-clamp-3">
           {excerpt}
         </p>
         
-        {/* Stats & CTA */}
         <div className="flex items-center justify-between pt-4 border-t border-emerald-100">
           <div className="flex items-center gap-6">
+            <button 
+              onClick={handleLike}
+              disabled={isProcessing}
+              className="flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Heart className={`w-4 h-4 ${isLikedState ? 'fill-red-500 text-red-500' : ''}`} />
+              <span className="font-medium">{likesCount}</span>
+            </button>
             <div className="flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">
               <MessageCircle className="w-4 h-4" />
-              <span className="font-medium">{comments}</span>
+              <span className="font-medium">{comments.length}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">
               <Eye className="w-4 h-4" />
               <span className="font-medium">{views}</span>
             </div>
-            {isFeatured && (
-              <div className="flex items-center gap-1 text-amber-500">
-                <Star className="w-4 h-4 fill-amber-500" />
-                <span className="text-sm font-medium">Featured</span>
-              </div>
-            )}
           </div>
           
           <button className="flex items-center gap-2 text-emerald-600 font-semibold group-hover:text-emerald-700 transition-colors">
@@ -137,150 +225,16 @@ const BlogPost = ({
   );
 };
 
-// Enhanced Credit Score Gauge with Animation
-const CreditScoreGauge = ({ score = 720 }) => {
-  const [animatedScore, setAnimatedScore] = useState(300);
-  const gaugeRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-          // Animate score from 300 to actual score
-          let start = 300;
-          const duration = 1500;
-          const increment = (score - 300) / (duration / 16);
-          
-          const timer = setInterval(() => {
-            start += increment;
-            setAnimatedScore(Math.min(start, score));
-            if (start >= score) {
-              clearInterval(timer);
-            }
-          }, 16);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
-    if (gaugeRef.current) {
-      observer.observe(gaugeRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [score]);
-
-  const getScoreColor = (score) => {
-    if (score < 500) return '#EF4444';
-    if (score < 600) return '#F59E0B';
-    if (score < 660) return '#FACC15';
-    if (score < 780) return '#84CC16';
-    return '#22C55E';
-  };
-
-  return (
-    <div ref={gaugeRef} className="relative w-full h-full flex items-center justify-center">
-      <svg viewBox="0 0 320 220" className="w-full h-full">
-        <defs>
-          <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#EF4444" />
-            <stop offset="25%" stopColor="#F59E0B" />
-            <stop offset="50%" stopColor="#FACC15" />
-            <stop offset="75%" stopColor="#84CC16" />
-            <stop offset="100%" stopColor="#22C55E" />
-          </linearGradient>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        
-        {/* Gauge Arc */}
-        <path 
-          d="M 40 170 A 140 140 0 0 1 280 170" 
-          fill="none" 
-          stroke="url(#gaugeGradient)" 
-          strokeWidth="30" 
-          strokeLinecap="round"
-          opacity="0.8"
-        />
-        
-        {/* Score Indicator */}
-        <g transform={`rotate(${((animatedScore - 300) / 550) * 180 - 90}, 160, 170)`}>
-          <path 
-            d="M160,170 L160,50" 
-            stroke={getScoreColor(animatedScore)} 
-            strokeWidth="4" 
-            strokeLinecap="round"
-            opacity="0.7"
-          />
-          <circle 
-            cx="160" 
-            cy="50" 
-            r="10" 
-            fill={getScoreColor(animatedScore)} 
-            filter="url(#glow)"
-          />
-          <circle 
-            cx="160" 
-            cy="50" 
-            r="6" 
-            fill="white" 
-          />
-        </g>
-        
-        {/* Score Display */}
-        <g>
-          <rect x="120" y="100" width="80" height="40" rx="8" fill="white" opacity="0.9" />
-          <text 
-            x="160" 
-            y="120" 
-            fontSize="20" 
-            fontWeight="bold" 
-            fill="#111827" 
-            textAnchor="middle" 
-            fontFamily="system-ui"
-          >
-            {Math.round(animatedScore)}
-          </text>
-          <text 
-            x="160" 
-            y="140" 
-            fontSize="10" 
-            fill="#6B7280" 
-            textAnchor="middle" 
-            fontFamily="system-ui"
-          >
-            Credit Score
-          </text>
-        </g>
-        
-        {/* Labels */}
-        <g fontSize="10" fill="#6B7280" fontFamily="system-ui">
-          <text x="40" y="190" textAnchor="middle">300</text>
-          <text x="100" y="160">500</text>
-          <text x="160" y="150">600</text>
-          <text x="220" y="160">700</text>
-          <text x="280" y="190" textAnchor="middle">850</text>
-        </g>
-      </svg>
-    </div>
-  );
-};
-
-// Sidebar Components
-const SearchWidget = () => {
+// Search Widget Component
+const SearchWidget = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('Searching for:', searchTerm);
+    if (onSearch) {
+      onSearch(searchTerm);
+    }
   };
 
   return (
@@ -317,15 +271,30 @@ const SearchWidget = () => {
 const NewsletterWidget = () => {
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (email) {
+    if (!email) return;
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Import newsletterAPI if not already imported
+      const { newsletterAPI } = await import('../services/api');
+      await newsletterAPI.subscribe({ email });
+      
       setIsSubscribed(true);
       setTimeout(() => {
         setIsSubscribed(false);
         setEmail('');
       }, 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -335,7 +304,7 @@ const NewsletterWidget = () => {
       <div className="relative bg-gradient-to-br from-white/90 to-emerald-50/30 backdrop-blur-sm border border-emerald-100/50 p-8 rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
-            <Mail className="w-6 h-6 text-white" />
+            <MailIcon className="w-6 h-6 text-white" />
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900">Stay Updated</h3>
@@ -354,18 +323,28 @@ const NewsletterWidget = () => {
               placeholder="your.email@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-4 bg-white border border-emerald-100 rounded-xl focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+              disabled={isLoading}
+              className="w-full px-5 py-4 bg-white border border-emerald-100 rounded-xl focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 disabled:opacity-50"
             />
           </div>
+          {error && (
+            <p className="text-red-500 text-sm">{error}</p>
+          )}
           <button
             type="submit"
-            className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
+            disabled={isLoading}
+            className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 ${
               isSubscribed
                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
                 : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-1'
             }`}
           >
-            {isSubscribed ? (
+            {isLoading ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                Subscribing...
+              </>
+            ) : isSubscribed ? (
               <>
                 <span className="animate-pulse">✓</span>
                 Subscribed Successfully!
@@ -423,14 +402,14 @@ const SocialWidget = () => {
   );
 };
 
-const CategoryWidget = () => {
+const CategoryWidget = ({ onCategoryClick, activeCategory }) => {
   const categories = [
     { name: 'Credit & Loans', count: 24, icon: TrendingUp },
-    { name: 'Personal Finance', count: 18, icon: DollarSign },
+    { name: 'Personal Finance', count: 18, icon: Banknote },
     { name: 'Business Banking', count: 15, icon: Building },
-    { name: 'Investment', count: 12, icon: Shield },
+    { name: 'Investment', count: 12, icon: ShieldCheck },
     { name: 'Digital Banking', count: 9, icon: Zap },
-    { name: 'Agriculture', count: 7, icon: Sprout }
+    { name: 'Agriculture', count: 7, icon: Plant }
   ];
 
   return (
@@ -439,25 +418,32 @@ const CategoryWidget = () => {
       <div className="space-y-3">
         {categories.map((category, index) => {
           const Icon = category.icon;
+          const isActive = activeCategory === category.name;
           return (
-            <a
+            <button
               key={index}
-              href="#"
-              className="group flex items-center justify-between p-3 rounded-lg hover:bg-emerald-50/50 transition-all duration-300"
+              onClick={() => onCategoryClick && onCategoryClick(category.name)}
+              className={`group flex items-center justify-between p-3 rounded-lg transition-all duration-300 w-full ${
+                isActive ? 'bg-emerald-100/70' : 'hover:bg-emerald-50/50'
+              }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center group-hover:scale-110 transition-transform ${
+                  isActive ? 'scale-110' : ''
+                }`}>
                   <Icon className="w-5 h-5 text-emerald-600" />
                 </div>
-                <span className="font-medium text-gray-700 group-hover:text-emerald-700">
+                <span className={`font-medium ${isActive ? 'text-emerald-700' : 'text-gray-700 group-hover:text-emerald-700'}`}>
                   {category.name}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">{category.count}</span>
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
+                <ChevronRight className={`w-4 h-4 text-gray-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all ${
+                  isActive ? 'text-emerald-500 translate-x-1' : ''
+                }`} />
               </div>
-            </a>
+            </button>
           );
         })}
       </div>
@@ -465,171 +451,177 @@ const CategoryWidget = () => {
   );
 };
 
-export default function BlogPage() {
-  const blogPosts = [
-    {
-      title: "Enhancing Your Credit Score: 5 Effective Tips to Secure a Loan in Ghana",
-      excerpt: "Master the art of credit management with proven strategies that can significantly improve your credit score and increase your loan approval chances in Ghana's competitive financial landscape.",
-      comments: 24,
-      views: 2450,
-      date: "Mar 15, 2024",
-      author: "Michael Boateng",
-      category: "Credit & Loans",
-      readTime: 6,
-      image: <CreditScoreGauge score={720} />,
-      isFeatured: true
-    },
-    {
-      title: "Understanding Mobile Money Loans in Ghana: A Complete Guide",
-      excerpt: "Explore the revolutionary world of mobile money services that have transformed financial access, making quick loans more accessible than ever for Ghanaian individuals and businesses.",
-      comments: 15,
-      views: 4320,
-      date: "Mar 10, 2024",
-      author: "Sarah Mensah",
-      category: "Digital Banking",
-      readTime: 8,
-      image: <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-400 to-cyan-400">
-        <div className="text-8xl">📱</div>
-      </div>
-    },
-    {
-      title: "Top 10 Microfinance Banks in Ghana for Small Business Loans",
-      excerpt: "Discover the leading microfinance institutions offering competitive rates and specialized services tailored for small businesses, the backbone of Ghana's thriving economy.",
-      comments: 32,
-      views: 5890,
-      date: "Mar 5, 2024",
-      author: "David Osei",
-      category: "Business Banking",
-      readTime: 10,
-      image: <div className="flex items-center justify-center h-full bg-gradient-to-br from-emerald-400 to-teal-400">
-        <div className="text-8xl">🏦</div>
-      </div>
-    },
-    {
-      title: "How to Build Business Credit in Ghana: Essential Steps",
-      excerpt: "Learn comprehensive strategies for establishing and growing business credit, a crucial factor for accessing larger loans and securing better financial terms for entrepreneurs.",
-      comments: 18,
-      views: 3670,
-      date: "Feb 28, 2024",
-      author: "Grace Asante",
-      category: "Business Banking",
-      readTime: 7,
-      image: <div className="flex items-center justify-center h-full bg-gradient-to-br from-purple-400 to-pink-400">
-        <div className="text-8xl">📊</div>
-      </div>
-    },
-    {
-      title: "Agricultural Loans in Ghana: Funding Your Farm Business",
-      excerpt: "Navigate the financial options available for farmers and agribusiness owners, exploring specialized loan products designed to support Ghana's vital agricultural sector.",
-      comments: 25,
-      views: 6780,
-      date: "Feb 22, 2024",
-      author: "Kwame Appiah",
-      category: "Agriculture",
-      readTime: 9,
-      image: <div className="flex items-center justify-center h-full bg-gradient-to-br from-green-400 to-emerald-400">
-        <div className="text-8xl">🌾</div>
-      </div>
-    },
-    {
-      title: "Personal Loans vs Salary Advances: Which is Right for You?",
-      excerpt: "Make informed financial decisions by understanding the key differences, benefits, and considerations between personal loans and salary advances in the Ghanaian market.",
-      comments: 17,
-      views: 4230,
-      date: "Feb 18, 2024",
-      author: "Esi Amoah",
-      category: "Personal Finance",
-      readTime: 5,
-      image: <div className="flex items-center justify-center h-full bg-gradient-to-br from-amber-400 to-yellow-400">
-        <div className="text-8xl">💰</div>
-      </div>
+// Main Blog Section Component with API Integration
+export default function IntegratedBlogSection() {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Fetch blogs from API
+  const fetchBlogs = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        page,
+        limit: 6,
+        ...(searchTerm && { search: searchTerm }),
+        ...(selectedCategory && { category: selectedCategory })
+      };
+
+      const response = await blogAPI.getBlogs(params);
+      
+      if (response.data.success) {
+        setBlogs(response.data.data);
+        setTotalPages(response.data.totalPages || 1);
+      } else {
+        throw new Error('Failed to fetch blogs');
+      }
+    } catch (err) {
+      console.error('Error fetching blogs:', err);
+      setError(err.response?.data?.message || 'Failed to load blogs. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Fetch blogs on component mount and when filters change
+  useEffect(() => {
+    fetchBlogs();
+  }, [page, searchTerm, selectedCategory]);
+
+  // Handle search
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    setPage(1); // Reset to first page
+  };
+
+  // Handle category selection
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(selectedCategory === category ? '' : category);
+    setPage(1); // Reset to first page
+  };
+
+  // Handle pagination
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white">
-      {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 py-16">
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-40 -left-40 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 backdrop-blur-sm mb-8">
-            <BookOpen className="w-4 h-4 text-emerald-600 mr-2" />
+    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-emerald-50/30">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 backdrop-blur-sm px-6 py-3 rounded-full mb-6">
+            <BookOpen className="w-5 h-5 text-emerald-600" />
             <span className="text-emerald-700 font-semibold text-sm tracking-wider">
               FINANCIAL INSIGHTS BLOG
             </span>
           </div>
-          
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+          <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
             Expert Financial
             <br />
             <span className="relative inline-block">
               <span className="text-emerald-600">Insights</span>
               <span className="absolute -bottom-3 left-0 right-0 h-4 bg-emerald-200/30 -rotate-1 transform"></span>
             </span>
-          </h1>
-          
+          </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Empowering your financial journey with expert analysis, practical advice, 
             and the latest trends in Ghana's dynamic financial landscape.
           </p>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        {/* Blog Posts Grid */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Blog Posts Grid */}
-          <div className="lg:col-span-2">
-            {/* Featured Post */}
-            <div className="mb-8">
-              <BlogPost {...blogPosts[0]} />
-            </div>
-            
-            {/* Regular Posts Grid */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {blogPosts.slice(1).map((post, index) => (
-                <BlogPost key={index} {...post} />
-              ))}
-            </div>
+          <div className="lg:col-span-2 space-y-8">
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader className="w-12 h-12 text-emerald-600 animate-spin" />
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+                <p className="text-red-600 font-medium">{error}</p>
+                <button
+                  onClick={fetchBlogs}
+                  className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : blogs.length === 0 ? (
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+                <p className="text-gray-600 font-medium">No blogs found. Try a different search or category.</p>
+              </div>
+            ) : (
+              <>
+                {blogs.map((blog) => (
+                  <BlogPostItem key={blog._id} {...blog} />
+                ))}
 
-            {/* Pagination */}
-            <div className="mt-12 flex items-center justify-center gap-2">
-              <button className="w-12 h-12 flex items-center justify-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300">
-                1
-              </button>
-              <button className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-xl hover:bg-emerald-50 border border-emerald-100 transition-all duration-300 hover:scale-105">
-                2
-              </button>
-              <button className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-xl hover:bg-emerald-50 border border-emerald-100 transition-all duration-300 hover:scale-105">
-                3
-              </button>
-              <button className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-xl hover:bg-emerald-50 border border-emerald-100 transition-all duration-300 hover:scale-105">
-                4
-              </button>
-              <span className="px-3 text-gray-400">...</span>
-              <button className="w-12 h-12 flex items-center justify-center bg-white text-gray-700 rounded-xl hover:bg-emerald-50 border border-emerald-100 transition-all duration-300 hover:scale-105">
-                20
-              </button>
-              <button className="px-6 h-12 flex items-center justify-center bg-white text-gray-700 rounded-xl hover:bg-emerald-50 border border-emerald-100 transition-all duration-300 hover:scale-105">
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </button>
-            </div>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-4 mt-12">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={page === 1}
+                      className="px-6 py-3 bg-white border border-emerald-200 rounded-lg font-semibold text-gray-700 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-gray-600 font-medium">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={page === totalPages}
+                      className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-8">
-            <SearchWidget />
+            <SearchWidget onSearch={handleSearch} />
             <NewsletterWidget />
             <SocialWidget />
-            <CategoryWidget />
+            <CategoryWidget 
+              onCategoryClick={handleCategoryClick}
+              activeCategory={selectedCategory}
+            />
           </div>
         </div>
+
+        {/* View All Articles Button */}
+        <div className="mt-12 text-center">
+          <a
+            href="/blog"
+            className="group px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 inline-flex items-center gap-3"
+          >
+            View All Articles
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+          </a>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
