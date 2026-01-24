@@ -37,9 +37,8 @@ export default function PurchasePageHero() {
   const savings = originalAmount - currentAmount;
 
   const handleApplyClick = () => {
-    // Redirect to loan application or contact
-    window.location.href = 'tel:+233208070000';
-    // Or open WhatsApp: window.open('https://wa.me/233208070000', '_blank');
+    // Redirect to catalogue page
+    window.location.href = 'https://catalogue.sikanii.com/Y%2FNkZRMzZ%2F2WE2KNL7ApXw%3D%3D/listing';
   };
 
   return (
@@ -184,13 +183,13 @@ export default function PurchasePageHero() {
                   Or Contact Us Directly:
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 text-sm">
-                  <a href="tel:+233208070000" className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold">
-                    📞 0208070000
-                  </a>
+                  <button onClick={handleApplyClick} className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold">
+                    📞 View Catalogue
+                  </button>
                   <span className="hidden sm:inline text-gray-400">|</span>
-                  <a href="https://wa.me/233208070000" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold">
-                    💬 WhatsApp
-                  </a>
+                  <button onClick={handleApplyClick} className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold">
+                    💬 Browse Products
+                  </button>
                 </div>
               </div>
 

@@ -15,6 +15,7 @@ const LoginPage = lazy(() => import("./pages/LoginPage.jsx"));
 const SignupPage = lazy(() => import("./pages/SignupPage.jsx"));
 const Contact = lazy(() => import("./pages/Contact.jsx"));
 const BlogPage = lazy(() => import("./pages/BlogPost.jsx"));
+const BlogDetails = lazy(()=>import("./pages/BlogDetails.jsx")) // ✨ NEW - Individual blog post view
 const MTLoans = lazy(() => import("./pages/MTLoans.jsx"));
 const Ippisloan = lazy(() => import("./pages/IPloanPage.jsx"));
 const Car4CashPage = lazy(() => import("./pages/Car4CashPage.jsx"));
@@ -70,12 +71,10 @@ const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPa
 const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage.jsx"));
 const DigitalBankingPage = lazy(() => import("./pages/Digitalbankingpage.jsx"));
 const PurchasePage = lazy(() => import("./pages/PurchasePage.jsx"));
-const BlogDetailPage = lazy(() => import("./pages/Blogdetailpage.jsx"));
-const ApplyForLoanPage = lazy(() => import("./pages/LoanPage.jsx"));  
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
-const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard.jsx"));
+const AdminMessages = lazy(() => import("./pages/admin/Adminblogdashboard.jsx"));
 
 function App() {
   return (
@@ -92,7 +91,11 @@ function App() {
                 <Route path="savings-account" element={<SavingsAccountPage />} />
                 <Route path="susu-account" element={<SusuAccount />} />
                 <Route path="contact" element={<Contact />} />
+                
+                {/* ✨ BLOG ROUTES - Updated with detail page */}
                 <Route path="blog" element={<BlogPage />} />
+                <Route path="blog/:slug" element={<BlogDetails />} />
+                
                 <Route path="mtloans" element={<MTLoans />} />
                 <Route path="ippis-loans" element={<Ippisloan />} />
                 <Route path="car4cash" element={<Car4CashPage />} />
@@ -109,10 +112,10 @@ function App() {
                 <Route path="gallery" element={<Gallary />} />
                 <Route path="corporatesocial-responsibility-(csr)" element={<CSRPage />} />
                 <Route path="privacy-page" element={<PrivacyPage />} />
-                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="remittance-and-moneytransfer" element={<RemittancePage />} />
                 <Route path="emeraldcapitalsavingsproducts" element={<SavingsProduct />} />
-                <Route path="investment-and-wealthmanagement" element={<InvestmentWealthManagementPage />} />
+                <Route path="investment-and-wealthmanagement" element={<InvestmentPage/>} />
                 <Route path="savingsproductspurplegoldtheme" element={<SavingsProductsPage/>} />
                 <Route path="businessstarterloan" element={<BusinessStarterPage/>} />
                 <Route path="workingcapitalloan" element={<WorkingCapitalPage/>} />
@@ -132,13 +135,12 @@ function App() {
                 <Route path="funeralloans" element={<FuneralLoanPage/>} />
                 <Route path="personalloan" element={<PersonalLoanPage/>} />
                 <Route path="businessloan" element={<BusinessLoanPage/>} />
+                <Route path="investment-and-wealthmanagement" element={<InvestmentWealthManagementPage/>} />
                 <Route path="emeraldbusiness" element={<EmeraldBusinessPage/>} />
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
-                <Route path="digital-banking" element={<DigitalBankingPage />} />
-                <Route path="highpurchase" element={<PurchasePage />} />
-                <Route path="blog/:slug" element={<BlogDetailPage />} />
-                <Route path="applyforloanpage" element={<ApplyForLoanPage />} />
+                <Route path="/digital-banking" element={<DigitalBankingPage />} />
+                <Route path="/highpurchase" element={<PurchasePage />} />
                 
                 {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
@@ -154,7 +156,7 @@ function App() {
                 <Route path="chiefexecutiveofficerceo" element={<RegionalBranchManagersPage/>} />
                 <Route path="chiefoperatingofficercoo" element={<RegionalBranchManagersPage/>} />
                 <Route path="chieffinancialofficercfo" element={<RegionalBranchManagersPage/>} />
-                <Route path="chiefriskofficerc-ro" element={<RegionalBranchManagersPage/>} />
+                <Route path="chiefriskofficerc ro" element={<RegionalBranchManagersPage/>} />
                 <Route path="chieftechnologyofficercto" element={<RegionalBranchManagersPage/>} />
                 <Route path="chiefmarketing-and-businessdevelopmentofficercmobdo" element={<RegionalBranchManagersPage/>} />
                 <Route path="chiefcompliance-and-legalofficercccclo" element={<RegionalBranchManagersPage/>} />
@@ -162,18 +164,29 @@ function App() {
                 <Route path="chiefinsuranceofficercinso" element={<RegionalBranchManagersPage/>} />
                 <Route path="chiefhumanresourcesofficerchro" element={<RegionalBranchManagersPage/>} />
                 <Route path="operationalstructureandorganogram" element={<RegionalBranchManagersPage/>} />
-                <Route path="regionalmanagement" element={<RegionalBranchManagersPage/>} />
                 
-                {/* Form route - inside RootLayout if it should have header/footer */}
-                <Route path="form" element={<Form />} />
+                {/* Regional Management Routes - All using same component */}
+                <Route path="regionalmanagement" element={<RegionalBranchManagersPage/>} />
+                {/* <Route path="ashantiregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="ahaforegion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="westernnorthregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="westernregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="centralregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="easternregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="volta-and-otiregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="bono-and-bonoeastregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="northernsavannah-and-northeast" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="upperwest-and-uppereastregion" element={<RegionalBranchManagersPage/>} /> */}
+                {/* <Route path="diasporaservices" element={<RegionalBranchManagersPage/>} /> */}
+                
               </Route>
               
-              {/* Routes outside RootLayout */}
+              <Route path="form" element={<Form />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
 
               {/* 🔐 ADMIN ROUTES - Protected */}
-              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/blog/login" element={<AdminLogin />} />
               <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
               <Route 
                 path="/admin/dashboard" 
