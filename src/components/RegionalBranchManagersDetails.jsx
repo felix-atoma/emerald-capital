@@ -303,7 +303,7 @@ const RegionalBranchManagersDetails = () => {
     {
       id: 'bono',
       region: 'Bono & Bono East',
-      manager: 'Mr. Justin Cobbold',
+      manager: 'Mr. Mr. Justin Cudjoe',
       title: 'Regional Manager',
       subtitle: 'Operations & Community Engagement Leader',
       bio: 'Manages operations, staff training, and revenue targets; recognized for community engagement initiatives.',
