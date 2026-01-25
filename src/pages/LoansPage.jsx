@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   TrendingUp, 
   Shield, 
@@ -17,15 +18,13 @@ import {
   Award,
   Phone,
   Mail,
-  Calendar,
   DollarSign,
-  Percent,
   FileText,
   Building,
   Briefcase,
   Smartphone,
-  Globe,
-  ShieldCheck
+  ShieldCheck,
+  ExternalLink
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -33,19 +32,6 @@ const LoansPage = () => {
   const [loanType, setLoanType] = useState('business');
   const [amount, setAmount] = useState(5000);
   const [duration, setDuration] = useState(12);
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [applicationData, setApplicationData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    loanType: '',
-    amount: '',
-    duration: '',
-    purpose: '',
-    monthlyIncome: '',
-    employment: ''
-  });
 
   const microfinanceLoans = [
     {
@@ -172,7 +158,7 @@ const LoansPage = () => {
 
   const calculateEMI = () => {
     const principal = amount;
-    const annualRate = 0.15; // 15% annual interest
+    const annualRate = 0.15;
     const monthlyRate = annualRate / 12;
     const months = duration;
     
@@ -183,33 +169,16 @@ const LoansPage = () => {
     return Math.round(emi);
   };
 
-  const handleApplyNow = () => {
-    document.getElementById('loan-application').scrollIntoView({ behavior: 'smooth' });
+  const handleCallUs = () => {
+    window.location.href = 'tel:+233208070000';
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setApplicationData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleEmailUs = () => {
+    window.location.href = 'mailto:loans@emeraldcapitalgh.com';
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Loan application submitted successfully! We will contact you within 24 hours.');
-    setApplicationData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      loanType: '',
-      amount: '',
-      duration: '',
-      purpose: '',
-      monthlyIncome: '',
-      employment: ''
-    });
+  const handleUSSD = () => {
+    alert('Dial *928*321# on your mobile phone for loan services');
   };
 
   return (
@@ -262,15 +231,16 @@ const LoansPage = () => {
               </motion.div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleApplyNow}
-              className="bg-white text-emerald-700 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
-            >
-              Apply for Loan Now
-              <ArrowRight className="w-6 h-6" />
-            </motion.button>
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-emerald-700 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
+              >
+                Apply for Loan Now
+                <ArrowRight className="w-6 h-6" />
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -389,13 +359,14 @@ const LoansPage = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleApplyNow}
-                    className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Apply for This Loan
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Apply for This Loan
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -469,12 +440,13 @@ const LoansPage = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={handleApplyNow}
-                    className="w-full py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition-colors"
-                  >
-                    Apply Now
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition-colors"
+                    >
+                      Apply Now
+                    </button>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -534,12 +506,13 @@ const LoansPage = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={handleApplyNow}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 transition-all"
-                  >
-                    Apply Now
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 transition-all"
+                    >
+                      Apply Now
+                    </button>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -607,228 +580,147 @@ const LoansPage = () => {
                   </motion.div>
                 ))}
               </div>
+
+              <div className="mt-8 text-center">
+                <Link to="applyforloanpage">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold py-3 px-8 rounded-xl hover:shadow-xl hover:shadow-emerald-500/50 transition-all inline-flex items-center gap-3"
+                  >
+                    <Smartphone className="w-5 h-5" />
+                    Start Online Application
+                  </motion.button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Application Form */}
-      <div id="loan-application" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 to-cyan-50">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-emerald-200"
-          >
-            <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white p-8">
-              <h2 className="text-3xl font-bold mb-2">Loan Application Form</h2>
-              <p className="text-emerald-100">Complete this form to start your loan application</p>
-            </div>
-
-            <div className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={applicationData.firstName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={applicationData.lastName}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={applicationData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={applicationData.phone}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Loan Type *
-                    </label>
-                    <select
-                      name="loanType"
-                      value={applicationData.loanType}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    >
-                      <option value="">Select type</option>
-                      <option value="business">Business Loan</option>
-                      <option value="personal">Personal Loan</option>
-                      <option value="education">Education Loan</option>
-                      <option value="agriculture">Agricultural Loan</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Amount (GH₵) *
-                    </label>
-                    <input
-                      type="number"
-                      name="amount"
-                      value={applicationData.amount}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="5000"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Duration (months) *
-                    </label>
-                    <input
-                      type="number"
-                      name="duration"
-                      value={applicationData.duration}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="12"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Loan Purpose *
-                  </label>
-                  <textarea
-                    name="purpose"
-                    value={applicationData.purpose}
-                    onChange={handleInputChange}
-                    required
-                    rows="3"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Describe what you need the loan for..."
-                  />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Monthly Income (GH₵) *
-                    </label>
-                    <input
-                      type="number"
-                      name="monthlyIncome"
-                      value={applicationData.monthlyIncome}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="2000"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Employment Status *
-                    </label>
-                    <select
-                      name="employment"
-                      value={applicationData.employment}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    >
-                      <option value="">Select status</option>
-                      <option value="employed">Employed</option>
-                      <option value="self-employed">Self-employed</option>
-                      <option value="business-owner">Business Owner</option>
-                      <option value="student">Student</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4 p-4 bg-emerald-50 rounded-xl">
-                  <Shield className="w-6 h-6 text-emerald-600" />
-                  <p className="text-sm text-gray-600">
-                    Your information is secure and confidential. We'll contact you within 24 hours of submission.
-                  </p>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-emerald-500/50 transition-all"
-                >
-                  Submit Loan Application
-                </button>
-              </form>
-            </div>
-          </motion.div>
-
-          {/* Contact Info */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-6">Need help with your application?</p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm text-gray-600">Call us at</p>
-                    <p className="text-lg font-bold text-emerald-900">020 807 0000</p>
-                  </div>
+      {/* CTA Section */}
+      <div className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-emerald-700 via-emerald-600 to-cyan-600 text-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-4xl font-black mb-6">
+            Ready to Get Your Loan?
+          </h2>
+          <p className="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
+            Start your application today for quick approval
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCallUs}
+              className="bg-white text-emerald-700 font-bold py-4 px-8 rounded-2xl hover:shadow-2xl transform transition-all inline-flex items-center justify-center gap-3"
+            >
+              <Phone className="w-6 h-6" />
+              Call: 020 807 0000
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEmailUs}
+              className="bg-emerald-800 text-white font-bold py-4 px-8 rounded-2xl hover:shadow-2xl transform transition-all inline-flex items-center justify-center gap-3 border border-emerald-700"
+            >
+              <Mail className="w-6 h-6" />
+              Email: loans@emeraldcapitalgh.com
+            </motion.button>
+            
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl w-full h-full flex items-center justify-center"
+              >
+                Apply for Loan
+              </motion.button>
+            </Link>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <div className="flex items-center gap-3">
+                <Clock className="w-6 h-6 text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-sm text-emerald-200">Operating Hours</p>
+                  <p className="font-bold">Mon-Fri: 8AM-5PM | Sat: 9AM-1PM</p>
                 </div>
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
-                    <Mail className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm text-gray-600">Email us at</p>
-                    <p className="text-lg font-bold text-emerald-900">loans@emeraldcapitalgh.com</p>
-                  </div>
+              <div className="flex items-center gap-3">
+                <Shield className="w-6 h-6 text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-sm text-emerald-200">Visit Our Office</p>
+                  <p className="font-bold">Emerald Capital Building, Kumasi</p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8 bg-emerald-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-emerald-900 mb-4">
+              Need More Information?
+            </h3>
+            <p className="text-emerald-700">
+              Explore our other financial services
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <Link to="/investments">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <TrendingUp className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Investment Services</h4>
+                <p className="text-gray-600 mb-6">Grow your wealth with our investment products</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Explore Investments <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
+            
+            <Link to="/about">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Building className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">About Emerald Capital</h4>
+                <p className="text-gray-600 mb-6">Learn about our mission and values</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Learn More <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
+            
+            <Link to="/contact">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Contact Us</h4>
+                <p className="text-gray-600 mb-6">Get in touch with our team</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Contact Now <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
           </div>
         </div>
       </div>

@@ -74,8 +74,7 @@ const PurchasePage = lazy(() => import("./pages/PurchasePage.jsx"));
 const CareersPage = lazy(() => import("./pages/CareersPage.jsx"));
 const LoansPage= lazy(() => import("./pages/LoansPage.jsx"));
 const InvestmentsPage= lazy(() => import("./pages/InvestmentsPage.jsx"));
-
-// 🔐 Admin pages (lazy loaded)
+const LoanPage = lazy(() => import("./pages/LoanPage.jsx"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
 const Adminblogdashboard = lazy(() => import("./pages/admin/Adminblogdashboard.jsx"));
 
@@ -147,6 +146,7 @@ function App() {
                 <Route path="/careers" element={<CareersPage />} />
                 <Route path="/loans" element={<LoansPage />} />
                 <Route path="/investments" element={<InvestmentsPage />} />
+                <Route path="/applyforloanpage" element={<LoanPage />} />
 
                 
                 {/* Leadership & Governance Routes */}
