@@ -71,6 +71,9 @@ const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPa
 const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage.jsx"));
 const DigitalBankingPage = lazy(() => import("./pages/Digitalbankingpage.jsx"));
 const PurchasePage = lazy(() => import("./pages/PurchasePage.jsx"));
+const CareersPage = lazy(() => import("./pages/CareersPage.jsx"));
+const LoansPage= lazy(() => import("./pages/LoansPage.jsx"));
+const InvestmentsPage= lazy(() => import("./pages/InvestmentsPage.jsx"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
@@ -141,6 +144,10 @@ function App() {
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
                 <Route path="/digital-banking" element={<DigitalBankingPage />} />
                 <Route path="/hirepurchase" element={<PurchasePage />} />
+                <Route path="/careers" element={<CareersPage />} />
+                <Route path="/loans" element={<LoansPage />} />
+                <Route path="/investments" element={<InvestmentsPage />} />
+
                 
                 {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
