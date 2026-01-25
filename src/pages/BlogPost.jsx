@@ -1,6 +1,6 @@
 // src/pages/BlogPost.jsx
 import React from 'react';
-import IntegratedBlogSection from '../components/IntegratedBlogSection';
+import BlogIter from '../components/BlogIter';
 
 /**
  * Blog Listing Page
@@ -9,7 +9,7 @@ import IntegratedBlogSection from '../components/IntegratedBlogSection';
 export default function BlogPost() {
   return (
     <div className="min-h-screen">
-      <IntegratedBlogSection />
+      <BlogIter/>
     </div>
   );
 }
