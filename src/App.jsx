@@ -15,6 +15,7 @@ const LoginPage = lazy(() => import("./pages/LoginPage.jsx"));
 const SignupPage = lazy(() => import("./pages/SignupPage.jsx"));
 const Contact = lazy(() => import("./pages/Contact.jsx"));
 const BlogPage = lazy(() => import("./pages/BlogPost.jsx"));
+const BlogDetails = lazy(()=>import("./pages/BlogDetails.jsx")) // ✨ NEW - Individual blog post view
 const MTLoans = lazy(() => import("./pages/MTLoans.jsx"));
 const Ippisloan = lazy(() => import("./pages/IPloanPage.jsx"));
 const Car4CashPage = lazy(() => import("./pages/Car4CashPage.jsx"));
@@ -69,10 +70,14 @@ const BoardOfDirectorsPage = lazy(() => import("./pages/BoardOfDirectorsPage.jsx
 const ExecutiveLeadershipPage = lazy(() => import("./pages/ExecutiveLeadershipPage.jsx"));
 const RegionalBranchManagersPage = lazy(() => import("./pages/RegionalBranchManagersPage.jsx"));
 const DigitalBankingPage = lazy(() => import("./pages/Digitalbankingpage.jsx"));
+const PurchasePage = lazy(() => import("./pages/PurchasePage.jsx"));
+const CareersPage = lazy(() => import("./pages/CareersPage.jsx"));
+const LoansPage= lazy(() => import("./pages/LoansPage.jsx"));
+const InvestmentsPage= lazy(() => import("./pages/InvestmentsPage.jsx"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
-const AdminMessages = lazy(() => import("./pages/admin/AdminMessagesDashboard.jsx"));
+const Adminblogdashboard = lazy(() => import("./pages/admin/Adminblogdashboard.jsx"));
 
 function App() {
   return (
@@ -89,7 +94,11 @@ function App() {
                 <Route path="savings-account" element={<SavingsAccountPage />} />
                 <Route path="susu-account" element={<SusuAccount />} />
                 <Route path="contact" element={<Contact />} />
+                
+                {/* ✨ BLOG ROUTES - Updated with detail page */}
                 <Route path="blog" element={<BlogPage />} />
+                <Route path="blog/:slug" element={<BlogDetails />} />
+                
                 <Route path="mtloans" element={<MTLoans />} />
                 <Route path="ippis-loans" element={<Ippisloan />} />
                 <Route path="car4cash" element={<Car4CashPage />} />
@@ -134,6 +143,11 @@ function App() {
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
                 <Route path="/digital-banking" element={<DigitalBankingPage />} />
+                <Route path="/hirepurchase" element={<PurchasePage />} />
+                <Route path="/careers" element={<CareersPage />} />
+                <Route path="/loans" element={<LoansPage />} />
+                <Route path="/investments" element={<InvestmentsPage />} />
+
                 
                 {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
@@ -179,13 +193,13 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
 
               {/* 🔐 ADMIN ROUTES - Protected */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+              <Route path="/admin/blog/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<Navigate to="/admin/blog/login" replace />} />
               <Route 
-                path="/admin/dashboard" 
+                path="/admin/blog/dashboard" 
                 element={
                   <ProtectedRoute>
-                    <AdminMessages />
+                    <Adminblogdashboard  />
                   </ProtectedRoute>
                 } 
               />
@@ -200,13 +214,65 @@ function App() {
 // 🔐 Protected Route Component - Blocks unauthorized access
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('adminAuthToken');
-  const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+  const adminUserStr = localStorage.getItem('adminUser');
   
-  // Check both token AND user role
-  if (!token || (adminUser.role !== 'admin' && adminUser.role !== 'officer')) {
+  console.log('🔐 ProtectedRoute - Checking authentication...');
+  
+  // Parse adminUser safely
+  let adminUser = null;
+  try {
+    // Check for valid string before parsing
+    if (adminUserStr && 
+        adminUserStr !== 'undefined' && 
+        adminUserStr !== 'null' && 
+        adminUserStr.trim() !== '' &&
+        adminUserStr !== '{}') {
+      
+      const parsed = JSON.parse(adminUserStr);
+      
+      // Validate the parsed object has required structure
+      if (parsed && typeof parsed === 'object') {
+        adminUser = parsed;
+        console.log('✅ Valid admin user found:', { role: adminUser.role, username: adminUser.username });
+      } else {
+        console.warn('⚠️ Invalid admin user structure');
+      }
+    } else {
+      console.warn('⚠️ No valid admin user in localStorage');
+    }
+  } catch (error) {
+    console.error('❌ Error parsing adminUser:', error);
+    console.error('❌ Problematic string:', adminUserStr);
+    
+    // Clear corrupted data
+    localStorage.removeItem('adminAuthToken');
+    localStorage.removeItem('adminUser');
+    
     return <Navigate to="/admin/login" replace />;
   }
   
+  // Check both token AND user role
+  const hasValidToken = token && token.length > 10; // Basic token validation
+  const hasValidUser = adminUser && adminUser.role && 
+                      (adminUser.role === 'admin' || adminUser.role === 'officer');
+  
+  console.log('🔐 Auth Check:', {
+    hasValidToken,
+    hasValidUser,
+    userRole: adminUser?.role,
+    shouldRedirect: !hasValidToken || !hasValidUser
+  });
+  
+  if (!hasValidToken || !hasValidUser) {
+    // Clear all auth data
+    localStorage.removeItem('adminAuthToken');
+    localStorage.removeItem('adminUser');
+    
+    console.log('🚫 Access denied. Redirecting to login.');
+    return <Navigate to="/admin/login" replace />;
+  }
+  
+  console.log('✅ Access granted to protected route');
   return children;
 }
 

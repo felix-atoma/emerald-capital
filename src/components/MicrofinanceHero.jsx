@@ -23,9 +23,9 @@ export default function MicrofinanceHero() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              {/* ✅ Apply for Loan button now links to /loan-form */}
+              {/* ✅ Apply for Loan button now links to /applyforloanpage */}
               <Link
-                to="form"
+                to="/applyforloanpage"  // ✅ Changed from "form" to "/applyforloanpage"
                 className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-full flex items-center gap-3 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
               >
                 Apply For Loan

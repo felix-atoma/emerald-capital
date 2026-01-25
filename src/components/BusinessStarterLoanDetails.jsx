@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Rocket, Target, Zap, Shield, Briefcase, Users, DollarSign, FileText, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom'; // ✅ Added Link import
 
 const BusinessStarterLoanDetails = () => {
   return (
@@ -152,9 +153,6 @@ const BusinessStarterLoanDetails = () => {
               </div>
             </div>
 
-            {/* Loan Calculator */}
-           
-
             {/* Documents Required */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Required Documents</h3>
@@ -178,9 +176,11 @@ const BusinessStarterLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply Now for Business Starter Loan
-            </button>
+            <Link to="/applyforloanpage"> {/* ✅ Fixed: Changed to absolute path */}
+              <button className="w-full bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                Apply for Business Starter Loan
+              </button>
+            </Link>
           </div>
         </div>
 

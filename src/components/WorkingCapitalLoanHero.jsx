@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, RefreshCw, BarChart, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom'; // ✅ Added Link import
 
 const WorkingCapitalLoanHero = () => {
   return (
@@ -65,9 +66,11 @@ const WorkingCapitalLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Working Capital
-          </button>
+          <Link to="/applyforloanpage"> {/* ✅ Added Link wrapper */}
+            <button className="bg-yellow-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              Apply for Working Capital
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}

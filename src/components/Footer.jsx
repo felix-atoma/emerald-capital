@@ -55,7 +55,9 @@ import {
   Database,
   Server,
   Wifi,
-  GitBranch
+  GitBranch,
+  Smartphone,
+  Hash
 } from 'lucide-react';
 import { newsletterAPI } from '../services/api';
 import { useToast } from '../components/CustomToast';
@@ -518,6 +520,26 @@ const Footer = () => {
                       <p className="text-white font-bold text-sm">info@emeraldcapitalgh.com</p>
                     </div>
                   </motion.a>
+
+                  {/* USSD Code Section */}
+                  <motion.div 
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
+                  >
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                      <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                        <Smartphone className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400">USSD Banking</p>
+                      <p className="text-base font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
+                        *928*321#
+                      </p>
+                    </div>
+                  </motion.div>
                 </div>
 
                 <div className="mt-4">
@@ -630,11 +652,17 @@ const Footer = () => {
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
               <div className="text-center lg:text-left">
                 <p className="text-gray-400 text-sm">
-                  © {new Date().getFullYear()} <span className="text-white font-bold">Emerald Capital Holdings</span>
+                  © {new Date().getFullYear()} Emerald Capital
                 </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  Licensed by Bank of Ghana • Registration: AK-634-5480
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-gray-500 text-xs">
+                    Licensed by Bank of Ghana • Registration: AK-634-5480
+                  </p>
+                  <div className="flex items-center gap-1 px-2 py-1 bg-emerald-900/30 rounded text-emerald-400 text-xs font-bold border border-emerald-700/50">
+                    <Smartphone className="w-3 h-3" />
+                    <span>USSD: *928*321#</span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
@@ -651,11 +679,11 @@ const Footer = () => {
 
               <div className="flex items-center gap-3">
                 <Link 
-                  to="/admin/login"
+                  to="/admin/blog/login"
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-900 to-gray-800 border-2 border-gray-700 text-gray-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all duration-300 group text-xs"
                 >
                   <Shield className="w-4 h-4 group-hover:text-emerald-500 transition-colors" />
-                  {/* <span className="font-medium">Staff Portal</span> */}
+                  <span className="font-medium">Admin Login</span>
                 </Link>
                 
                 <a 
@@ -664,7 +692,6 @@ const Footer = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <Zap className="w-4 h-4 group-hover:animate-pulse relative z-10" />
-                  {/* <span className="relative z-10">FeliD Media</span> */}
                   <Sparkles className="w-3 h-3 relative z-10" />
                 </a>
               </div>

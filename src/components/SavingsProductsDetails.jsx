@@ -410,7 +410,7 @@ const SavingsProductsDetails = () => {
         <div className="mt-20 bg-white rounded-3xl shadow-2xl p-8 border border-purple-100">
           <div className="flex justify-between items-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900">
-              Financial Products Comparison
+              Compare Our Savings Products
             </h3>
             <div className="flex gap-2">
               <button

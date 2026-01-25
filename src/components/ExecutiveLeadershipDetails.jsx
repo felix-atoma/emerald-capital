@@ -19,14 +19,14 @@ const ExecutiveLeadershipDetails = () => {
     const imageMap = {
       'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
       'coo': 'MR. SOLOMON AMANKWAH.jpg',
-      'cfo': 'MR. ALBERT KWAME ACHIIFU.jpg', // Update if you have Emmanuel's photo
+      'cfo': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
-      'cmo': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Update if you have Gladys's photo
+      'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
-      'cio': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Anna Frimpong - update when available
-      'chro': 'MISS. AMAZING N. EKUA ABBEY.jpg', // Anna Frimpong - update when available
-      'cino': 'byuiutr.jpg' // Update if you have Christian's photo
+      'cio': 'MISS. ANNA FRIMPONG.jpg',
+      'chro': 'MISS. ANNA FRIMPONG.jpg',
+      'cino': 'MR. CHRISTIAN YAW BOATENG.jpg'
     };
     
     const imageFilename = imageMap[executiveId];
@@ -34,19 +34,19 @@ const ExecutiveLeadershipDetails = () => {
     
     // Fallback avatar
     const colorMap = {
-      'emerald': '10b981',
-      'blue': '3b82f6',
-      'purple': '8b5cf6',
-      'red': 'ef4444',
-      'indigo': '6366f1',
-      'pink': 'ec4899',
-      'gray': '6b7280',
-      'teal': '14b8a6',
-      'amber': 'f59e0b'
+      'ceo': '10b981',
+      'coo': '3b82f6',
+      'cfo': '8b5cf6',
+      'cro': 'ef4444',
+      'cto': '6366f1',
+      'cmo': 'ec4899',
+      'cco': '6b7280',
+      'cio': '14b8a6',
+      'chro': 'f59e0b',
+      'cino': '3b82f6'
     };
     
-    const colorKey = executiveId === 'ceo' ? 'emerald' : 'blue';
-    const bgColor = colorMap[colorKey] || '3b82f6';
+    const bgColor = colorMap[executiveId] || '3b82f6';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bgColor}&color=fff&size=400&bold=true&length=2`;
     
     return { imageUrl, fallbackUrl };

@@ -1,5 +1,5 @@
- import React, { useState, useEffect, useRef } from "react";
- import { Link } from "react-router-dom"; 
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom"; 
 
 const FinancialProductsSite = () => {
   const [isNavFixed, setIsNavFixed] = useState(false);
@@ -196,11 +196,11 @@ const FinancialProductsSite = () => {
                 loans. Pay your rent, school fees, medical expenses and other
                 financial needs at a go.
               </p>
-              <Link to="form">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For SME Loan
-  </button>
-</Link>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+                  Apply For SME Loan
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -231,12 +231,12 @@ const FinancialProductsSite = () => {
                 offices. Get a quality and affordable solar energy system with
                 flexible repayments ranging from 1 to 12 months
               </p>
-              <Link to="form">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-    Apply For Business Loan
-    <span>→</span>
-  </button>
-</Link>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+                  Apply For Business Loan
+                  <span>→</span>
+                </button>
+              </Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative w-full h-96 rounded-lg overflow-hidden shadow-xl">
@@ -269,12 +269,12 @@ const FinancialProductsSite = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
-  <img
-    src="/loan approval.png"  // ✅ put your image in /public folder OR import from /src/assets
-    alt="MT Loan Illustration"
-    className="w-full h-full object-cover"
-  />
-</div>
+                <img
+                  src="/loan-approved-ghana.png"  // ✅ Fixed: Kept the new version, removed conflict markers
+                  alt="MT Loan Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-4 rounded-2xl shadow-lg">
                 <p className="text-green-600 text-2xl mb-1">✓</p>
@@ -316,11 +316,11 @@ const FinancialProductsSite = () => {
                   <span className="text-gray-700">Easy Application</span>
                 </div>
               </div>
-             <Link to="form">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For Personal Loans
-  </button>
-</Link>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+                  Apply For Personal Loans
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -348,20 +348,20 @@ const FinancialProductsSite = () => {
                 where we come in. Get easy access to funds of up to GHS 100 million
                 to take your business to the next level.
               </p>
-              <Link to="form">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
-    Apply For Funeral Loan
-  </button>
-</Link>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition">
+                  Apply For Funeral Loan
+                </button>
+              </Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
-  <img
-    src="New SME Loan.png"  // ✅ put sme.png in /public folder, or import from /src/assets
-    alt="SME Loan Illustration"
-    className="w-full h-full object-cover"
-  />
-</div>
+                <img
+                  src="lady.png"  // ✅ put sme.png in /public folder, or import from /src/assets
+                  alt="SME Loan Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
               <div className="absolute -bottom-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
                 <p className="text-sm font-semibold">Funeral Loan</p>
@@ -375,57 +375,56 @@ const FinancialProductsSite = () => {
       </section>
 
       {/* Car4Cash Section */}
-    <section id="car4cash" className="relative py-20 bg-white">
-  {/* Decorative bubbles */}
-  <div className="absolute top-20 left-20 w-16 h-16 bg-purple-500 rounded-full opacity-30 animate-pulse"></div>
-  <div className="absolute bottom-40 right-10 w-10 h-10 bg-red-400 rounded-full opacity-40 animate-bounce"></div>
+      <section id="car4cash" className="relative py-20 bg-white">
+        {/* Decorative bubbles */}
+        <div className="absolute top-20 left-20 w-16 h-16 bg-purple-500 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-40 right-10 w-10 h-10 bg-red-400 rounded-full opacity-40 animate-bounce"></div>
 
-  <div className="container mx-auto px-4">
-    <div className="flex flex-col md:flex-row items-center gap-12">
-      {/* Left side: Car Image */}
-      <div className="md:w-1/2 relative flex justify-center">
-        <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl border-4 border-gray-200">
-          <img
-            src="/car-loan-ghana.png"   // ✅ put your image in /public OR import from /src/assets
-            alt="Car Valuation Visual"
-            className="w-full h-full object-cover"
-          />
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            {/* Left side: Car Image */}
+            <div className="md:w-1/2 relative flex justify-center">
+              <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl border-4 border-gray-200">
+                <img
+                  src="/car-loan-ghana.png"   // ✅ put your image in /public OR import from /src/assets
+                  alt="Car Valuation Visual"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Floating price tag */}
+              <div className="absolute top-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
+                <p className="text-sm font-semibold">
+                  2024 Benz ={" "}
+                  <span className="text-green-600">GHS 100,000,000</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Right side: Text */}
+            <div className="md:w-1/2">
+              <p className="text-sm font-semibold text-gray-600 mb-2">Education Loan:</p>
+              <h2 className="text-5xl font-bold mb-6">
+                <span className="text-gray-700">Your Car can be</span>
+                <br />
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  much more!
+                </span>
+              </h2>
+              <p className="text-gray-600 text-lg mb-8">
+                Do you have a car and you need quick funds? Explore the value of your
+                car and get the funds that you need.
+              </p>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+                  Apply For Education Loan
+                  <span>→</span>
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
-
-        {/* Floating price tag */}
-        <div className="absolute top-5 right-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-green-500">
-          <p className="text-sm font-semibold">
-            2024 Benz ={" "}
-            <span className="text-green-600">GHS 100,000,000</span>
-          </p>
-        </div>
-      </div>
-
-      {/* Right side: Text */}
-      <div className="md:w-1/2">
-        <p className="text-sm font-semibold text-gray-600 mb-2">Education Loan:</p>
-        <h2 className="text-5xl font-bold mb-6">
-          <span className="text-gray-700">Your Car can be</span>
-          <br />
-          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            much more!
-          </span>
-        </h2>
-        <p className="text-gray-600 text-lg mb-8">
-          Do you have a car and you need quick funds? Explore the value of your
-          car and get the funds that you need.
-        </p>
-       <Link to="form">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-    Apply For Education Loan
-    <span>→</span>
-  </button>
-</Link>
-      </div>
-    </div>
-  </div>
-</section>
-
+      </section>
 
       {/* Investment Section */}
       <section id="investment" className="relative py-20 bg-gray-50">
@@ -448,32 +447,31 @@ const FinancialProductsSite = () => {
                 Grow your wealth with us and enjoy guaranteed return on
                 investments. Security guaranteed with easy liquidation.
               </p>
-              <Link to="/contact">
-  <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
-    Invest With Us
-    <span>→</span>
-  </button>
-</Link>
+              <Link to="/applyforloanpage">
+                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full transition flex items-center gap-2">
+                  Invest With Us
+                  <span>→</span>
+                </button>
+              </Link>
             </div>
             <div className="md:w-1/2 relative">
               <div className="relative flex justify-center">
-  <div className="w-80 h-80 rounded-full overflow-hidden shadow-xl border-4 border-gray-200">
-    <img
-      src="download.jpg"   // ✅ put your image in /public OR import from /src/assets
-      alt="Grow Your Fund"
-      className="w-full h-full object-cover"
-    />
-  </div>
+                <div className="w-80 h-80 rounded-full overflow-hidden shadow-xl border-4 border-gray-200">
+                  <img
+                    src="download.jpg"   // ✅ put your image in /public OR import from /src/assets
+                    alt="Grow Your Fund"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-  {/* Floating label (optional) */}
-  <div className="absolute bottom-5 left-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-purple-500">
-    <p className="text-sm font-semibold">
-      Steady Growth ={" "}
-      <span className="text-purple-600">+15% ROI</span>
-    </p>
-  </div>
-</div>
-
+                {/* Floating label (optional) */}
+                <div className="absolute bottom-5 left-10 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-purple-500">
+                  <p className="text-sm font-semibold">
+                    Steady Growth ={" "}
+                    <span className="text-purple-600">+15% ROI</span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

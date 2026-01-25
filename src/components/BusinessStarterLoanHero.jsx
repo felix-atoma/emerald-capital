@@ -1,5 +1,6 @@
 import React from 'react';
 import { Rocket, Target, Zap, Shield } from 'lucide-react';
+import { Link } from 'react-router-dom'; // ✅ Added Link import
 
 const BusinessStarterLoanHero = () => {
   return (
@@ -64,9 +65,11 @@ const BusinessStarterLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Business Loan
-          </button>
+          <Link to="/applyforloanpage"> {/* ✅ Changed to Link component */}
+            <button className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              Apply for Business Loan
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}
