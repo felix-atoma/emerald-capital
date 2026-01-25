@@ -37,7 +37,7 @@ export default function MicrofinanceHero() {
               <div className="flex flex-col">
                 <span className="text-gray-400 text-sm mb-1">Support Email</span>
                 <a
-                  href="mailto:info@emeraldcapital.com"
+                  href="mailto:info@emeraldcapitalgh.com"
                   className="text-gray-900 font-medium flex items-center gap-2"
                 >
                   <Mail className="w-4 h-4" />

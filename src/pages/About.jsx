@@ -10,7 +10,7 @@ export default function AboutPage() {
       <BankingHero />
       <WhoWeAre />
       {/* <HowItStarted imageUrl="/path-to-relaxed-person.jpg" /> */}
-      <FinancialSolutions imageUrl="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80" />
+      <FinancialSolutions imageUrl="/engagement.jpg" />
     </div>
   );
 }
