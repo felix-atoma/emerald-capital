@@ -390,7 +390,7 @@ const RegionalBranchManagersDetails = () => {
     {
       id: 'diaspora',
       region: 'Diaspora',
-      manager: 'Mr. Gabriel Amoako',
+      manager: 'Dr. Gabriel Amoako',
       title: 'Diaspora Relations Manager',
       subtitle: 'International Banking & Foreign Relations Expert',
       bio: 'Manages diasporan affairs and foreign client relations.',
