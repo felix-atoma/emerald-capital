@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // ADD THIS IMPORT
 import { 
   TrendingUp, 
   Shield, 
@@ -34,7 +35,6 @@ const InvestmentsPage = () => {
   const [amount, setAmount] = useState(5000);
   const [duration, setDuration] = useState(12);
   const [riskLevel, setRiskLevel] = useState('moderate');
-  const [showCalculator, setShowCalculator] = useState(false);
 
   const investmentProducts = [
     {
@@ -143,8 +143,12 @@ const InvestmentsPage = () => {
     };
   };
 
-  const handleInvestNow = () => {
-    document.getElementById('investment-form').scrollIntoView({ behavior: 'smooth' });
+  const handleCallUs = () => {
+    window.location.href = 'tel:+233208070000';
+  };
+
+  const handleEmailUs = () => {
+    window.location.href = 'mailto:investments@emeraldcapitalgh.com';
   };
 
   return (
@@ -197,15 +201,17 @@ const InvestmentsPage = () => {
               </motion.div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleInvestNow}
-              className="bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
-            >
-              Start Investing Today
-              <ArrowRight className="w-6 h-6" />
-            </motion.button>
+            {/* UPDATED BUTTON WITH LINK */}
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
+              >
+                Start Investing Today
+                <ArrowRight className="w-6 h-6" />
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -327,13 +333,15 @@ const InvestmentsPage = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleInvestNow}
-                    className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
-                  >
-                    <TrendingUp className="w-5 h-5" />
-                    Start This Investment
-                  </button>
+                  {/* UPDATED BUTTON WITH LINK */}
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
+                    >
+                      <TrendingUp className="w-5 h-5" />
+                      Start This Investment
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -407,12 +415,14 @@ const InvestmentsPage = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={handleInvestNow}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold rounded-xl hover:shadow-lg transition-all"
-                  >
-                    Invest Now
-                  </button>
+                  {/* UPDATED BUTTON WITH LINK */}
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold rounded-xl hover:shadow-lg transition-all"
+                    >
+                      Invest Now
+                    </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}
@@ -467,6 +477,14 @@ const InvestmentsPage = () => {
                     <div className="text-sm text-emerald-200">
                       Suitable for: {strategy.suitable}
                     </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <Link to="applyforloanpage">
+                      <button className="w-full py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 transition-all">
+                        Get Started
+                      </button>
+                    </Link>
                   </div>
                 </motion.div>
               ))}
@@ -526,164 +544,130 @@ const InvestmentsPage = () => {
         </div>
       </div>
 
-      {/* Investment Form */}
-      <div id="investment-form" className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-50 to-cyan-50">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-emerald-200"
-          >
-            <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white p-8">
-              <h2 className="text-3xl font-bold mb-2">Start Your Investment Journey</h2>
-              <p className="text-emerald-100">Complete this form to speak with an investment advisor</p>
-            </div>
-
-            <div className="p-8">
-              <form className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                      placeholder="+233 XX XXX XXXX"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Investment Amount (GH₵) *
-                    </label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                      <option value="">Select amount</option>
-                      <option value="500-5000">GH₵ 500 - 5,000</option>
-                      <option value="5000-20000">GH₵ 5,000 - 20,000</option>
-                      <option value="20000-50000">GH₵ 20,000 - 50,000</option>
-                      <option value="50000+">GH₵ 50,000+</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Investment Horizon *
-                    </label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                      <option value="">Select period</option>
-                      <option value="short">Short-term (1-2 years)</option>
-                      <option value="medium">Medium-term (3-5 years)</option>
-                      <option value="long">Long-term (5+ years)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Risk Tolerance *
-                    </label>
-                    <select className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                      <option value="">Select risk level</option>
-                      <option value="conservative">Conservative (Low Risk)</option>
-                      <option value="moderate">Moderate (Balanced)</option>
-                      <option value="aggressive">Aggressive (High Risk)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Investment Goals *
-                  </label>
-                  <textarea
-                    rows="4"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Tell us about your financial goals and objectives..."
-                  />
-                </div>
-
-                <div className="flex items-center gap-4 p-4 bg-emerald-50 rounded-xl">
-                  <Award className="w-6 h-6 text-emerald-600" />
-                  <p className="text-sm text-gray-600">
-                    One of our investment advisors will contact you within 24 hours for a free consultation.
-                  </p>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-emerald-500/50 transition-all"
-                >
-                  Schedule Free Consultation
-                </button>
-              </form>
-            </div>
-          </motion.div>
-
-          {/* Contact Info */}
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 mb-6">Speak with an investment advisor today</p>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm text-gray-600">Call us at</p>
-                    <p className="text-lg font-bold text-emerald-900">020 807 0000</p>
-                  </div>
+      {/* CTA Section */}
+      <div className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-emerald-700 via-emerald-600 to-cyan-600 text-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-4xl font-black mb-6">
+            Ready to Start Your Investment Journey?
+          </h2>
+          <p className="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
+            Apply now for personalized investment consultation
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCallUs}
+              className="bg-white text-emerald-700 font-bold py-4 px-8 rounded-2xl hover:shadow-2xl transform transition-all inline-flex items-center justify-center gap-3"
+            >
+              <Phone className="w-6 h-6" />
+              Call: 020 807 0000
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEmailUs}
+              className="bg-emerald-800 text-white font-bold py-4 px-8 rounded-2xl hover:shadow-2xl transform transition-all inline-flex items-center justify-center gap-3 border border-emerald-700"
+            >
+              <Mail className="w-6 h-6" />
+              Email: investments@emeraldcapitalgh.com
+            </motion.button>
+            
+            {/* UPDATED YELLOW BUTTON WITH LINK */}
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl w-full h-full flex items-center justify-center"
+              >
+                Apply Now
+              </motion.button>
+            </Link>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+              <div className="flex items-center gap-3">
+                <Clock className="w-6 h-6 text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-sm text-emerald-200">Operating Hours</p>
+                  <p className="font-bold">Mon-Fri: 8AM-5PM | Sat: 9AM-1PM</p>
                 </div>
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
-                    <Mail className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm text-gray-600">Email us at</p>
-                    <p className="text-lg font-bold text-emerald-900">investments@emeraldcapitalgh.com</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-emerald-100">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white">
-                    <Download className="w-6 h-6" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm text-gray-600">Download</p>
-                    <p className="text-lg font-bold text-emerald-900">Investment Guide</p>
-                  </div>
+              <div className="flex items-center gap-3">
+                <Award className="w-6 h-6 text-emerald-300" />
+                <div className="text-left">
+                  <p className="text-sm text-emerald-200">Certified Advisors</p>
+                  <p className="font-bold">15+ Years Experience</p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="py-16 px-4 sm:px-6 lg:px-8 bg-emerald-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-emerald-900 mb-4">
+              Explore Our Services
+            </h3>
+            <p className="text-emerald-700">
+              Discover more financial solutions from Emerald Capital
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <Link to="/loans">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <DollarSign className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Loan Services</h4>
+                <p className="text-gray-600 mb-6">Flexible loan solutions for every need</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  View Loans <ArrowRight className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
+            
+            <Link to="/about">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Building className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">About Us</h4>
+                <p className="text-gray-600 mb-6">Learn about our mission and values</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Learn More <ArrowRight className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
+            
+            <Link to="/contact">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Phone className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Contact Us</h4>
+                <p className="text-gray-600 mb-6">Get in touch with our team</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Contact Now <ArrowRight className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
           </div>
         </div>
       </div>

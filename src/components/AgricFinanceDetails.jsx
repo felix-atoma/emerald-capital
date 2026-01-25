@@ -1,5 +1,5 @@
-import React from 'react';
-import {link} from 'react-router-dom';
+import React from "react";
+import { link } from "react-router-dom";
 
 const AgricFinanceDetails = () => {
   return (
@@ -80,7 +80,10 @@ const AgricFinanceDetails = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>Valid Identification (National ID, Driver's License, or Passport)</span>
+                  <span>
+                    Valid Identification (National ID, Driver's License, or
+                    Passport)
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
@@ -93,11 +96,13 @@ const AgricFinanceDetails = () => {
               </ul>
             </div>
 
-           <Link to="applyforloanpage"> {/* Without leading slash for relative path */}
-  <button className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-    Apply for Loan Assistance
-  </button>
-</Link>
+            <Link to="applyforloanpage">
+              {" "}
+              {/* Without leading slash for relative path */}
+              <button className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                Apply for Loan Assistance
+              </button>
+            </Link>
           </div>
         </div>
       </div>

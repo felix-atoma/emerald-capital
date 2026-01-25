@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   TrendingUp, 
   Shield, 
@@ -17,14 +18,11 @@ import {
   Award,
   Phone,
   Mail,
-  Calendar,
   DollarSign,
-  Percent,
   FileText,
   Building,
   Briefcase,
   Smartphone,
-  Globe,
   ShieldCheck,
   ExternalLink
 } from 'lucide-react';
@@ -160,7 +158,7 @@ const LoansPage = () => {
 
   const calculateEMI = () => {
     const principal = amount;
-    const annualRate = 0.15; // 15% annual interest
+    const annualRate = 0.15;
     const monthlyRate = annualRate / 12;
     const months = duration;
     
@@ -169,11 +167,6 @@ const LoansPage = () => {
     const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / 
                 (Math.pow(1 + monthlyRate, months) - 1);
     return Math.round(emi);
-  };
-
-  const handleContactUs = () => {
-    // You can redirect to contact page or show contact modal
-    window.location.href = '/contact';
   };
 
   const handleCallUs = () => {
@@ -185,7 +178,6 @@ const LoansPage = () => {
   };
 
   const handleUSSD = () => {
-    // For USSD code
     alert('Dial *928*321# on your mobile phone for loan services');
   };
 
@@ -239,15 +231,16 @@ const LoansPage = () => {
               </motion.div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleContactUs}
-              className="bg-white text-emerald-700 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
-            >
-              Apply for Loan Now
-              <ArrowRight className="w-6 h-6" />
-            </motion.button>
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white text-emerald-700 font-bold py-4 px-12 rounded-2xl text-xl hover:shadow-2xl transform transition-all inline-flex items-center gap-3"
+              >
+                Apply for Loan Now
+                <ArrowRight className="w-6 h-6" />
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -366,13 +359,14 @@ const LoansPage = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={handleContactUs}
-                    className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Contact Us to Apply
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-3"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Apply for This Loan
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -446,13 +440,13 @@ const LoansPage = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={handleContactUs}
-                    className="w-full py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Contact to Apply
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200 transition-colors"
+                    >
+                      Apply Now
+                    </button>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -512,13 +506,13 @@ const LoansPage = () => {
                     ))}
                   </div>
 
-                  <button
-                    onClick={handleContactUs}
-                    className="w-full py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Get Started
-                  </button>
+                  <Link to="applyforloanpage">
+                    <button
+                      className="w-full py-3 bg-gradient-to-r from-emerald-400 to-cyan-400 text-emerald-900 font-bold rounded-xl hover:bg-gradient-to-r hover:from-emerald-300 hover:to-cyan-300 transition-all"
+                    >
+                      Apply Now
+                    </button>
+                  </Link>
                 </motion.div>
               ))}
             </div>
@@ -555,10 +549,10 @@ const LoansPage = () => {
               <h3 className="text-3xl font-bold text-emerald-900 mb-8">Application Process</h3>
               <div className="space-y-6">
                 {[
-                  { step: 1, title: "Contact Us", desc: "Call, email, or visit our office", icon: <Phone className="w-6 h-6" /> },
-                  { step: 2, title: "Consultation", desc: "Get personalized loan advice", icon: <Users className="w-6 h-6" /> },
-                  { step: 3, title: "Documentation", desc: "Submit required documents", icon: <FileText className="w-6 h-6" /> },
-                  { step: 4, title: "Approval & Disbursement", desc: "Get funds within 24-48 hours", icon: <DollarSign className="w-6 h-6" /> }
+                  { step: 1, title: "Apply Online", desc: "Fill our simple application form", icon: <Smartphone className="w-6 h-6" /> },
+                  { step: 2, title: "Document Review", desc: "Submit required documents", icon: <FileText className="w-6 h-6" /> },
+                  { step: 3, title: "Approval", desc: "Get decision within 24-48 hours", icon: <CheckCircle className="w-6 h-6" /> },
+                  { step: 4, title: "Disbursement", desc: "Receive funds in your account", icon: <DollarSign className="w-6 h-6" /> }
                 ].map((step, index) => (
                   <motion.div
                     key={index}
@@ -586,6 +580,19 @@ const LoansPage = () => {
                   </motion.div>
                 ))}
               </div>
+
+              <div className="mt-8 text-center">
+                <Link to="applyforloanpage">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold py-3 px-8 rounded-xl hover:shadow-xl hover:shadow-emerald-500/50 transition-all inline-flex items-center gap-3"
+                  >
+                    <Smartphone className="w-5 h-5" />
+                    Start Online Application
+                  </motion.button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -598,7 +605,7 @@ const LoansPage = () => {
             Ready to Get Your Loan?
           </h2>
           <p className="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
-            Contact us today for personalized loan consultation and quick approval
+            Start your application today for quick approval
           </p>
           
           <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -622,15 +629,15 @@ const LoansPage = () => {
               Email: loans@emeraldcapitalgh.com
             </motion.button>
             
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleUSSD}
-              className="bg-cyan-700 text-white font-bold py-4 px-8 rounded-2xl hover:shadow-2xl transform transition-all inline-flex items-center justify-center gap-3"
-            >
-              <Smartphone className="w-6 h-6" />
-              USSD: *928*321#
-            </motion.button>
+            <Link to="applyforloanpage">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl w-full h-full flex items-center justify-center"
+              >
+                Apply for Loan
+              </motion.button>
+            </Link>
           </div>
           
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 inline-block">
@@ -667,50 +674,53 @@ const LoansPage = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
-            <motion.a
-              href="/investments"
-              whileHover={{ y: -8 }}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center"
-            >
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
-                <TrendingUp className="w-8 h-8" />
-              </div>
-              <h4 className="text-xl font-bold text-emerald-900 mb-3">Investment Services</h4>
-              <p className="text-gray-600 mb-6">Grow your wealth with our investment products</p>
-              <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
-                Explore Investments <ExternalLink className="w-4 h-4" />
-              </span>
-            </motion.a>
+            <Link to="/investments">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <TrendingUp className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Investment Services</h4>
+                <p className="text-gray-600 mb-6">Grow your wealth with our investment products</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Explore Investments <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
             
-            <motion.a
-              href="/about"
-              whileHover={{ y: -8 }}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center"
-            >
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
-                <Building className="w-8 h-8" />
-              </div>
-              <h4 className="text-xl font-bold text-emerald-900 mb-3">About Emerald Capital</h4>
-              <p className="text-gray-600 mb-6">Learn about our mission and values</p>
-              <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
-                Learn More <ExternalLink className="w-4 h-4" />
-              </span>
-            </motion.a>
+            <Link to="/about">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Building className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">About Emerald Capital</h4>
+                <p className="text-gray-600 mb-6">Learn about our mission and values</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Learn More <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
             
-            <motion.a
-              href="/contact"
-              whileHover={{ y: -8 }}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center"
-            >
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
-                <Mail className="w-8 h-8" />
-              </div>
-              <h4 className="text-xl font-bold text-emerald-900 mb-3">Contact Us</h4>
-              <p className="text-gray-600 mb-6">Get in touch with our team</p>
-              <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
-                Contact Now <ExternalLink className="w-4 h-4" />
-              </span>
-            </motion.a>
+            <Link to="/contact">
+              <motion.div
+                whileHover={{ y: -8 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all border border-emerald-100 text-center cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 flex items-center justify-center text-white mx-auto mb-6">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <h4 className="text-xl font-bold text-emerald-900 mb-3">Contact Us</h4>
+                <p className="text-gray-600 mb-6">Get in touch with our team</p>
+                <span className="text-emerald-600 font-bold inline-flex items-center gap-2">
+                  Contact Now <ExternalLink className="w-4 h-4" />
+                </span>
+              </motion.div>
+            </Link>
           </div>
         </div>
       </div>
