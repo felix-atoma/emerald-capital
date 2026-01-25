@@ -18,8 +18,8 @@ const BoardOfDirectorsDetails = () => {
     // Map director IDs to actual image filenames in your public folder
     const imageMap = {
       'chairperson': 'DR. ASAMOAH KORANTENG EVANS.jpg',
-      'nonexecutive1': 'DR. OPHILIA OSEI.jpg',
-      'nonexecutive2': 'REV. FREDERICK APPIAH.jpg',
+      'nonexecutive1': 'DR. MRS.  OPHELIA OSEI ULZEN.jpg',
+      'nonexecutive2': 'REV. FREDERICK APPIAH.png',
       'executive': 'MRS. GERTRUDE ASAMOAH.jpg'
     };
     
@@ -81,7 +81,7 @@ const BoardOfDirectorsDetails = () => {
     },
     {
       id: 'nonexecutive1',
-      name: 'Dr. Ophilia Osei',
+      name: 'Dr. Mrs. Ophilia Osei Ulzen',
       title: 'Non-Executive Director',
       subtitle: 'Governance & Compliance Expert',
       role: 'Advises on governance, strategic investments, and regulatory compliance; mentor for women in finance.',
