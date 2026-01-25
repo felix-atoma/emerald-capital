@@ -18,13 +18,13 @@ const RegionalBranchManagersDetails = () => {
     // Map region IDs to actual image filenames in your public folder
     // These match the EXACT filenames from your public folder
     const imageMap = {
-      'greater-accra': 'MR. MARTIN JONES-ARTHUR.jpg',
+      'greater-accra': 'Mr. Martin.jpg',
       'ashanti': 'Picture8.jpg',
       'ahafo': 'MRS. HELENA BOAMAH.jpg',
       'western-north': 'MS. BEATRICE BANNOR.jpg',
       'western': 'MISS. MERCY AHIANOR.jpg',
       'central': 'MISS. AMAZING N. EKUA ABBEY.jpg',
-      'eastern': 'MR. EMMANUEL OSEI MENSAH.jpg',
+      'eastern': 'Mr. Emmanuel.jpg',
       'volta-oti': 'MISS. ESTHER TAKYI.jpg',
       'bono': 'MR. JUSTIN CUDJOE.png',
       'northern': 'MRS. SALMA ADAMS.png',
@@ -331,7 +331,7 @@ const RegionalBranchManagersDetails = () => {
     },
     {
       id: 'northern',
-      region: 'Northern & Savannah & North East',
+      region: 'Northern, Savannah & North East',
       manager: 'Mrs. Salma Adams',
       title: 'Regional Manager',
       subtitle: 'Rural Banking & Community Development Specialist',
