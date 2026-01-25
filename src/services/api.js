@@ -1,6 +1,4 @@
-// src/services/api.js
 import axios from "axios";
-
 /* ===============================
    API CONFIG
 ================================ */
@@ -31,47 +29,132 @@ const adminApi = axios.create({
 /* ===============================
    REQUEST INTERCEPTORS
 ================================ */
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // Log request in development
+    if (import.meta.env.DEV) {
+      console.log(`📤 ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
+    }
+    
+    return config;
+  },
+  (error) => {
+    console.error("❌ Request interceptor error:", error);
+    return Promise.reject(error);
+  }
+);
 
-adminApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("adminAuthToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+adminApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("adminAuthToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // Log admin request in development
+    if (import.meta.env.DEV) {
+      console.log(`👑 ${config.method?.toUpperCase()} ${config.url}`, config.data || '');
+    }
+    
+    return config;
+  },
+  (error) => {
+    console.error("❌ Admin request interceptor error:", error);
+    return Promise.reject(error);
+  }
+);
 
 /* ===============================
    RESPONSE INTERCEPTORS
 ================================ */
 api.interceptors.response.use(
-  (res) => {
-    console.log(`✅ ${res.config.method?.toUpperCase()} ${res.config.url}: ${res.status}`);
-    return res;
-  },
-  (err) => {
-    console.error(`❌ ${err.config?.method?.toUpperCase()} ${err.config?.url}: ${err.response?.status}`);
-    
-    if (err.response?.status === 401 && !window.location.pathname.includes('/login')) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+  (response) => {
+    // Log successful response in development
+    if (import.meta.env.DEV) {
+      console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url}: ${response.status}`);
     }
-    return Promise.reject(err);
+    
+    // Always return response.data for consistency
+    return {
+      ...response,
+      data: response.data
+    };
+  },
+  (error) => {
+    console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}: ${error.response?.status || 'Network Error'}`);
+    
+    if (error.response) {
+      // Server responded with error status
+      console.error("❌ Error response:", error.response.data);
+      
+      // Handle specific error codes
+      if (error.response.status === 401 && !window.location.pathname.includes('/login')) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+      
+      if (error.response.status === 403) {
+        console.error("❌ Access forbidden");
+      }
+      
+      if (error.response.status === 404) {
+        console.error("❌ Endpoint not found");
+      }
+      
+      if (error.response.status === 500) {
+        console.error("❌ Server error");
+      }
+    } else if (error.request) {
+      // Request made but no response
+      console.error("❌ No response received:", error.request);
+    } else {
+      // Something else happened
+      console.error("❌ Request setup error:", error.message);
+    }
+    
+    // Return a consistent error structure
+    return Promise.reject({
+      success: false,
+      message: error.response?.data?.message || error.message || "Network Error",
+      status: error.response?.status,
+      data: error.response?.data
+    });
   }
 );
 
 adminApi.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
+  (response) => {
+    // Log successful admin response in development
+    if (import.meta.env.DEV) {
+      console.log(`👑 ${response.config.method?.toUpperCase()} ${response.config.url}: ${response.status}`);
+    }
+    
+    return {
+      ...response,
+      data: response.data
+    };
+  },
+  (error) => {
+    console.error(`👑❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}: ${error.response?.status || 'Network Error'}`);
+    
+    if (error.response?.status === 401) {
       localStorage.removeItem("adminAuthToken");
       localStorage.removeItem("adminUser");
       window.location.href = "/admin/login";
     }
-    return Promise.reject(err);
+    
+    return Promise.reject({
+      success: false,
+      message: error.response?.data?.message || error.message || "Network Error",
+      status: error.response?.status,
+      data: error.response?.data
+    });
   }
 );
 
@@ -117,7 +200,7 @@ export const loanAPI = {
   createApplication: (data) => api.post("/api/loans/applications", data, {
     headers: { "Content-Type": "multipart/form-data" },
   }),
-  getMyApplications: (params) => api.get("/api/loans/applications", { params }),
+  getMyApplications: (params = {}) => api.get("/api/loans/applications", { params }),
   getApplication: (id) => api.get(`/api/loans/applications/${id}`),
   updateApplication: (id, data) => api.put(`/api/loans/applications/${id}`, data, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -125,7 +208,7 @@ export const loanAPI = {
   deleteApplication: (id) => api.delete(`/api/loans/applications/${id}`),
   
   // Admin loan management
-  getAllApplications: (params) => adminApi.get("/api/admin/loans/applications", { params }),
+  getAllApplications: (params = {}) => adminApi.get("/api/admin/loans/applications", { params }),
   updateApplicationStatus: (id, data) => adminApi.put(`/api/admin/loans/applications/${id}/status`, data),
   getLoanStats: () => adminApi.get("/api/admin/loans/stats"),
 };
@@ -138,7 +221,7 @@ export const contactAPI = {
   submitMessage: (data) => api.post("/api/contact", data),
   
   // Admin contact management
-  getMessages: (params) => adminApi.get("/api/admin/contact", { params }),
+  getMessages: (params = {}) => adminApi.get("/api/admin/contact", { params }),
   getMessage: (id) => adminApi.get(`/api/admin/contact/${id}`),
   updateMessageStatus: (id, data) => adminApi.put(`/api/admin/contact/${id}/status`, data),
   deleteMessage: (id) => adminApi.delete(`/api/admin/contact/${id}`),
@@ -173,20 +256,20 @@ export const accountAPI = {
   // User account operations
   getBalance: () => api.get("/api/account/balance"),
   getDetails: () => api.get("/api/account/details"),
-  getTransactions: (params) => api.get("/api/account/transactions", { params }),
+  getTransactions: (params = {}) => api.get("/api/account/transactions", { params }),
   getTransaction: (id) => api.get(`/api/account/transactions/${id}`),
   transferFunds: (data) => api.post("/api/account/transfer", data),
   updateStatus: (data) => api.patch("/api/account/status", data),
   
   // Admin account management
-  getAllAccounts: (params) => adminApi.get("/api/admin/accounts", { params }),
+  getAllAccounts: (params = {}) => adminApi.get("/api/admin/accounts", { params }),
   getAccountDetails: (id) => adminApi.get(`/api/admin/accounts/${id}`),
   updateAccount: (id, data) => adminApi.put(`/api/admin/accounts/${id}`, data),
   getAccountStats: () => adminApi.get("/api/admin/accounts/stats"),
 };
 
 /* ===============================
-   BLOG API
+   BLOG API - UPDATED WITH CORRECT RESPONSE HANDLING
 ================================ */
 export const blogAPI = {
   // Public blog access
@@ -194,61 +277,65 @@ export const blogAPI = {
     params,
     timeout: 15000
   }),
-  getBlog: (slug) => api.get(`/api/blogs/${slug}`),
+  
+  getBlog: (slugOrId) => api.get(`/api/blogs/${slugOrId}`),
+  
   getPopularBlogs: (limit = 5) => api.get("/api/blogs/popular", { params: { limit } }),
-  getFeaturedBlogs: (limit = 3) => api.get("/api/blogs/featured", { params: { limit } }),
-  searchBlogs: (query) => api.get("/api/blogs/search", { params: { q: query } }),
   
-  // User interactions (authenticated)
+  // User interactions (require authentication)
   likeBlog: (id) => api.put(`/api/blogs/${id}/like`),
-  unlikeBlog: (id) => api.put(`/api/blogs/${id}/unlike`),
   bookmarkBlog: (id) => api.put(`/api/blogs/${id}/bookmark`),
-  removeBookmark: (id) => api.put(`/api/blogs/${id}/remove-bookmark`),
   
-  // Comments
+  // Comments (require authentication)
   addComment: (id, data) => api.post(`/api/blogs/${id}/comments`, data),
-  updateComment: (id, commentId, data) => api.put(`/api/blogs/${id}/comments/${commentId}`, data),
   deleteComment: (id, commentId) => api.delete(`/api/blogs/${id}/comments/${commentId}`),
-  getComments: (id, params) => api.get(`/api/blogs/${id}/comments`, { params }),
   
-  // User content
+  // User content (require authentication)
   getMyBookmarks: () => api.get("/api/blogs/bookmarks/my"),
   getMyLikes: () => api.get("/api/blogs/likes/my"),
-  getMyComments: () => api.get("/api/blogs/comments/my"),
   
-  // Admin blog management
-  createBlog: (data) => adminApi.post("/api/admin/blogs", data),
-  updateBlog: (id, data) => adminApi.put(`/api/admin/blogs/${id}`, data),
-  deleteBlog: (id) => adminApi.delete(`/api/admin/blogs/${id}`),
-  getBlogStats: () => adminApi.get("/api/admin/blogs/stats"),
-  getAllComments: (params) => adminApi.get("/api/admin/blogs/comments", { params }),
-  updateCommentStatus: (id, data) => adminApi.put(`/api/admin/blogs/comments/${id}/status`, data),
-};
-
-/* ===============================
-   CATEGORY API
-================================ */
-export const categoryAPI = {
-  // Public category access
-  getCategories: () => api.get("/api/categories"),
-  getCategory: (slug) => api.get(`/api/categories/${slug}`),
-  getCategoryBlogs: (slug, params) => api.get(`/api/categories/${slug}/blogs`, { params }),
+  // Admin blog management - FIXED: Use adminApi with correct endpoints
+  createBlog: (data) => adminApi.post("/api/blogs", data),
+  updateBlog: (id, data) => adminApi.put(`/api/blogs/${id}`, data),
+  deleteBlog: (id) => adminApi.delete(`/api/blogs/${id}`),
   
-  // Admin category management
-  createCategory: (data) => adminApi.post("/api/admin/categories", data),
-  updateCategory: (id, data) => adminApi.put(`/api/admin/categories/${id}`, data),
-  deleteCategory: (id) => adminApi.delete(`/api/admin/categories/${id}`),
-  getCategoryStats: () => adminApi.get("/api/admin/categories/stats"),
+  // Blog statistics
+  getBlogStats: () => {
+    // Try admin endpoint first, fallback to calculating from public data
+    return adminApi.get("/api/blogs/stats/summary").catch(() => {
+      return blogAPI.getBlogs({ limit: 100 }).then(response => {
+        const blogs = response.data.data?.blogs || response.data.blogs || [];
+        const stats = {
+          totalBlogs: blogs.length,
+          publishedBlogs: blogs.filter(b => b.isPublished).length,
+          draftBlogs: blogs.filter(b => !b.isPublished).length,
+          totalViews: blogs.reduce((sum, b) => sum + (b.views || 0), 0),
+          totalComments: blogs.reduce((sum, b) => sum + (b.comments?.length || 0), 0),
+          blogsByCategory: blogs.reduce((acc, blog) => {
+            const category = blog.category || 'Uncategorized';
+            acc[category] = (acc[category] || 0) + 1;
+            return acc;
+          }, {})
+        };
+        return { 
+          data: { 
+            success: true, 
+            data: { stats } 
+          } 
+        };
+      });
+    });
+  },
 };
 
 /* ===============================
    UPLOAD API
 ================================ */
 export const uploadAPI = {
-  // File uploads
-  uploadImage: (data) => {
+  // File uploads with FormData
+  uploadImage: (formData, type = 'blog') => {
     const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
-    return api.post("/api/upload/image", data, {
+    return api.post(`/api/upload/image?type=${type}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         ...(token && { Authorization: `Bearer ${token}` })
@@ -256,9 +343,9 @@ export const uploadAPI = {
     });
   },
   
-  uploadFile: (data) => {
+  uploadFile: (formData, type = 'general') => {
     const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
-    return api.post("/api/upload/file", data, {
+    return api.post(`/api/upload/file?type=${type}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         ...(token && { Authorization: `Bearer ${token}` })
@@ -266,10 +353,8 @@ export const uploadAPI = {
     });
   },
   
-  // Admin upload management
-  getAllUploads: (params) => adminApi.get("/api/admin/uploads", { params }),
-  deleteUpload: (id) => adminApi.delete(`/api/admin/uploads/${id}`),
-  getUploadStats: () => adminApi.get("/api/admin/uploads/stats"),
+  // Get upload info
+  getUploadInfo: () => api.get("/api/upload/info"),
 };
 
 /* ===============================
@@ -280,7 +365,7 @@ export const adminAPI = {
   getDashboardStats: () => adminApi.get("/api/admin/dashboard"),
   
   // User management
-  getUsers: (params) => adminApi.get("/api/admin/users", { params }),
+  getUsers: (params = {}) => adminApi.get("/api/admin/users", { params }),
   getUser: (id) => adminApi.get(`/api/admin/users/${id}`),
   createUser: (data) => adminApi.post("/api/admin/users", data),
   updateUser: (id, data) => adminApi.put(`/api/admin/users/${id}`, data),
@@ -289,13 +374,8 @@ export const adminAPI = {
   
   // System management
   getSystemInfo: () => adminApi.get("/api/admin/system-info"),
-  getActivityLogs: (params) => adminApi.get("/api/admin/activity-logs", { params }),
+  getActivityLogs: (params = {}) => adminApi.get("/api/admin/activity-logs", { params }),
   clearCache: () => adminApi.delete("/api/admin/cache"),
-  
-  // Analytics
-  getAnalytics: (period) => adminApi.get("/api/admin/analytics", { params: { period } }),
-  getRevenueStats: () => adminApi.get("/api/admin/analytics/revenue"),
-  getUserGrowth: () => adminApi.get("/api/admin/analytics/user-growth"),
 };
 
 /* ===============================

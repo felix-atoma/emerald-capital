@@ -43,7 +43,7 @@ const Navbar = () => {
       dropdown: [
         { label: "Remittance & Money Transfer", link: true },
         { label: "Emerald Capital — Savings Products", link: true },
-        { label: "High Purchase", link: true },
+        
       ]
     },
     {
@@ -85,6 +85,8 @@ const Navbar = () => {
       dropdown: [
         { label: "Emerald Business", link: true },
         { label: "Insurance Products", link: true },
+        { label: "Hire Purchase", link: true },
+        { label: "Emerald Pay", link: true },
       ],
     },
     {

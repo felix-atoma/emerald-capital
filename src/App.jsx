@@ -74,7 +74,7 @@ const PurchasePage = lazy(() => import("./pages/PurchasePage.jsx"));
 
 // 🔐 Admin pages (lazy loaded)
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin.jsx"));
-const AdminMessages = lazy(() => import("./pages/admin/Adminblogdashboard.jsx"));
+const Adminblogdashboard = lazy(() => import("./pages/admin/Adminblogdashboard.jsx"));
 
 function App() {
   return (
@@ -140,7 +140,7 @@ function App() {
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
                 <Route path="/digital-banking" element={<DigitalBankingPage />} />
-                <Route path="/highpurchase" element={<PurchasePage />} />
+                <Route path="/hirepurchase" element={<PurchasePage />} />
                 
                 {/* Leadership & Governance Routes */}
                 <Route path="leadership-and-governanceoverview" element={<LeadershipPage/>} />
@@ -186,13 +186,13 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
 
               {/* 🔐 ADMIN ROUTES - Protected */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+              <Route path="/admin/blog/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<Navigate to="/admin/blog/login" replace />} />
               <Route 
-                path="/admin/dashboard" 
+                path="/admin/blog/dashboard" 
                 element={
                   <ProtectedRoute>
-                    <AdminMessages />
+                    <Adminblogdashboard  />
                   </ProtectedRoute>
                 } 
               />
