@@ -102,13 +102,13 @@ const BoardOfDirectorsHero = () => {
                     style={{ animationDelay: '0.5s' }}>
                     <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
                       <img
-                        src="/Picture7.jpg"
+                        src="/DR. MRS.  OPHELIA OSEI ULZEN.jpg"
                         alt="Non-Executive Director"
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="text-white">
-                      <div className="font-bold">Dr. Ophilia Osei</div>
+                      <div className="font-bold">Dr. Mrs Ophilia Osei Ulzen</div>
                       <div className="text-sm text-purple-200">Non-Executive Director</div>
                     </div>
                   </div>

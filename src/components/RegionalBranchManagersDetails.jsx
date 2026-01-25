@@ -18,16 +18,16 @@ const RegionalBranchManagersDetails = () => {
     // Map region IDs to actual image filenames in your public folder
     // These match the EXACT filenames from your public folder
     const imageMap = {
-      'greater-accra': 'MR. MARTIN JONES-ARTHUR.jpg',
-      'ashanti': 'MR. CHARLES BINNEY ESQ.jpg',
+      'greater-accra': 'Mr. Martin.jpg',
+      'ashanti': 'Picture8.jpg',
       'ahafo': 'MRS. HELENA BOAMAH.jpg',
-      'western-north': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'western-north': 'MS. BEATRICE BANNOR.jpg',
       'western': 'MISS. MERCY AHIANOR.jpg',
       'central': 'MISS. AMAZING N. EKUA ABBEY.jpg',
-      'eastern': 'MR. SOLOMON AMANKWAH.jpg',
-      'volta-oti': 'MRS. ABENA KONADU ASAMOAH-KORANTENG.jpg',
+      'eastern': 'Mr. Emmanuel.jpg',
+      'volta-oti': 'MISS. ESTHER TAKYI.jpg',
       'bono': 'MR. JUSTIN CUDJOE.png',
-      'northern': 'MRS. GERTRUDE ASAMOAH.jpg',
+      'northern': 'MRS. SALMA ADAMS.png',
       'upper-west-east': 'MR. ABASS MOHAIDEEN.jpg',
       'diaspora': 'DR. GABRIEL AMOAKO.png'
     };
@@ -303,7 +303,7 @@ const RegionalBranchManagersDetails = () => {
     {
       id: 'bono',
       region: 'Bono & Bono East',
-      manager: 'Mr. Justin Cobbold',
+      manager: 'Mr. Mr. Justin Cudjoe',
       title: 'Regional Manager',
       subtitle: 'Operations & Community Engagement Leader',
       bio: 'Manages operations, staff training, and revenue targets; recognized for community engagement initiatives.',
@@ -331,7 +331,7 @@ const RegionalBranchManagersDetails = () => {
     },
     {
       id: 'northern',
-      region: 'Northern & Savannah',
+      region: 'Northern, Savannah & North East',
       manager: 'Mrs. Salma Adams',
       title: 'Regional Manager',
       subtitle: 'Rural Banking & Community Development Specialist',

@@ -38,7 +38,7 @@ export default function BankingHero() {
       entrepreneur: "Emerald Capital",
       quote: "Banking should be accessible to everyone, everywhere. That's why we've built Ghana's most user-friendly digital banking platform.",
       imageUrl: "/loan approval.png",
-      thumbnailUrl: "/digital-banking-hero-ghana.png",
+      thumbnailUrl: "/emralspay.png",
       businessType: "Digital Banking Platform"
     },
     {
@@ -52,7 +52,7 @@ export default function BankingHero() {
       entrepreneur: "Business Owner",
       quote: "I received my loan approval and funds within a day. Emerald Capital made expanding my business possible.",
       imageUrl: "/emerals capital.jpg",
-      thumbnailUrl: "/loan-disbursement-ghana.png",
+      thumbnailUrl: "/New SME Loan.png",
       businessType: "Small Business Financing"
     },
     {
@@ -66,7 +66,7 @@ export default function BankingHero() {
       entrepreneur: "Entrepreneur",
       quote: "The loan approval came in just 5 minutes! This speed allowed me to grab a time-sensitive business opportunity.",
       imageUrl: "/New SME Loan.png",
-      thumbnailUrl: "/loan-approved-ghana.png",
+      thumbnailUrl: "loan approval.png",
       businessType: "Fast Loan Processing"
     },
     {
@@ -93,8 +93,8 @@ export default function BankingHero() {
       category: "Fashion & Retail",
       entrepreneur: "Ama Mensah",
       quote: "Emerald Capital believed in my vision when others saw only a market trader. Now I employ 15 women from my community.",
-      imageUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      thumbnailUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      imageUrl: "/nyi.jpg",
+      thumbnailUrl: "nyi.jpg",
       businessType: "African Fashion Boutique"
     },
     {

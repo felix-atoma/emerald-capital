@@ -424,9 +424,9 @@ const Footer = () => {
                 </p>
 
                 <div className="flex gap-3 mb-4">
-                  <SocialIcon href="#" icon={Twitter} label="Twitter" color="text-sky-400" />
+                  <SocialIcon href="https://x.com/CapitalEme21146" icon={Twitter} label="Twitter" color="text-sky-400" />
                   <SocialIcon href="#" icon={Facebook} label="Facebook" color="text-blue-500" />
-                  <SocialIcon href="#" icon={Instagram} label="Instagram" color="text-pink-500" />
+                  <SocialIcon href="https://www.instagram.com/emeraldcapitalgh/" icon={Instagram} label="Instagram" color="text-pink-500" />
                   <SocialIcon href="#" icon={Linkedin} label="LinkedIn" color="text-blue-400" />
                 </div>
               </motion.div>

@@ -87,7 +87,7 @@ const InvestmentHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1559523161-0fc0d8b38a7a?w=800&h=800&fit=crop&crop=face"
+                  src="/tyty.jpg"
                   alt="Financial analyst reviewing investment portfolio"
                   className="w-full h-full object-cover"
                 />

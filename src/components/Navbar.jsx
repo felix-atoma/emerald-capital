@@ -81,7 +81,7 @@ const Navbar = () => {
       ],
     },
     {
-      label: "Project Financing",
+      label: "Business solutions",
       dropdown: [
         { label: "Emerald Business", link: true },
         { label: "Insurance Products", link: true },
