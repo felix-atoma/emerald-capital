@@ -63,7 +63,7 @@ const BoardOfDirectorsHero = () => {
       id: 'chairperson',
       name: 'Dr. Asamoah Koranteng Evans',
       title: 'Chairperson',
-      image: 'Picture1.jpg'
+      image: 'DR. ASAMOAH KORANTENG EVANS.jpg'
     },
     director1: {
       id: 'director1',
@@ -73,15 +73,15 @@ const BoardOfDirectorsHero = () => {
     },
     director2: {
       id: 'director2',
-      name: 'MR. EMMANUEL OSEI MENSAH',
-      title: 'Chief Financial Officer',
-      image: 'Picture5.jpg'
+      name: 'Rev. Frederick Appiah',
+      title: 'Non-Executive Director',
+      image: 'REV. FREDERICK APPIAH.png'
     },
     director3: {
       id: 'director3',
       name: 'Mrs. Gertrude Asamoah',
       title: 'Executive Director / CEO',
-      image: 'Picture3.jpg'
+      image: 'MRS. GERTRUDE ASAMOAH.jpg'
     }
   };
 
