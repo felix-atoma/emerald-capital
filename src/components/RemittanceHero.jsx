@@ -71,7 +71,7 @@ const RemittanceHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-white shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=800&fit=crop&crop=face"
+                  src="/Remiitance.jpeg"
                   alt="Person using digital banking on phone"
                   className="w-full h-full object-cover"
                 />
