@@ -104,12 +104,14 @@ const LeadershipOwnershipHero = () => {
                 {/* Investor Group */}
                 <div className="absolute left-1/4 bottom-8">
                   <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 mx-auto">
-                      <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-teal-300 flex items-center justify-center">
-                        <Building2 className="w-10 h-10 text-white" />
-                      </div>
-                    </div>
                     <div className="text-white text-center">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
+                      <img
+                        src="/loggg.jpeg"
+                        alt="Founder Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                       <div className="font-bold">Emerald Global Business</div>
                       <div className="text-sm text-slate-300">Strategic Partners</div>
                     </div>
