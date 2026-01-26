@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, Heart, Target, Award, BookOpen, Briefcase, Globe } from 'lucide-react';
-import {link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const WomensEmpowermentLoanDetails = () => {
   return (
@@ -174,11 +174,11 @@ const WomensEmpowermentLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <Link to="applyforloanpage"> {/* Without leading slash for relative path */}
-  <button className="bg-yellow-400 text-green-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-    Apply for women's Loan
-  </button>
-</Link>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-yellow-400 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+                Apply for Women's Loan
+              </button>
+            </Link>
           </div>
         </div>
 
