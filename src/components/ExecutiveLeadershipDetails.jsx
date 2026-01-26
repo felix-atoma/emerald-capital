@@ -19,7 +19,7 @@ const ExecutiveLeadershipDetails = () => {
     const imageMap = {
       'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
       'coo': 'MR. SOLOMON AMANKWAH.jpg',
-      'cfo': 'MR. ALBERT KWAME ACHIIFU.jpg',
+      'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
       'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
       'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
