@@ -21,11 +21,11 @@ const BoardAndExecutiveLeadershipDetails = () => {
       'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
       'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
-      'cmo': 'MISS GLADYS ABENA YEBOAH.jpg',
+      'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
-      'cio': 'MISS ANNA FRIMPONG.jpg',
+      'cio': 'MISS. ANNA FRIMPONG.jpg',
       'cino': 'MR. CHRISTIAN YAW BOATENG.jpg',
-      'chro': 'MISS ANNA FRIMPONG HR.jpg'
+      'chro': 'MISS. ANNA FRIMPONG.jpg'
     };
     
     // Get the actual image filename for this role

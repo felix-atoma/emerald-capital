@@ -24,10 +24,10 @@ const ExecutiveManagementDetails = () => {
       'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
       'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
-      'cmo': 'MISS GLADYS ABENA YEBOAH.jpg',
+      'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
-      'cio': 'MISS ANNA FRIMPONG.jpg',
-      'chro': 'MISS ANNA FRIMPONG HR.jpg',
+      'cio': 'Audrey Owusu-Ansah.jpg',
+      'chro': 'MISS. ANNA FRIMPONG.jpg',
       'cino': 'MR. CHRISTIAN YAW BOATENG.jpg'
     };
     
@@ -230,7 +230,7 @@ const ExecutiveManagementDetails = () => {
       id: 'cio',
       title: 'Chief Investment Officer',
       subtitle: 'Investment Strategy Leader',
-      executiveName: 'Miss Anna Frimpong',
+      executiveName: 'Audrey Owusu-Ansah',
       role: 'Oversees portfolio management, investment strategy, and research.',
       icon: <BarChart3 className="w-8 h-8" />,
       color: 'from-teal-500 to-cyan-500',
