@@ -39,7 +39,7 @@ const DarkHeroSection = () => {
             <div className="relative">
               <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-white/10">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=800&fit=crop"
+                  src="/SME Loan Appoval - female.jpeg"
                   alt="Business owners celebrating"
                   className="w-full h-full object-cover"
                 />

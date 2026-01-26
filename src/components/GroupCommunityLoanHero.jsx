@@ -87,7 +87,7 @@ const GroupCommunityLoanHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&h=800&fit=crop&crop=center"
+                  src="Comm group.jpeg"
                   alt="Community members working together on project"
                   className="w-full h-full object-cover"
                   onError={(e) => {

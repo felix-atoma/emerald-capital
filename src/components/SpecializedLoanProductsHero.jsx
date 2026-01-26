@@ -87,7 +87,7 @@ const SpecializedLoanProductsHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-pink-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=800&fit=crop&crop=center"
+                  src="/Investment.jpeg"
                   alt="Professionals discussing specialized business financing solutions"
                   className="w-full h-full object-cover"
                   onError={(e) => {

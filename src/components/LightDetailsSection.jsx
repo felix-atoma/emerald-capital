@@ -11,7 +11,7 @@ const LightDetailsSection = () => {
             <div className="relative">
               <div className="w-96 h-96 rounded-full overflow-hidden border-8 border-white shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=800&fit=crop"
+                  src="/34r33.jpg"
                   alt="Business owners celebrating"
                   className="w-full h-full object-cover"
                 />

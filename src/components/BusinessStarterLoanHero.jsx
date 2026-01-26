@@ -89,7 +89,7 @@ const BusinessStarterLoanHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=800&fit=crop"
+                  src="/group review.jpeg"
                   alt="Entrepreneur starting new business"
                   className="w-full h-full object-cover"
                 />
