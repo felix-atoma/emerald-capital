@@ -126,8 +126,8 @@ const BoardOfDirectorsHero = () => {
                       />
                     </div>
                     <div className="text-white">
-                      <div className="font-bold">Rev. Frederick Appiah</div>
-                      <div className="text-sm text-indigo-200">Non-Executive Director</div>
+                      <div className="font-bold">MR. EMMANUEL OSEI MENSAH</div>
+                      <div className="text-sm text-indigo-200">Chief Financial Officer</div>
                     </div>
                   </div>
                 </div>

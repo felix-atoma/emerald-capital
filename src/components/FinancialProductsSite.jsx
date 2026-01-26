@@ -270,7 +270,7 @@ const FinancialProductsSite = () => {
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                 <img
-                  src="/loan-approved-ghana.png"  // ✅ Fixed: Kept the new version, removed conflict markers
+                  src="/mobile interface.png"  // ✅ Fixed: Kept the new version, removed conflict markers
                   alt="MT Loan Illustration"
                   className="w-full h-full object-cover"
                 />

@@ -465,7 +465,7 @@ const Footer = () => {
               </motion.div>
             </div>
 
-            {/* Contact Cards - REDUCED PADDING */}
+            {/* Customer Support Section - UPDATED */}
             <div>
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -479,77 +479,104 @@ const Footer = () => {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500"
                   />
-                  Contact & Support
+                  Customer Support
                 </h3>
                 
                 <div className="space-y-3">
-                  <motion.a 
-                    href="tel:+233208070000"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
-                  >
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-                      <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
-                        <PhoneCall className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Executive Line</p>
-                      <p className="text-base font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                        +233 20 807 0000
-                      </p>
-                    </div>
-                  </motion.a>
-
-                  <motion.a 
-                    href="mailto:info@emeraldcapitalgh.com"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
-                  >
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-                      <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
-                        <MailCheck className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400">Email Support</p>
-                      <p className="text-white font-bold text-sm">info@emeraldcapitalgh.com</p>
-                    </div>
-                  </motion.a>
-
-                  {/* USSD Code Section */}
+                  {/* Phone Support Card */}
                   <motion.div 
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.98 }}
+                    className="p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                        <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                          <Phone className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Phone Support</p>
+                        <div className="flex items-center gap-1">
+                          <Headphones className="w-3 h-3 text-emerald-500" />
+                          <span className="text-xs text-emerald-400 font-medium">📞 Phone numbers</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1.5 mt-2">
+                      <a href="tel:0531929712" className="text-xs text-gray-300 hover:text-emerald-400 transition-colors p-1.5 bg-gray-900/40 rounded-lg hover:bg-gray-800/60 text-center">
+                        0531929712
+                      </a>
+                      <a href="tel:0537420472" className="text-xs text-gray-300 hover:text-emerald-400 transition-colors p-1.5 bg-gray-900/40 rounded-lg hover:bg-gray-800/60 text-center">
+                        0537420472
+                      </a>
+                      <a href="tel:0208203653" className="text-xs text-gray-300 hover:text-emerald-400 transition-colors p-1.5 bg-gray-900/40 rounded-lg hover:bg-gray-800/60 text-center">
+                        0208203653
+                      </a>
+                      <a href="tel:0209877171" className="text-xs text-gray-300 hover:text-emerald-400 transition-colors p-1.5 bg-gray-900/40 rounded-lg hover:bg-gray-800/60 text-center">
+                        0209877171
+                      </a>
+                      <a href="tel:0240776444" className="text-xs text-gray-300 hover:text-emerald-400 transition-colors p-1.5 bg-gray-900/40 rounded-lg hover:bg-gray-800/60 text-center col-span-2">
+                        0240776444
+                      </a>
+                    </div>
+                  </motion.div>
+
+                  {/* Email Support Card */}
+                  <motion.a 
+                    href="mailto:support@emeraldcapitalgh.com"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
                     className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 group backdrop-blur-sm"
                   >
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
                       <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
-                        <Smartphone className="w-5 h-5 text-white" />
+                        <Mail className="w-5 h-5 text-white" />
                       </div>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-400">USSD Banking</p>
-                      <p className="text-base font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                        *928*321#
-                      </p>
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-400">Email Support</p>
+                      <div className="space-y-1">
+                        <p className="text-white font-bold text-sm truncate">support@emeraldcapitalgh.com</p>
+                        <p className="text-gray-400 text-xs truncate">emeraldcapitalgh@gmail.com</p>
+                      </div>
+                    </div>
+                  </motion.a>
+
+                  {/* Operating Hours Card */}
+                  <motion.div 
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="p-3 rounded-xl bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-2 border-gray-700/50 hover:border-emerald-500/50 transition-all duration-500 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                        <div className="relative w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+                          <Clock className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Operating Hours</p>
+                        <div className="flex items-center gap-1">
+                          <Zap className="w-3 h-3 text-emerald-500" />
+                          <span className="text-xs text-emerald-400 font-medium">Always Available</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs p-2 bg-gray-900/40 rounded-lg">
+                        <span className="text-gray-400">Office Walk-in:</span>
+                        <span className="text-emerald-400 font-medium">Mon–Fri: 8:00 AM – 5:00 PM</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs p-2 bg-emerald-900/20 rounded-lg border border-emerald-800/30">
+                        <span className="text-gray-400">Online & Internet Banking:</span>
+                        <span className="text-emerald-300 font-bold">24/7</span>
+                      </div>
                     </div>
                   </motion.div>
-                </div>
-
-                <div className="mt-4">
-                  <div className="flex items-center gap-3 text-xs text-gray-400 p-2.5 rounded-lg bg-gradient-to-r from-gray-900/40 to-gray-800/40 backdrop-blur-sm">
-                    <Headphones className="w-4 h-4 text-emerald-500" />
-                    <span>24/7 Emergency:</span>
-                    <a href="tel:0208203653" className="text-emerald-400 hover:text-cyan-300 transition-colors font-bold">
-                      020 820 3653
-                    </a>
-                  </div>
                 </div>
               </motion.div>
             </div>
