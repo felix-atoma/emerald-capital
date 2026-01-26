@@ -87,7 +87,7 @@ const HousingHomeImprovementLoanHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&h=800&fit=crop&crop=center"
+                  src="/reg.jpg"
                   alt="Beautiful modern home construction"
                   className="w-full h-full object-cover"
                   onError={(e) => {
