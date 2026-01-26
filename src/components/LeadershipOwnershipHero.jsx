@@ -47,8 +47,8 @@ const LeadershipOwnershipHero = () => {
     setImageLoaded(prev => ({ ...prev, [imageId]: true }));
   };
 
-  const founderImage = getLeaderImage('Picture1.jpg', 'Dr. Asamoah Koranteng Evans');
-  const shareholderImage = getLeaderImage('Picture2.png', 'Mrs. Abena Konadu Asamoah-Koranteng');
+  const founderImage = getLeaderImage('DR. ASAMOAH KORANTENG EVANS.jpg', 'Dr. Asamoah Koranteng Evans');
+  const shareholderImage = getLeaderImage('MRS. ABENA KONADU ASAMOAH-KORANTENG.jpeg', 'Mrs. Abena Konadu Asamoah-Koranteng');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-slate-900 flex items-center px-8 md:px-16 lg:px-24 relative overflow-hidden">
