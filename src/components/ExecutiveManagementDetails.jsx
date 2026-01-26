@@ -15,6 +15,7 @@ import {
 const ExecutiveManagementDetails = () => {
   const [selectedRole, setSelectedRole] = useState('coo');
   const [imageErrors, setImageErrors] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
 
   // Function to get executive image from public folder
   const getExecutiveImage = (roleId, executiveName) => {
@@ -33,7 +34,28 @@ const ExecutiveManagementDetails = () => {
     
     // Get the actual image filename for this role
     const imageFilename = imageMap[roleId];
-    const imageUrl = `/${imageFilename}`;
+    
+    // Try multiple possible paths and formats
+    const possiblePaths = [
+      `/${imageFilename}`,
+      `/images/${imageFilename}`,
+      `/team/${imageFilename}`,
+      `/executives/${imageFilename}`,
+      `/leadership/${imageFilename}`,
+      `./${imageFilename}`,
+      imageFilename,
+      // Try different filename formats
+      imageFilename.toLowerCase(),
+      imageFilename.replace(/\s+/g, '_'),
+      imageFilename.replace(/\s+/g, '-'),
+      imageFilename.replace('DR. ', ''),
+      imageFilename.replace('MRS. ', ''),
+      imageFilename.replace('MR. ', ''),
+      imageFilename.replace('MISS. ', ''),
+      imageFilename.replace('.jpg', '.jpeg'),
+      imageFilename.replace('.jpg', '.png'),
+      imageFilename.replace('.jpg', '.JPG')
+    ];
     
     // Create a fallback avatar URL in case image is missing
     const colorMap = {
@@ -51,16 +73,30 @@ const ExecutiveManagementDetails = () => {
     const bgColor = colorMap[roleId] || '3b82f6';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(executiveName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
     
-    return { imageUrl, fallbackUrl };
+    return { imagePaths: possiblePaths, fallbackUrl };
   };
 
-  // Handle image error
-  const handleImageError = (roleId, e) => {
-    console.warn(`Image failed to load for role ${roleId}:`, e.target.src);
-    setImageErrors(prev => ({ ...prev, [roleId]: true }));
-    const { fallbackUrl } = getExecutiveImage(roleId, '');
-    e.target.src = fallbackUrl;
-    e.target.className = e.target.className + ' bg-gray-200 p-2';
+  // Handle image error with multiple fallback attempts
+  const handleImageError = (roleId, e, executiveName, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${executiveName}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(roleId, err, executiveName, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${executiveName}, using fallback`);
+      const { fallbackUrl } = getExecutiveImage(roleId, executiveName);
+      e.target.src = fallbackUrl;
+      e.target.className = e.target.className.replace('object-cover', 'object-contain') + ' bg-gray-200 p-2';
+      setImageErrors(prev => ({ ...prev, [roleId]: true }));
+    }
+  };
+
+  // Handle image load
+  const handleImageLoad = (roleId) => {
+    setImageLoaded(prev => ({ ...prev, [roleId]: true }));
   };
 
   const executiveRoles = [
@@ -310,7 +346,7 @@ const ExecutiveManagementDetails = () => {
   ];
 
   const selectedRoleData = executiveRoles.find(role => role.id === selectedRole);
-  const { imageUrl, fallbackUrl } = getExecutiveImage(selectedRole, selectedRoleData.executiveName);
+  const { imagePaths, fallbackUrl } = getExecutiveImage(selectedRole, selectedRoleData.executiveName);
 
   return (
     <div className="bg-gradient-to-b from-white to-gray-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
@@ -330,7 +366,7 @@ const ExecutiveManagementDetails = () => {
         <div className="mb-10">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {executiveRoles.map((role) => {
-              const { imageUrl: navImageUrl } = getExecutiveImage(role.id, role.executiveName);
+              const { imagePaths: navImagePaths } = getExecutiveImage(role.id, role.executiveName);
               const hasError = imageErrors[role.id];
               
               return (
@@ -347,26 +383,24 @@ const ExecutiveManagementDetails = () => {
                 >
                   <div className="relative z-10">
                     <div className="flex flex-col items-center text-center">
-                      {/* Executive Image Thumbnail */}
+                      {/* Executive Image Thumbnail - Full image visible */}
                       <div className={`
                         w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 mb-2 md:mb-3
                         ${selectedRole === role.id ? 'border-white' : 'border-gray-100'}
-                        ${hasError ? 'bg-gray-100 p-1' : ''}
+                        ${hasError ? 'bg-gray-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'}
                       `}>
                         <img
-                          src={hasError ? getExecutiveImage(role.id, role.executiveName).fallbackUrl : navImageUrl}
+                          src={navImagePaths[0]}
                           alt={role.executiveName}
-                          className={`
-                            w-full h-full transition-all duration-300
-                            ${hasError 
-                              ? 'object-contain p-1' 
-                              : 'object-cover'
-                            }
-                          `}
-                          style={{ objectPosition: 'center top' }}
+                          className="w-full h-full object-contain p-0.5"
                           loading="lazy"
-                          onError={(e) => handleImageError(role.id, e)}
+                          onError={(e) => handleImageError(role.id, e, role.executiveName, navImagePaths)}
+                          onLoad={() => handleImageLoad(role.id)}
                         />
+                        {/* Loading overlay */}
+                        {!imageLoaded[role.id] && !hasError && (
+                          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                        )}
                       </div>
                       
                       <div className={`
@@ -409,20 +443,25 @@ const ExecutiveManagementDetails = () => {
             {/* Role Overview Card */}
             <div className={`bg-gradient-to-r ${selectedRoleData.color} rounded-2xl md:rounded-3xl p-6 md:p-8 text-white shadow-lg md:shadow-2xl`}>
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 mb-6 md:mb-8">
-                {/* Executive Image */}
+                {/* Executive Image - Full image visible */}
                 <div className="
-                  w-20 h-20 md:w-32 md:h-32 rounded-xl md:rounded-2xl overflow-hidden 
+                  relative w-20 h-20 md:w-32 md:h-32 rounded-xl md:rounded-2xl overflow-hidden 
                   border-4 border-white shadow-lg md:shadow-xl flex-shrink-0
-                  bg-gray-100 mx-auto md:mx-0
+                  bg-gradient-to-br from-white to-gray-50 mx-auto md:mx-0
+                  flex items-center justify-center
                 ">
                   <img
-                    src={imageUrl}
+                    src={imagePaths[0]}
                     alt={selectedRoleData.executiveName}
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: 'center 30%' }}
+                    className="w-full h-full object-contain p-1"
                     loading="lazy"
-                    onError={(e) => handleImageError(selectedRole, e)}
+                    onError={(e) => handleImageError(selectedRole, e, selectedRoleData.executiveName, imagePaths)}
+                    onLoad={() => handleImageLoad(selectedRole)}
                   />
+                  {/* Loading overlay */}
+                  {!imageLoaded[selectedRole] && !imageErrors[selectedRole] && (
+                    <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl md:rounded-2xl"></div>
+                  )}
                 </div>
                 
                 <div className="text-center md:text-left flex-1">

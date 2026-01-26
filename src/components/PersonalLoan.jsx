@@ -85,16 +85,26 @@ const PersonalLoanHero = () => {
 
             {/* Circular Image */}
             <div className="relative">
-              <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-cyan-300 shadow-2xl">
-                <img
-                  src="/Personal loan.jpeg"
-                  alt="Happy person achieving personal goals with financial support"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=800&fit=crop&crop=center";
-                  }}
-                />
+              <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-cyan-300 shadow-2xl relative">
+                {/* Main Image with precise positioning */}
+                <div className="relative w-full h-full">
+                  <img
+  src="/personal.jpg"
+  alt="Happy person achieving personal goals with financial support"
+  className="absolute inset-0 w-full h-full object-contain bg-white"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src =
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=800&fit=contain";
+  }}
+/>
+
+                  
+                  {/* Overlay to ensure face is visible */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-48 h-48 md:w-60 md:h-60 rounded-full border-4 border-white/30 pointer-events-none"></div>
+                  </div>
+                </div>
               </div>
 
               {/* Badge 1 - People Helped */}

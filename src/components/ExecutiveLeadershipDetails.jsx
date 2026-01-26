@@ -1,4 +1,3 @@
-// src/components/ExecutiveLeadershipDetails.jsx
 import React, { useState } from 'react';
 import { 
   Users, Award, Briefcase, TrendingUp, Zap, Target, Shield, Star,
@@ -12,10 +11,10 @@ import {
 
 const ExecutiveLeadershipDetails = () => {
   const [selectedExecutive, setSelectedExecutive] = useState('ceo');
+  const [imageErrors, setImageErrors] = useState({});
 
   // Function to get executive image from public folder
   const getExecutiveImage = (executiveId, name) => {
-    // Map executive IDs to actual image filenames in your public folder
     const imageMap = {
       'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
       'coo': 'MR. SOLOMON AMANKWAH.jpg',
@@ -30,7 +29,19 @@ const ExecutiveLeadershipDetails = () => {
     };
     
     const imageFilename = imageMap[executiveId];
-    const imageUrl = `/${imageFilename}`;
+    
+    // Try different possible paths
+    const possiblePaths = [
+      `/${imageFilename}`,
+      `/images/${imageFilename}`,
+      `/team/${imageFilename}`,
+      `/executives/${imageFilename}`,
+      `./${imageFilename}`,
+      imageFilename,
+      imageFilename.toLowerCase(),
+      imageFilename.replace(/\s+/g, '_'),
+      imageFilename.replace(/\s+/g, '-')
+    ];
     
     // Fallback avatar
     const colorMap = {
@@ -49,7 +60,7 @@ const ExecutiveLeadershipDetails = () => {
     const bgColor = colorMap[executiveId] || '3b82f6';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bgColor}&color=fff&size=400&bold=true&length=2`;
     
-    return { imageUrl, fallbackUrl };
+    return { imagePaths: possiblePaths, fallbackUrl };
   };
 
   const executiveTeam = [
@@ -336,93 +347,106 @@ const ExecutiveLeadershipDetails = () => {
   ];
 
   const selectedExecutiveData = executiveTeam.find(exec => exec.id === selectedExecutive);
-  const { imageUrl, fallbackUrl } = getExecutiveImage(selectedExecutive, selectedExecutiveData.name);
+  const { imagePaths, fallbackUrl } = getExecutiveImage(selectedExecutive, selectedExecutiveData.name);
+
+  // Handle image error
+  const handleImageError = (e, executiveId, name, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${name}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(err, executiveId, name, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${name}, using fallback`);
+      e.target.src = fallbackUrl;
+      e.target.className = e.target.className + ' bg-gray-200 p-2 object-contain';
+      
+      // Mark this executive's image as failed
+      setImageErrors(prev => ({ ...prev, [executiveId]: true }));
+    }
+  };
 
   return (
-    <div className="bg-gradient-to-b from-white to-emerald-50 min-h-screen py-20 px-8 md:px-16 lg:px-24">
+    <div className="bg-gradient-to-b from-white to-emerald-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full px-6 py-3 mb-6 animate-bobble">
-            <Briefcase className="w-5 h-5" />
-            <span className="font-bold text-white">EXECUTIVE LEADERSHIP TEAM</span>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full px-4 py-2 md:px-6 md:py-3 mb-6">
+            <Briefcase className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="font-bold text-white text-sm md:text-base">EXECUTIVE LEADERSHIP TEAM</span>
           </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             Strategic Operational Leadership
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             Our executive leaders bring specialized expertise across all functional areas 
             to drive operational excellence, innovation, and sustainable growth.
           </p>
         </div>
 
         {/* Executive Navigation */}
-        <div className="mb-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="mb-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {executiveTeam.map((executive) => {
-              const { imageUrl: navImageUrl, fallbackUrl: navFallbackUrl } = getExecutiveImage(executive.id, executive.name);
+              const { imagePaths: navImagePaths, fallbackUrl: navFallbackUrl } = getExecutiveImage(executive.id, executive.name);
               
               return (
                 <button
                   key={executive.id}
                   onClick={() => setSelectedExecutive(executive.id)}
                   className={`
-                    group relative overflow-hidden rounded-2xl transition-all duration-300 transform hover:scale-[1.02]
+                    group relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-300
                     ${selectedExecutive === executive.id 
-                      ? `bg-gradient-to-r ${executive.color} shadow-2xl text-white` 
-                      : 'bg-white border-2 border-gray-200 shadow-lg hover:shadow-xl text-gray-900'
+                      ? `bg-gradient-to-r ${executive.color} shadow-lg md:shadow-2xl text-white scale-105` 
+                      : 'bg-white border border-gray-200 shadow-md hover:shadow-lg text-gray-900'
                     }
                   `}
                 >
-                  <div className="p-4">
+                  <div className="p-3 md:p-4">
                     <div className="flex flex-col items-center text-center">
-                      {/* Profile Image in Navigation */}
+                      {/* Profile Image in Navigation - FIXED */}
                       <div className={`
-                        w-14 h-14 rounded-full overflow-hidden border-2 mb-3 flex-shrink-0
+                        w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 mb-2 md:mb-3 flex-shrink-0
                         ${selectedExecutive === executive.id ? 'border-white' : 'border-gray-200'}
                       `}>
                         <img
-                          src={navImageUrl}
+                          src={navImagePaths[0]}
                           alt={executive.name}
-                          className="w-full h-full object-cover object-center"
+                          className="w-full h-full object-contain object-center"
                           style={{
-                            objectFit: 'cover',
-                            objectPosition: 'center'
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                            transform: 'scale(1.1)' // Slightly zoom in to show faces better
                           }}
                           loading="lazy"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = navFallbackUrl;
-                          }}
+                          onError={(e) => handleImageError(e, executive.id, executive.name, navImagePaths)}
                         />
                       </div>
                       
                       <div className={`
-                        font-bold text-sm mb-1
+                        font-bold text-xs md:text-sm mb-1 line-clamp-1
                         ${selectedExecutive === executive.id ? 'text-white' : 'text-gray-900'}
                       `}>
                         {executive.title.split(' ')[0]}
                       </div>
                       <div className={`
-                        text-xs
+                        text-xs line-clamp-1
                         ${selectedExecutive === executive.id ? 'text-white/80' : 'text-gray-600'}
                       `}>
                         {executive.name.split(' ')[0]}
                       </div>
                       
                       {selectedExecutive === executive.id && (
-                        <div className="mt-2">
-                          <div className="w-2 h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+                        <div className="mt-1 md:mt-2">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full mx-auto animate-pulse"></div>
                         </div>
                       )}
                     </div>
                   </div>
-                  
-                  {/* Hover Effect */}
-                  <div className={`
-                    absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300
-                    ${executive.color}
-                  `}></div>
                 </button>
               );
             })}
@@ -430,51 +454,51 @@ const ExecutiveLeadershipDetails = () => {
         </div>
 
         {/* Main Executive Details */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
           {/* Left - Executive Overview */}
           <div className="lg:col-span-2">
             {/* Executive Card */}
-            <div className={`bg-gradient-to-r ${selectedExecutiveData.color} rounded-3xl overflow-hidden shadow-2xl mb-8 animate-bobble`}>
-              <div className="p-8 text-white">
-                <div className="flex flex-col md:flex-row items-start gap-8">
-                  {/* Executive Image */}
-                  <div className="w-48 h-48 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0 bg-gray-100">
+            <div className={`bg-gradient-to-r ${selectedExecutiveData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8`}>
+              <div className="p-6 md:p-8 text-white">
+                <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
+                  {/* Executive Image - FIXED */}
+                  <div className="w-full md:w-48 h-48 rounded-xl md:rounded-2xl overflow-hidden border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 bg-gray-100 mx-auto md:mx-0">
                     <img
-                      src={imageUrl}
+                      src={imagePaths[0]}
                       alt={selectedExecutiveData.name}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-contain object-center"
                       style={{
-                        objectFit: 'cover',
-                        objectPosition: 'center'
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        backgroundColor: '#f8fafc' // Light background for better contrast
                       }}
                       loading="lazy"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = fallbackUrl;
-                      }}
+                      onError={(e) => handleImageError(e, selectedExecutive, selectedExecutiveData.name, imagePaths)}
                     />
                   </div>
                   
                   {/* Executive Info */}
                   <div className="flex-1">
-                    <div className="mb-6">
-                      <h3 className="text-3xl font-bold mb-2">{selectedExecutiveData.name}</h3>
-                      <div className="text-xl mb-4 text-white/90">{selectedExecutiveData.title}</div>
-                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                        <Award className="w-4 h-4" />
-                        <span className="text-sm font-medium">{selectedExecutiveData.subtitle}</span>
+                    <div className="mb-4 md:mb-6">
+                      <h3 className="text-2xl md:text-3xl font-bold mb-2">{selectedExecutiveData.name}</h3>
+                      <div className="text-lg md:text-xl mb-3 md:mb-4 text-white/90">{selectedExecutiveData.title}</div>
+                      <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2">
+                        <Award className="w-3 h-3 md:w-4 md:h-4" />
+                        <span className="text-xs md:text-sm font-medium">{selectedExecutiveData.subtitle}</span>
                       </div>
                     </div>
                     
                     {/* Role Description */}
-                    <p className="text-lg mb-6 text-white/95 leading-relaxed">
+                    <p className="text-base md:text-lg mb-4 md:mb-6 text-white/95 leading-relaxed">
                       {selectedExecutiveData.role}
                     </p>
                     
                     {/* Experience Badge */}
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-3 mb-6">
-                      <Clock className="w-5 h-5" />
-                      <span className="font-medium">{selectedExecutiveData.experience}</span>
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2 md:px-4 md:py-3 mb-4 md:mb-6">
+                      <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                      <span className="text-sm md:text-base font-medium">{selectedExecutiveData.experience}</span>
                     </div>
                   </div>
                 </div>
@@ -482,14 +506,14 @@ const ExecutiveLeadershipDetails = () => {
               
               {/* Certifications */}
               <div className="bg-white/10 backdrop-blur-sm border-t border-white/20">
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Award className="w-5 h-5 text-white" />
-                    <span className="font-bold text-white">Certifications & Qualifications</span>
+                <div className="p-4 md:p-6">
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <Award className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    <span className="font-bold text-white text-sm md:text-base">Certifications & Qualifications</span>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2 md:gap-3">
                     {selectedExecutiveData.certifications.split(', ').map((cert, index) => (
-                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-white">
+                      <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm text-white">
                         {cert}
                       </div>
                     ))}
@@ -499,36 +523,34 @@ const ExecutiveLeadershipDetails = () => {
             </div>
 
             {/* Responsibilities & Achievements */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {/* Key Responsibilities */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble" 
-                style={{ animationDelay: '0.2s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Target className="w-5 h-5 text-emerald-600" />
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                  <Target className="w-4 h-4 md:w-5 md:h-5 text-emerald-600" />
                   Key Responsibilities
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {selectedExecutiveData.responsibilities.map((resp, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors">
-                      <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{resp}</span>
+                    <div key={index} className="flex items-start gap-3 p-3 md:p-4 bg-emerald-50 rounded-lg md:rounded-xl hover:bg-emerald-100 transition-colors">
+                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-gray-700">{resp}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Major Achievements */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-                style={{ animationDelay: '0.4s' }}>
-                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-amber-600" />
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
+                  <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
                   Key Achievements
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {selectedExecutiveData.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors">
-                      <Award className="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" />
-                      <span className="text-gray-700">{achievement}</span>
+                    <div key={index} className="flex items-start gap-3 p-3 md:p-4 bg-amber-50 rounded-lg md:rounded-xl hover:bg-amber-100 transition-colors">
+                      <Award className="w-4 h-4 md:w-5 md:h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-gray-700">{achievement}</span>
                     </div>
                   ))}
                 </div>
@@ -537,32 +559,31 @@ const ExecutiveLeadershipDetails = () => {
           </div>
 
           {/* Right - Expertise & Contact */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             {/* Expertise & Education */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-              style={{ animationDelay: '0.6s' }}>
-              <h3 className="text-xl font-bold text-gray-900 mb-6">Expertise & Education</h3>
-              <div className="space-y-6">
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Expertise & Education</h3>
+              <div className="space-y-4 md:space-y-6">
                 {/* Education */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-emerald-700 font-medium">
-                    <GraduationCap className="w-5 h-5" />
-                    <span>Education</span>
+                    <GraduationCap className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Education</span>
                   </div>
-                  <p className="text-gray-700 bg-emerald-50 rounded-xl p-4">
+                  <p className="text-sm md:text-base text-gray-700 bg-emerald-50 rounded-lg md:rounded-xl p-3 md:p-4">
                     {selectedExecutiveData.education}
                   </p>
                 </div>
 
                 {/* Areas of Expertise */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-emerald-700 font-medium">
-                    <Lightbulb className="w-5 h-5" />
-                    <span>Areas of Expertise</span>
+                    <Lightbulb className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Areas of Expertise</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {selectedExecutiveData.expertise.split(', ').map((area, index) => (
-                      <div key={index} className="bg-gray-100 rounded-lg px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-emerald-100 transition-colors">
+                      <div key={index} className="bg-gray-100 rounded-lg px-2 py-1.5 md:px-3 md:py-2 text-center text-xs md:text-sm font-medium text-gray-700 hover:bg-emerald-100 transition-colors">
                         {area}
                       </div>
                     ))}
@@ -570,12 +591,12 @@ const ExecutiveLeadershipDetails = () => {
                 </div>
 
                 {/* Leadership Philosophy */}
-                <div className="space-y-3">
+                <div className="space-y-2 md:space-y-3">
                   <div className="flex items-center gap-2 text-emerald-700 font-medium">
-                    <Heart className="w-5 h-5" />
-                    <span>Leadership Philosophy</span>
+                    <Heart className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-sm md:text-base">Leadership Philosophy</span>
                   </div>
-                  <p className="text-sm text-gray-600 italic">
+                  <p className="text-xs md:text-sm text-gray-600 italic bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4">
                     "Leading with integrity, driving innovation, and creating sustainable value for all stakeholders."
                   </p>
                 </div>
@@ -583,44 +604,42 @@ const ExecutiveLeadershipDetails = () => {
             </div>
 
             {/* Contact & Network */}
-            <div className={`bg-gradient-to-r ${selectedExecutiveData.color} rounded-2xl p-8 text-white hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
-              style={{ animationDelay: '0.8s' }}>
-              <h3 className="text-lg font-bold mb-4">Contact & Network</h3>
-              <div className="space-y-4">
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Mail className="w-5 h-5" />
-                  <span className="font-medium">Send Email</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className={`bg-gradient-to-r ${selectedExecutiveData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white`}>
+              <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Contact & Network</h3>
+              <div className="space-y-3 md:space-y-4">
+                <button className="w-full flex items-center gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base font-medium">Send Email</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <Linkedin className="w-5 h-5" />
-                  <span className="font-medium">LinkedIn Profile</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <Linkedin className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base font-medium">LinkedIn Profile</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
-                  <FileText className="w-5 h-5" />
-                  <span className="font-medium">Download Bio</span>
-                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-sm md:text-base font-medium">Download Bio</span>
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               </div>
             </div>
 
             {/* Executive Impact */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 animate-bobble"
-              style={{ animationDelay: '1s' }}>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Executive Impact</h3>
-              <div className="space-y-3">
+            <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border border-gray-200">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Executive Impact</h3>
+              <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Performance Score</span>
-                  <span className="font-bold text-emerald-600">96% Rating</span>
+                  <span className="text-xs md:text-sm text-gray-600">Performance Score</span>
+                  <span className="font-bold text-emerald-600 text-sm md:text-base">96% Rating</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Team Leadership</span>
-                  <span className="font-bold text-emerald-600">50-200 Team</span>
+                  <span className="text-xs md:text-sm text-gray-600">Team Leadership</span>
+                  <span className="font-bold text-emerald-600 text-sm md:text-base">50-200 Team</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Initiative Success</span>
-                  <span className="font-bold text-emerald-600">95% Achieved</span>
+                  <span className="text-xs md:text-sm text-gray-600">Initiative Success</span>
+                  <span className="font-bold text-emerald-600 text-sm md:text-base">95% Achieved</span>
                 </div>
               </div>
             </div>
@@ -628,28 +647,28 @@ const ExecutiveLeadershipDetails = () => {
         </div>
 
         {/* Contact Executive Team */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl px-8 py-8 shadow-xl animate-bobble">
-            <div className="text-left text-white">
-              <div className="flex items-center gap-3 mb-2">
-                <Briefcase className="w-6 h-6" />
-                <p className="text-lg font-bold">Executive Office Contact</p>
+        <div className="mt-12 md:mt-20 text-center">
+          <div className="inline-flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl md:rounded-3xl px-6 md:px-8 py-6 md:py-8 shadow-xl">
+            <div className="text-center md:text-left text-white">
+              <div className="flex items-center gap-2 md:gap-3 mb-2 justify-center md:justify-start">
+                <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
+                <p className="text-base md:text-lg font-bold">Executive Office Contact</p>
               </div>
-              <p className="text-emerald-100">
+              <p className="text-emerald-100 text-sm md:text-base">
                 Connect with our executive leadership team for strategic partnerships, 
                 operational collaboration, or leadership engagements.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 md:gap-4">
               <a 
                 href="mailto:executive@emeraldcapitalgh.com" 
-                className="bg-white text-emerald-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                className="bg-white text-emerald-700 px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-gray-100 transition-colors text-sm md:text-base"
               >
                 Email Executive Office
               </a>
               <a 
                 href="tel:+233208070010" 
-                className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
+                className="bg-transparent border-2 border-white text-white px-4 py-2 md:px-6 md:py-3 rounded-full font-bold hover:bg-white/10 transition-colors text-sm md:text-base"
               >
                 Call Executive Assistant
               </a>
@@ -658,29 +677,36 @@ const ExecutiveLeadershipDetails = () => {
         </div>
       </div>
 
-      {/* Add custom animation styles */}
+      {/* Add custom styles */}
       <style jsx>{`
         @keyframes bobble {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-bobble {
-          animation: bobble 3s ease-in-out infinite;
+          50% { transform: translateY(-5px); }
         }
         
-        /* Ensure all images fit perfectly */
-        img {
-          max-width: 100%;
-          height: auto;
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
         
-        /* Specific styling for executive images */
-        .w-48.h-48 img,
-        .w-14.h-14 img {
-          object-fit: cover !important;
-          object-position: center !important;
-          width: 100% !important;
-          height: 100% !important;
+        /* Responsive image container */
+        .image-container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+        
+        .image-container img {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          min-width: 100%;
+          min-height: 100%;
+          object-fit: cover;
         }
       `}</style>
     </div>

@@ -1,8 +1,90 @@
 // src/components/BoardOfDirectorsHero.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Users, Award, Crown, Shield, Target, TrendingUp, Star, Gavel } from 'lucide-react';
 
 const BoardOfDirectorsHero = () => {
+  const [imageErrors, setImageErrors] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
+
+  // Function to get board member image with fallback
+  const getBoardMemberImage = (imageFile, memberName) => {
+    const possiblePaths = [
+      `/${imageFile}`,
+      `/images/${imageFile}`,
+      `/team/${imageFile}`,
+      `/board/${imageFile}`,
+      `/directors/${imageFile}`,
+      `./${imageFile}`,
+      imageFile,
+      // Try different filename formats
+      imageFile.toLowerCase(),
+      imageFile.replace(/\s+/g, '_'),
+      imageFile.replace(/\s+/g, '-'),
+      imageFile.replace('DR. ', ''),
+      imageFile.replace('MRS. ', ''),
+      imageFile.replace('DR. MRS. ', ''),
+      imageFile.replace('MR. ', ''),
+      imageFile.replace('.jpg', '.jpeg'),
+      imageFile.replace('.jpg', '.png'),
+      imageFile.replace('.png', '.jpg')
+    ];
+    
+    // Create fallback avatar with appropriate color
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(memberName)}&background=3b82f6&color=fff&size=400&bold=true&format=svg`;
+    
+    return { imagePaths: possiblePaths, fallbackUrl };
+  };
+
+  // Handle image error with multiple fallback attempts
+  const handleImageError = (imageId, e, memberName, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${memberName}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(imageId, err, memberName, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${memberName}, using fallback`);
+      const { fallbackUrl } = getBoardMemberImage('', memberName);
+      e.target.src = fallbackUrl;
+      setImageErrors(prev => ({ ...prev, [imageId]: true }));
+    }
+  };
+
+  // Handle image load
+  const handleImageLoad = (imageId) => {
+    setImageLoaded(prev => ({ ...prev, [imageId]: true }));
+  };
+
+  // Define board members with image info
+  const boardMembers = {
+    chairperson: {
+      id: 'chairperson',
+      name: 'Dr. Asamoah Koranteng Evans',
+      title: 'Chairperson',
+      image: 'Picture1.jpg'
+    },
+    director1: {
+      id: 'director1',
+      name: 'Dr. Mrs Ophilia Osei Ulzen',
+      title: 'Non-Executive Director',
+      image: 'DR. MRS.  OPHELIA OSEI ULZEN.jpg'
+    },
+    director2: {
+      id: 'director2',
+      name: 'MR. EMMANUEL OSEI MENSAH',
+      title: 'Chief Financial Officer',
+      image: 'Picture5.jpg'
+    },
+    director3: {
+      id: 'director3',
+      name: 'Mrs. Gertrude Asamoah',
+      title: 'Executive Director / CEO',
+      image: 'Picture3.jpg'
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-purple-900 flex items-center px-8 md:px-16 lg:px-24 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -82,16 +164,31 @@ const BoardOfDirectorsHero = () => {
                 {/* Chairperson - Center */}
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
                   <div className="bg-gradient-to-br from-blue-600 to-indigo-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble">
-                    <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
-                      <img
-                        src="/Picture1.jpg"
-                        alt="Chairperson"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
+                      {(() => {
+                        const member = boardMembers.chairperson;
+                        const { imagePaths } = getBoardMemberImage(member.image, member.name);
+                        return (
+                          <>
+                            <img
+                              src={imagePaths[0]}
+                              alt={member.name}
+                              className="w-full h-full object-contain p-1"
+                              loading="lazy"
+                              onError={(e) => handleImageError(member.id, e, member.name, imagePaths)}
+                              onLoad={() => handleImageLoad(member.id)}
+                            />
+                            {/* Loading overlay */}
+                            {!imageLoaded[member.id] && !imageErrors[member.id] && (
+                              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="text-white text-center">
-                      <div className="font-bold text-lg">Dr. Asamoah Koranteng Evans</div>
-                      <div className="text-sm text-blue-200">Chairperson</div>
+                      <div className="font-bold text-lg">{boardMembers.chairperson.name}</div>
+                      <div className="text-sm text-blue-200">{boardMembers.chairperson.title}</div>
                     </div>
                   </div>
                 </div>
@@ -100,16 +197,31 @@ const BoardOfDirectorsHero = () => {
                 <div className="absolute top-1/4 right-0 z-10">
                   <div className="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble" 
                     style={{ animationDelay: '0.5s' }}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
-                      <img
-                        src="/DR. MRS.  OPHELIA OSEI ULZEN.jpg"
-                        alt="Non-Executive Director"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
+                      {(() => {
+                        const member = boardMembers.director1;
+                        const { imagePaths } = getBoardMemberImage(member.image, member.name);
+                        return (
+                          <>
+                            <img
+                              src={imagePaths[0]}
+                              alt={member.name}
+                              className="w-full h-full object-contain p-1"
+                              loading="lazy"
+                              onError={(e) => handleImageError(member.id, e, member.name, imagePaths)}
+                              onLoad={() => handleImageLoad(member.id)}
+                            />
+                            {/* Loading overlay */}
+                            {!imageLoaded[member.id] && !imageErrors[member.id] && (
+                              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="text-white">
-                      <div className="font-bold">Dr. Mrs Ophilia Osei Ulzen</div>
-                      <div className="text-sm text-purple-200">Non-Executive Director</div>
+                      <div className="font-bold">{boardMembers.director1.name}</div>
+                      <div className="text-sm text-purple-200">{boardMembers.director1.title}</div>
                     </div>
                   </div>
                 </div>
@@ -118,16 +230,31 @@ const BoardOfDirectorsHero = () => {
                 <div className="absolute bottom-1/4 left-0 z-10">
                   <div className="bg-gradient-to-br from-indigo-600 to-blue-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble"
                     style={{ animationDelay: '1s' }}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
-                      <img
-                        src="/Picture5.jpg"
-                        alt="Non-Executive Director"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
+                      {(() => {
+                        const member = boardMembers.director2;
+                        const { imagePaths } = getBoardMemberImage(member.image, member.name);
+                        return (
+                          <>
+                            <img
+                              src={imagePaths[0]}
+                              alt={member.name}
+                              className="w-full h-full object-contain p-1"
+                              loading="lazy"
+                              onError={(e) => handleImageError(member.id, e, member.name, imagePaths)}
+                              onLoad={() => handleImageLoad(member.id)}
+                            />
+                            {/* Loading overlay */}
+                            {!imageLoaded[member.id] && !imageErrors[member.id] && (
+                              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="text-white">
-                      <div className="font-bold">MR. EMMANUEL OSEI MENSAH</div>
-                      <div className="text-sm text-indigo-200">Chief Financial Officer</div>
+                      <div className="font-bold">{boardMembers.director2.name}</div>
+                      <div className="text-sm text-indigo-200">{boardMembers.director2.title}</div>
                     </div>
                   </div>
                 </div>
@@ -136,16 +263,31 @@ const BoardOfDirectorsHero = () => {
                 <div className="absolute bottom-1/4 right-0 z-10">
                   <div className="bg-gradient-to-br from-cyan-600 to-teal-500 rounded-2xl p-6 shadow-2xl transform hover:scale-110 transition-transform duration-500 animate-bobble"
                     style={{ animationDelay: '1.5s' }}>
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
-                      <img
-                        src="/Picture3.jpg"
-                        alt="Executive Director"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
+                      {(() => {
+                        const member = boardMembers.director3;
+                        const { imagePaths } = getBoardMemberImage(member.image, member.name);
+                        return (
+                          <>
+                            <img
+                              src={imagePaths[0]}
+                              alt={member.name}
+                              className="w-full h-full object-contain p-1"
+                              loading="lazy"
+                              onError={(e) => handleImageError(member.id, e, member.name, imagePaths)}
+                              onLoad={() => handleImageLoad(member.id)}
+                            />
+                            {/* Loading overlay */}
+                            {!imageLoaded[member.id] && !imageErrors[member.id] && (
+                              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="text-white">
-                      <div className="font-bold">Mrs. Gertrude Asamoah</div>
-                      <div className="text-sm text-cyan-200">Executive Director / CEO</div>
+                      <div className="font-bold">{boardMembers.director3.name}</div>
+                      <div className="text-sm text-cyan-200">{boardMembers.director3.title}</div>
                     </div>
                   </div>
                 </div>

@@ -15,8 +15,6 @@ const RegionalBranchManagersDetails = () => {
 
   // Function to get manager image from public folder
   const getManagerImage = (regionId, managerName) => {
-    // Map region IDs to actual image filenames in your public folder
-    // These match the EXACT filenames from your public folder
     const imageMap = {
       'greater-accra': 'Mr. Martin.jpg',
       'ashanti': 'Picture8.jpg',
@@ -32,11 +30,9 @@ const RegionalBranchManagersDetails = () => {
       'diaspora': 'DR. GABRIEL AMOAKO.png'
     };
     
-    // Get the actual image filename for this region
     const imageFilename = imageMap[regionId];
     const imageUrl = `/${imageFilename}`;
     
-    // Create a fallback avatar URL in case image is missing
     const colorMap = {
       'greater-accra': '10b981',
       'ashanti': '3b82f6',
@@ -64,7 +60,7 @@ const RegionalBranchManagersDetails = () => {
     setImageErrors(prev => ({ ...prev, [regionId]: true }));
     const { fallbackUrl } = getManagerImage(regionId, '');
     e.target.src = fallbackUrl;
-    e.target.className = e.target.className + ' bg-gray-200 p-2'; // Add padding for avatar
+    e.target.className = e.target.className + ' bg-gray-200 p-2';
   };
 
   const regionalManagers = [
@@ -303,7 +299,7 @@ const RegionalBranchManagersDetails = () => {
     {
       id: 'bono',
       region: 'Bono & Bono East',
-      manager: 'Mr. Mr. Justin Cudjoe',
+      manager: 'Mr. Justin Cudjoe',
       title: 'Regional Manager',
       subtitle: 'Operations & Community Engagement Leader',
       bio: 'Manages operations, staff training, and revenue targets; recognized for community engagement initiatives.',
@@ -440,7 +436,7 @@ const RegionalBranchManagersDetails = () => {
 
         {/* Regional Navigation */}
         <div className="mb-10">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {regionalManagers.map((region) => {
               const { imageUrl, fallbackUrl } = getManagerImage(region.id, region.manager);
               const hasError = imageErrors[region.id];
@@ -460,29 +456,27 @@ const RegionalBranchManagersDetails = () => {
                 >
                   <div className="p-3 md:p-4">
                     <div className="flex flex-col items-center text-center">
-                      {/* Region Image - FIXED CONTAINER */}
+                      {/* Region Image - UPDATED FOR FULL VISIBILITY */}
                       <div className={`
-                        w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden border-2 mb-2 md:mb-3 
+                        w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-3 
                         flex-shrink-0 flex items-center justify-center
-                        ${selectedRegion === region.id ? 'border-white' : 'border-gray-200'}
-                        ${hasError ? 'bg-gray-100 p-1' : ''}
+                        ${selectedRegion === region.id ? 'border-3 border-white' : 'border-3 border-gray-200'}
+                        ${hasError ? 'bg-gray-100' : 'bg-white'}
                       `}>
-                        <img
-                          src={hasError ? fallbackUrl : imageUrl}
-                          alt={region.manager}
-                          className={`
-                            w-full h-full transition-all duration-300
-                            ${hasError 
-                              ? 'object-contain p-1' 
-                              : 'object-cover'
-                            }
-                          `}
-                          style={{
-                            objectPosition: 'center top', // Show faces at the top
-                          }}
-                          loading="lazy"
-                          onError={(e) => handleImageError(region.id, e)}
-                        />
+                        <div className="relative w-full h-full flex items-center justify-center">
+                          <img
+                            src={hasError ? fallbackUrl : imageUrl}
+                            alt={region.manager}
+                            className="w-full h-full object-contain p-1"
+                            style={{
+                              objectFit: 'contain',
+                              maxWidth: '100%',
+                              maxHeight: '100%'
+                            }}
+                            loading="lazy"
+                            onError={(e) => handleImageError(region.id, e)}
+                          />
+                        </div>
                       </div>
                       
                       {/* Region Name */}
@@ -503,8 +497,8 @@ const RegionalBranchManagersDetails = () => {
                       
                       {/* Active Indicator */}
                       {selectedRegion === region.id && (
-                        <div className="mt-1 md:mt-2">
-                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full mx-auto animate-pulse"></div>
+                        <div className="mt-2">
+                          <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full mx-auto animate-pulse"></div>
                         </div>
                       )}
                     </div>
@@ -522,37 +516,40 @@ const RegionalBranchManagersDetails = () => {
         </div>
 
         {/* Main Regional Details */}
-        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
           {/* Left - Regional Overview */}
           <div className="lg:col-span-2">
-            {/* Regional Card - FIXED IMAGE CONTAINER */}
-            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8 animate-bobble`}>
+            {/* Regional Card - UPDATED FOR FULL IMAGE VISIBILITY */}
+            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-8 animate-bobble`}>
               <div className="p-6 md:p-8 text-white">
-                <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
-                  {/* Manager Image - FIXED: Now shows full face */}
+                <div className="flex flex-col lg:flex-row items-start gap-8">
+                  {/* Manager Image - UPDATED FOR FULL VISIBILITY */}
                   <div className="
-                    w-32 h-32 md:w-48 md:h-48 rounded-xl md:rounded-2xl overflow-hidden 
-                    border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 
-                    bg-gray-100 mx-auto md:mx-0
+                    w-full lg:w-56 h-auto lg:h-56 mx-auto lg:mx-0
+                    flex-shrink-0 relative overflow-hidden
+                    bg-white rounded-xl md:rounded-2xl
+                    border-4 border-white shadow-lg
                   ">
-                    <img
-                      src={getManagerImage(selectedRegionData.id, selectedRegionData.manager).imageUrl}
-                      alt={selectedRegionData.manager}
-                      className="w-full h-full object-cover"
-                      style={{
-                        objectPosition: 'center 30%', // This focuses on the face area
-                        objectFit: 'cover',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      loading="lazy"
-                      onError={(e) => handleImageError(selectedRegionData.id, e)}
-                    />
+                    <div className="relative w-full h-full flex items-center justify-center p-2">
+                      <img
+                        src={getManagerImage(selectedRegionData.id, selectedRegionData.manager).imageUrl}
+                        alt={selectedRegionData.manager}
+                        className="w-full h-full object-contain"
+                        style={{
+                          objectFit: 'contain',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          display: 'block'
+                        }}
+                        loading="lazy"
+                        onError={(e) => handleImageError(selectedRegionData.id, e)}
+                      />
+                    </div>
                   </div>
                   
                   {/* Manager Info */}
-                  <div className="flex-1 text-center md:text-left">
-                    <div className="mb-4 md:mb-6">
+                  <div className="flex-1 text-center lg:text-left">
+                    <div className="mb-6">
                       <h3 className="text-2xl md:text-3xl font-bold mb-2">{selectedRegionData.region}</h3>
                       <div className="text-lg md:text-xl mb-4 text-white/90">{selectedRegionData.manager}</div>
                       <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
@@ -562,12 +559,12 @@ const RegionalBranchManagersDetails = () => {
                     </div>
                     
                     {/* Bio */}
-                    <p className="text-base md:text-lg mb-4 md:mb-6 text-white/95 leading-relaxed">
+                    <p className="text-base md:text-lg mb-6 text-white/95 leading-relaxed">
                       {selectedRegionData.bio}
                     </p>
                     
                     {/* Regional Stats */}
-                    <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                    <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                       <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-2">
                         <Building className="w-4 h-4 md:w-5 md:h-5" />
                         <span className="text-sm md:text-base font-medium">{selectedRegionData.branchCount}</span>
@@ -588,11 +585,11 @@ const RegionalBranchManagersDetails = () => {
               {/* Focus Areas */}
               <div className="bg-white/10 backdrop-blur-sm border-t border-white/20">
                 <div className="p-4 md:p-6">
-                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                  <div className="flex items-center gap-2 mb-4">
                     <Target className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     <span className="font-bold text-white text-sm md:text-base">Focus Areas</span>
                   </div>
-                  <div className="flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start">
+                  <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                     {selectedRegionData.focusAreas.map((area, index) => (
                       <div key={index} className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:text-sm text-white">
                         {area}
@@ -604,40 +601,40 @@ const RegionalBranchManagersDetails = () => {
             </div>
 
             {/* Responsibilities & Achievements */}
-            <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               {/* Responsibilities */}
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+              <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
                 style={{ animationDelay: '0.2s' }}>
-                <div className="flex items-center gap-3 mb-4 md:mb-6">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center">
-                    <FileText className="w-5 h-5 md:w-6 md:h-6 text-emerald-600" />
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900">Key Responsibilities</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Key Responsibilities</h3>
                 </div>
-                <ul className="space-y-3 md:space-y-4">
+                <ul className="space-y-4">
                   {selectedRegionData.responsibilities.map((item, index) => (
-                    <li key={index} className="flex items-start gap-2 md:gap-3">
-                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm md:text-base text-gray-700">{item}</span>
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-base text-gray-700">{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               {/* Achievements */}
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+              <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
                 style={{ animationDelay: '0.4s' }}>
-                <div className="flex items-center gap-3 mb-4 md:mb-6">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 flex items-center justify-center">
-                    <Award className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 flex items-center justify-center">
+                    <Award className="w-6 h-6 text-amber-600" />
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900">Notable Achievements</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Notable Achievements</h3>
                 </div>
-                <ul className="space-y-3 md:space-y-4">
+                <ul className="space-y-4">
                   {selectedRegionData.achievements.map((item, index) => (
-                    <li key={index} className="flex items-start gap-2 md:gap-3">
-                      <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm md:text-base text-gray-700">{item}</span>
+                    <li key={index} className="flex items-start gap-3">
+                      <Star className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-base text-gray-700">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -646,70 +643,70 @@ const RegionalBranchManagersDetails = () => {
           </div>
 
           {/* Right - Regional Impact */}
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-8">
             {/* Regional Performance */}
-            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '0.6s' }}>
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Regional Performance</h3>
-              <div className="space-y-4 md:space-y-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Regional Performance</h3>
+              <div className="space-y-6">
                 {[
                   { metric: 'Growth Rate', value: '35%', icon: '📈', color: 'text-emerald-600' },
                   { metric: 'Customer Satisfaction', value: '96%', icon: '😊', color: 'text-blue-600' },
                   { metric: 'Operational Efficiency', value: '92%', icon: '⚡', color: 'text-amber-600' },
                   { metric: 'Team Performance', value: '94%', icon: '👥', color: 'text-purple-600' }
                 ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="text-xl md:text-2xl">{item.icon}</div>
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl">{item.icon}</div>
                       <div>
-                        <div className="font-medium text-sm md:text-base text-gray-900">{item.metric}</div>
+                        <div className="font-medium text-base text-gray-900">{item.metric}</div>
                       </div>
                     </div>
-                    <div className={`font-bold text-base md:text-lg ${item.color}`}>{item.value}</div>
+                    <div className={`font-bold text-lg ${item.color}`}>{item.value}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Contact & Network */}
-            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
+            <div className={`bg-gradient-to-r ${selectedRegionData.color} rounded-2xl p-6 md:p-8 text-white hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
               style={{ animationDelay: '0.8s' }}>
-              <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Regional Contact</h3>
-              <div className="space-y-3 md:space-y-4">
-                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
-                  <Mail className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-medium text-sm md:text-base">Email Regional Office</span>
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              <h3 className="text-lg font-bold mb-4">Regional Contact</h3>
+              <div className="space-y-4">
+                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
+                  <Mail className="w-5 h-5" />
+                  <span className="font-medium text-base">Email Regional Office</span>
+                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
-                  <Phone className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-medium text-sm md:text-base">Call Regional Desk</span>
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
+                  <Phone className="w-5 h-5" />
+                  <span className="font-medium text-base">Call Regional Desk</span>
+                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
-                <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
-                  <MapPin className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-medium text-sm md:text-base">Visit Regional HQ</span>
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <button className="w-full flex items-center gap-3 p-4 bg-white/10 backdrop-blur-sm rounded-xl hover:bg-white/20 transition-colors group">
+                  <MapPin className="w-5 h-5" />
+                  <span className="font-medium text-base">Visit Regional HQ</span>
+                  <ArrowRight className="w-5 h-5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               </div>
             </div>
 
             {/* Branch Network */}
-            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
+            <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300 animate-bobble"
               style={{ animationDelay: '1s' }}>
-              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Branch Network</h3>
-              <div className="space-y-2 md:space-y-3">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Branch Network</h3>
+              <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-sm text-gray-600">Total Branches</span>
-                  <span className="font-bold text-amber-600 text-sm md:text-base">50+ Nationwide</span>
+                  <span className="text-sm text-gray-600">Total Branches</span>
+                  <span className="font-bold text-amber-600 text-base">50+ Nationwide</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-sm text-gray-600">Regional Coverage</span>
-                  <span className="font-bold text-amber-600 text-sm md:text-base">100% Ghana</span>
+                  <span className="text-sm text-gray-600">Regional Coverage</span>
+                  <span className="font-bold text-amber-600 text-base">100% Ghana</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs md:text-sm text-gray-600">Staff Members</span>
-                  <span className="font-bold text-amber-600 text-sm md:text-base">500+ Professionals</span>
+                  <span className="text-sm text-gray-600">Staff Members</span>
+                  <span className="font-bold text-amber-600 text-base">500+ Professionals</span>
                 </div>
               </div>
             </div>
@@ -717,39 +714,39 @@ const RegionalBranchManagersDetails = () => {
         </div>
 
         {/* National Coverage */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl md:rounded-3xl p-6 md:p-8 mb-8 md:mb-12 shadow-lg md:shadow-xl border border-blue-100 animate-bobble">
-          <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 md:mb-6">
-            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
-              <Globe className="w-6 h-6 md:w-7 md:h-7 text-white" />
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 mb-12 shadow-xl border border-blue-100 animate-bobble">
+          <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+              <Globe className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 text-center sm:text-left">Nationwide Coverage</h3>
+            <h3 className="text-2xl font-bold text-gray-900 text-center sm:text-left">Nationwide Coverage</h3>
           </div>
-          <p className="text-gray-700 mb-4 md:mb-6 text-base md:text-lg text-center sm:text-left">
+          <p className="text-gray-700 mb-6 text-lg text-center sm:text-left">
             With regional managers strategically positioned across all 16 regions of Ghana and extending to the diaspora community, 
             Emerald Capital ensures comprehensive financial coverage and localized expertise throughout the nation.
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Urban Centers', value: '100%', icon: '🏙️' },
               { label: 'Rural Coverage', value: '85%', icon: '🌾' },
               { label: 'Digital Access', value: '95%', icon: '📱' },
               { label: 'Diaspora Reach', value: '50+', icon: '🌍' }
             ].map((item, index) => (
-              <div key={index} className="bg-white rounded-lg md:rounded-xl p-3 md:p-4 text-center border border-gray-200">
-                <div className="text-2xl md:text-3xl mb-1 md:mb-2">{item.icon}</div>
-                <div className="font-bold text-gray-900 text-lg md:text-xl">{item.value}</div>
-                <div className="text-xs md:text-sm text-gray-600">{item.label}</div>
+              <div key={index} className="bg-white rounded-xl p-4 text-center border border-gray-200">
+                <div className="text-3xl mb-2">{item.icon}</div>
+                <div className="font-bold text-gray-900 text-xl">{item.value}</div>
+                <div className="text-sm text-gray-600">{item.label}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Summary Statement */}
-        <div className="text-center max-w-4xl mx-auto mb-8 md:mb-12">
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">
+        <div className="text-center max-w-4xl mx-auto mb-12">
+          <h3 className="text-3xl font-bold text-gray-900 mb-6">
             Local Expertise, National Impact
           </h3>
-          <p className="text-base md:text-xl text-gray-700 leading-relaxed">
+          <p className="text-xl text-gray-700 leading-relaxed">
             Each regional manager at Emerald Capital is not just an administrator but a community leader, 
             financial educator, and development partner. Their deep understanding of local contexts combined 
             with our national standards ensures that every Ghanaian, from urban centers to rural villages, 
@@ -758,23 +755,23 @@ const RegionalBranchManagersDetails = () => {
         </div>
 
         {/* Contact Regional Network */}
-        <div className="bg-gradient-to-r from-amber-500 to-orange-400 rounded-xl md:rounded-3xl p-6 md:p-8 text-white shadow-xl md:shadow-2xl animate-bobble">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6">
+        <div className="bg-gradient-to-r from-amber-500 to-orange-400 rounded-3xl p-8 text-white shadow-2xl animate-bobble">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
-              <h3 className="text-xl md:text-2xl font-bold mb-2">Connect with Our Regional Network</h3>
-              <p className="text-amber-100 text-sm md:text-base">
+              <h3 className="text-2xl font-bold mb-2">Connect with Our Regional Network</h3>
+              <p className="text-amber-100 text-base">
                 Ready to experience localized financial excellence? Contact your regional manager today.
               </p>
             </div>
-            <button className="bg-white text-amber-600 font-bold px-6 py-3 md:px-8 md:py-4 rounded-lg md:rounded-xl hover:bg-amber-50 transition-colors transform hover:scale-105 shadow-lg">
+            <button className="bg-white text-amber-600 font-bold px-8 py-4 rounded-xl hover:bg-amber-50 transition-colors transform hover:scale-105 shadow-lg">
               Contact Regional Office
-              <ArrowRight className="inline-block ml-2 w-4 h-4 md:w-5 md:h-5" />
+              <ArrowRight className="inline-block ml-2 w-5 h-5" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Add custom animation styles */}
+      {/* Custom CSS for image handling */}
       <style jsx>{`
         @keyframes bobble {
           0%, 100% { transform: translateY(0); }
@@ -783,18 +780,50 @@ const RegionalBranchManagersDetails = () => {
         .animate-bobble {
           animation: bobble 3s ease-in-out infinite;
         }
-        
-        /* Ensure all images fit perfectly */
-        img {
-          max-width: 100%;
-          height: auto;
-          display: block;
+
+        /* Ensure all images show full faces */
+        .image-full-display {
+          object-fit: contain !important;
+          width: 100% !important;
+          height: 100% !important;
+          max-width: 100% !important;
+          max-height: 100% !important;
+          display: block !important;
         }
-        
-        /* Fix for avatar fallback */
-        .avatar-fallback {
-          padding: 8px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Prevent cropping */
+        .no-crop {
+          overflow: visible !important;
+        }
+
+        /* Image container */
+        .image-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: white;
+          position: relative;
+        }
+
+        /* Navigation thumbnails */
+        .nav-thumbnail {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+        }
+
+        /* Main image */
+        .main-image-wrapper {
+          position: relative;
+          width: 100%;
+          height: auto;
+          min-height: 300px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
     </div>

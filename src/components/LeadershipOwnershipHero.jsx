@@ -1,8 +1,55 @@
 // src/components/LeadershipOwnershipHero.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Users, Award, Crown, Building2, TrendingUp, Star, Shield, Target } from 'lucide-react';
 
 const LeadershipOwnershipHero = () => {
+  const [imageErrors, setImageErrors] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
+
+  // Function to get leader image with fallback
+  const getLeaderImage = (imageFile, leaderName) => {
+    const possiblePaths = [
+      `/${imageFile}`,
+      `/images/${imageFile}`,
+      `/team/${imageFile}`,
+      `/leadership/${imageFile}`,
+      `./${imageFile}`,
+      imageFile
+    ];
+    
+    // Create fallback avatar
+    const nameParts = leaderName.split(' ');
+    const initials = nameParts.map(part => part[0]).join('');
+    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(leaderName)}&background=10b981&color=fff&size=400&bold=true&format=svg`;
+    
+    return { imagePaths: possiblePaths, fallbackUrl };
+  };
+
+  // Handle image error with multiple fallback attempts
+  const handleImageError = (imageId, e, leaderName, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${leaderName}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(imageId, err, leaderName, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${leaderName}, using fallback`);
+      const { fallbackUrl } = getLeaderImage('', leaderName);
+      e.target.src = fallbackUrl;
+      setImageErrors(prev => ({ ...prev, [imageId]: true }));
+    }
+  };
+
+  // Handle image load
+  const handleImageLoad = (imageId) => {
+    setImageLoaded(prev => ({ ...prev, [imageId]: true }));
+  };
+
+  const founderImage = getLeaderImage('Picture1.jpg', 'Dr. Asamoah Koranteng Evans');
+  const shareholderImage = getLeaderImage('Picture2.png', 'Mrs. Abena Konadu Asamoah-Koranteng');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-slate-900 flex items-center px-8 md:px-16 lg:px-24 relative overflow-hidden">
       {/* Background Pattern */}
@@ -70,12 +117,19 @@ const LeadershipOwnershipHero = () => {
                 {/* Main Profile - Founder */}
                 <div className="absolute -left-8 -top-8 z-20">
                   <div className="bg-gradient-to-br from-emerald-600 to-teal-500 rounded-2xl p-6 shadow-2xl transform -rotate-6 hover:rotate-0 transition-transform duration-300">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
                       <img
-                        src="/Picture1.jpg"
+                        src={founderImage.imagePaths[0]}
                         alt="Founder Profile"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain p-1"
+                        loading="lazy"
+                        onError={(e) => handleImageError('founder', e, 'Dr. Asamoah Koranteng Evans', founderImage.imagePaths)}
+                        onLoad={() => handleImageLoad('founder')}
                       />
+                      {/* Loading overlay */}
+                      {!imageLoaded['founder'] && !imageErrors['founder'] && (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                      )}
                     </div>
                     <div className="text-white">
                       <div className="font-bold text-lg">Dr. Asamoah Koranteng Evans</div>
@@ -87,12 +141,19 @@ const LeadershipOwnershipHero = () => {
                 {/* Executive Shareholder */}
                 <div className="absolute -right-8 top-1/3 z-10">
                   <div className="bg-gradient-to-br from-teal-600 to-emerald-500 rounded-2xl p-6 shadow-2xl transform rotate-6 hover:rotate-0 transition-transform duration-300">
-                    <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
+                    <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
                       <img
-                        src="/Picture2.png"
+                        src={shareholderImage.imagePaths[0]}
                         alt="Executive Shareholder"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain p-1"
+                        loading="lazy"
+                        onError={(e) => handleImageError('shareholder', e, 'Mrs. Abena Konadu Asamoah-Koranteng', shareholderImage.imagePaths)}
+                        onLoad={() => handleImageLoad('shareholder')}
                       />
+                      {/* Loading overlay */}
+                      {!imageLoaded['shareholder'] && !imageErrors['shareholder'] && (
+                        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                      )}
                     </div>
                     <div className="text-white">
                       <div className="font-bold">Mrs. Abena Konadu Asamoah-Koranteng</div>

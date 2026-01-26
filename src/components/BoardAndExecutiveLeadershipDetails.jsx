@@ -1,4 +1,3 @@
-// src/components/BoardAndExecutiveLeadershipDetails.jsx
 import React, { useState } from 'react';
 import { 
   Users, Award, Target, Shield, TrendingUp, Briefcase, 
@@ -10,12 +9,13 @@ import {
 
 const BoardAndExecutiveLeadershipDetails = () => {
   const [selectedRole, setSelectedRole] = useState('board');
+  const [imageErrors, setImageErrors] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
 
   // Function to get leader image from public folder
   const getLeaderImage = (roleId, roleName) => {
-    // Map role IDs to actual image filenames in your public folder
     const imageMap = {
-      'board': 'DR. ASAMOAH KORANTENG EVANS.jpg', // Board Chairperson
+      'board': 'DR. ASAMOAH KORANTENG EVANS.jpg',
       'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
       'coo': 'MR. SOLOMON AMANKWAH.jpg',
       'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
@@ -23,42 +23,77 @@ const BoardAndExecutiveLeadershipDetails = () => {
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
       'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
-      'cio': 'MISS. ANNA FRIMPONG.jpg',
+      'cio': 'Audrey Owusu-Ansah.jpg',
       'cino': 'MR. CHRISTIAN YAW BOATENG.jpg',
       'chro': 'MISS. ANNA FRIMPONG.jpg'
     };
     
-    // Get the actual image filename for this role
     const imageFilename = imageMap[roleId];
-    const imageUrl = `/${imageFilename}`;
     
-    // Create a fallback avatar URL in case image is missing
+    // Try multiple possible paths and formats
+    const possiblePaths = [
+      `/${imageFilename}`,
+      `/images/${imageFilename}`,
+      `/team/${imageFilename}`,
+      `/executives/${imageFilename}`,
+      `/leadership/${imageFilename}`,
+      `./${imageFilename}`,
+      imageFilename,
+      // Try different filename formats
+      imageFilename.toLowerCase(),
+      imageFilename.replace(/\s+/g, '_'),
+      imageFilename.replace(/\s+/g, '-'),
+      imageFilename.replace('DR. ', ''),
+      imageFilename.replace('MRS. ', ''),
+      imageFilename.replace('MR. ', ''),
+      imageFilename.replace('MISS. ', ''),
+      imageFilename.replace('.jpg', '.jpeg'),
+      imageFilename.replace('.jpg', '.png'),
+      imageFilename.replace('.jpg', '.JPG')
+    ];
+    
+    // Create a fallback avatar URL
     const colorMap = {
-      'board': '3b82f6',     // blue
-      'ceo': 'f59e0b',      // amber
-      'coo': '10b981',      // emerald
-      'cfo': '8b5cf6',      // purple
-      'cro': 'ef4444',      // red
-      'cto': '6366f1',      // indigo
-      'cmo': 'ec4899',      // pink
-      'cco': '6b7280',      // gray
-      'cio': '14b8a6',      // teal
-      'cino': '3b82f6',     // blue
-      'chro': 'f59e0b'      // amber
+      'board': '3b82f6',
+      'ceo': 'f59e0b',
+      'coo': '10b981',
+      'cfo': '8b5cf6',
+      'cro': 'ef4444',
+      'cto': '6366f1',
+      'cmo': 'ec4899',
+      'cco': '6b7280',
+      'cio': '14b8a6',
+      'cino': '3b82f6',
+      'chro': 'f59e0b'
     };
     
     const bgColor = colorMap[roleId] || '3b82f6';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(roleName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
     
-    return { imageUrl, fallbackUrl };
+    return { imagePaths: possiblePaths, fallbackUrl };
   };
 
-  // Handle image error
-  const handleImageError = (roleId, e, roleName) => {
-    console.warn(`Image failed to load for role ${roleId}:`, e.target.src);
-    const { fallbackUrl } = getLeaderImage(roleId, roleName);
-    e.target.src = fallbackUrl;
-    e.target.className = e.target.className + ' bg-gray-200 p-2 object-contain';
+  // Handle image error with multiple fallback attempts
+  const handleImageError = (roleId, e, roleName, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${roleName}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(roleId, err, roleName, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${roleName}, using fallback`);
+      const { fallbackUrl } = getLeaderImage(roleId, roleName);
+      e.target.src = fallbackUrl;
+      e.target.className = e.target.className.replace('object-cover', 'object-contain') + ' bg-gray-100 p-2';
+      setImageErrors(prev => ({ ...prev, [roleId]: true }));
+    }
+  };
+
+  // Handle image load
+  const handleImageLoad = (roleId) => {
+    setImageLoaded(prev => ({ ...prev, [roleId]: true }));
   };
 
   const leadershipRoles = [
@@ -296,7 +331,7 @@ const BoardAndExecutiveLeadershipDetails = () => {
   ];
 
   const selectedRoleData = leadershipRoles.find(role => role.id === selectedRole);
-  const { imageUrl, fallbackUrl } = getLeaderImage(selectedRole, selectedRoleData.leaderName);
+  const { imagePaths, fallbackUrl } = getLeaderImage(selectedRole, selectedRoleData.leaderName);
 
   return (
     <div className="bg-gradient-to-b from-white to-slate-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
@@ -316,7 +351,8 @@ const BoardAndExecutiveLeadershipDetails = () => {
         <div className="mb-10">
           <div className="flex overflow-x-auto pb-4 gap-2 md:gap-3 scrollbar-hide">
             {leadershipRoles.map((role) => {
-              const { imageUrl: navImageUrl } = getLeaderImage(role.id, role.leaderName);
+              const { imagePaths: navImagePaths, fallbackUrl: navFallback } = getLeaderImage(role.id, role.leaderName);
+              const hasError = imageErrors[role.id];
               
               return (
                 <button
@@ -330,19 +366,24 @@ const BoardAndExecutiveLeadershipDetails = () => {
                     }
                   `}
                 >
-                  {/* Leader Image Thumbnail */}
+                  {/* Leader Image Thumbnail - FIXED: Full image visible */}
                   <div className={`
-                    w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2
+                    w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 flex items-center justify-center
                     ${selectedRole === role.id ? 'border-white' : 'border-gray-200'}
+                    ${hasError ? 'bg-gray-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'}
                   `}>
                     <img
-                      src={navImageUrl}
+                      src={hasError ? navFallback : navImagePaths[0]}
                       alt={role.leaderName}
-                      className="w-full h-full object-cover"
-                      style={{ objectPosition: 'center top' }}
+                      className="w-full h-full object-contain p-0.5"
                       loading="lazy"
-                      onError={(e) => handleImageError(role.id, e, role.leaderName)}
+                      onError={(e) => handleImageError(role.id, e, role.leaderName, navImagePaths)}
+                      onLoad={() => handleImageLoad(role.id)}
                     />
+                    {/* Loading overlay */}
+                    {!imageLoaded[role.id] && !hasError && (
+                      <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                    )}
                   </div>
                   
                   <div className="text-center">
@@ -363,20 +404,24 @@ const BoardAndExecutiveLeadershipDetails = () => {
           <div className="lg:col-span-2">
             <div className={`bg-gradient-to-r ${selectedRoleData.color} rounded-2xl md:rounded-3xl p-6 md:p-8 text-white shadow-lg md:shadow-2xl mb-6 md:mb-8`}>
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 mb-6 md:mb-8">
-                {/* Leader Image */}
+                {/* Leader Image - FIXED: Full image visible */}
                 <div className="
-                  w-20 h-20 md:w-32 md:h-32 rounded-xl md:rounded-2xl overflow-hidden 
+                  w-32 h-32 md:w-40 md:h-40 rounded-xl md:rounded-2xl overflow-hidden 
                   border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 mx-auto md:mx-0
-                  bg-gray-100
+                  flex items-center justify-center bg-gradient-to-br from-white to-gray-50
                 ">
                   <img
-                    src={imageUrl}
+                    src={imageErrors[selectedRole] ? fallbackUrl : imagePaths[0]}
                     alt={selectedRoleData.leaderName}
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: 'center 30%' }}
+                    className="w-full h-full object-contain p-1"
                     loading="lazy"
-                    onError={(e) => handleImageError(selectedRole, e, selectedRoleData.leaderName)}
+                    onError={(e) => handleImageError(selectedRole, e, selectedRoleData.leaderName, imagePaths)}
+                    onLoad={() => handleImageLoad(selectedRole)}
                   />
+                  {/* Loading overlay */}
+                  {!imageLoaded[selectedRole] && !imageErrors[selectedRole] && (
+                    <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl md:rounded-2xl"></div>
+                  )}
                 </div>
                 
                 <div className="text-center md:text-left flex-1">

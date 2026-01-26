@@ -1,4 +1,3 @@
-// src/components/BoardOfDirectorsDetails.jsx
 import React, { useState } from 'react';
 import { 
   Users, Award, Crown, Shield, Target, TrendingUp, Star, Gavel,
@@ -12,10 +11,10 @@ import {
 const BoardOfDirectorsDetails = () => {
   const [selectedDirector, setSelectedDirector] = useState('chairperson');
   const [imageErrors, setImageErrors] = useState({});
+  const [imageLoaded, setImageLoaded] = useState({});
 
   // Function to get director image from public folder
   const getDirectorImage = (directorId, directorName) => {
-    // Map director IDs to actual image filenames in your public folder
     const imageMap = {
       'chairperson': 'DR. ASAMOAH KORANTENG EVANS.jpg',
       'nonexecutive1': 'DR. MRS.  OPHELIA OSEI ULZEN.jpg',
@@ -23,31 +22,66 @@ const BoardOfDirectorsDetails = () => {
       'executive': 'MRS. GERTRUDE ASAMOAH.jpg'
     };
     
-    // Get the actual image filename for this director
     const imageFilename = imageMap[directorId];
-    const imageUrl = `/${imageFilename}`;
     
-    // Create a fallback avatar URL in case image is missing
+    // Try multiple possible paths and formats
+    const possiblePaths = [
+      `/${imageFilename}`,
+      `/images/${imageFilename}`,
+      `/team/${imageFilename}`,
+      `/board/${imageFilename}`,
+      `/directors/${imageFilename}`,
+      `./${imageFilename}`,
+      imageFilename,
+      // Try different filename formats
+      imageFilename.toLowerCase(),
+      imageFilename.replace(/\s+/g, '_'),
+      imageFilename.replace(/\s+/g, '-'),
+      imageFilename.replace('DR. ', ''),
+      imageFilename.replace('MRS. ', ''),
+      imageFilename.replace('DR. MRS. ', ''),
+      imageFilename.replace('REV. ', ''),
+      imageFilename.replace('.jpg', '.jpeg'),
+      imageFilename.replace('.jpg', '.png'),
+      imageFilename.replace('.png', '.jpg'),
+      imageFilename.replace('.png', '.jpeg')
+    ];
+    
+    // Create a fallback avatar URL
     const colorMap = {
-      'chairperson': '3b82f6', // blue
-      'nonexecutive1': '8b5cf6', // purple
-      'nonexecutive2': '6366f1', // indigo
-      'executive': '06b6d4'    // cyan
+      'chairperson': '3b82f6',
+      'nonexecutive1': '8b5cf6',
+      'nonexecutive2': '6366f1',
+      'executive': '06b6d4'
     };
     
     const bgColor = colorMap[directorId] || '3b82f6';
     const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(directorName)}&background=${bgColor}&color=fff&size=400&bold=true&format=svg`;
     
-    return { imageUrl, fallbackUrl };
+    return { imagePaths: possiblePaths, fallbackUrl };
   };
 
-  // Handle image error
-  const handleImageError = (directorId, e) => {
-    console.warn(`Image failed to load for director ${directorId}:`, e.target.src);
-    setImageErrors(prev => ({ ...prev, [directorId]: true }));
-    const { fallbackUrl } = getDirectorImage(directorId, '');
-    e.target.src = fallbackUrl;
-    e.target.className = e.target.className + ' bg-gray-200 p-2';
+  // Handle image error with multiple fallback attempts
+  const handleImageError = (directorId, e, directorName, paths, currentIndex = 0) => {
+    console.warn(`Image ${paths[currentIndex]} failed to load for ${directorName}`);
+    
+    // Try next path in the array
+    if (currentIndex < paths.length - 1) {
+      e.target.src = paths[currentIndex + 1];
+      e.target.onerror = (err) => handleImageError(directorId, err, directorName, paths, currentIndex + 1);
+    } else {
+      // All paths failed, use fallback
+      console.log(`All image paths failed for ${directorName}, using fallback`);
+      const { fallbackUrl } = getDirectorImage(directorId, directorName);
+      e.target.src = fallbackUrl;
+      e.target.className = e.target.className.replace('object-cover', 'object-contain') + ' bg-gray-100 p-2';
+      setImageErrors(prev => ({ ...prev, [directorId]: true }));
+    }
+  };
+
+  // Handle image load
+  const handleImageLoad = (directorId) => {
+    setImageLoaded(prev => ({ ...prev, [directorId]: true }));
   };
 
   const boardMembers = [
@@ -166,51 +200,16 @@ const BoardOfDirectorsDetails = () => {
   ];
 
   const selectedDirectorData = boardMembers.find(director => director.id === selectedDirector);
-
-  // Render director image with proper handling
-  const renderDirectorImage = (director, size = 'normal') => {
-    const { imageUrl, fallbackUrl } = getDirectorImage(director.id, director.name);
-    const hasError = imageErrors[director.id];
-    
-    const sizeClasses = size === 'large' 
-      ? 'w-32 h-32 md:w-48 md:h-48' 
-      : 'w-16 h-16 md:w-20 md:h-20';
-    
-    const borderClass = selectedDirector === director.id ? 'border-white' : 'border-gray-100';
-    
-    return (
-      <div className={`
-        ${sizeClasses} ${size === 'large' ? 'rounded-xl md:rounded-2xl' : 'rounded-full'} 
-        overflow-hidden border-4 ${borderClass} flex-shrink-0 bg-gray-100
-      `}>
-        <img
-          src={hasError ? fallbackUrl : imageUrl}
-          alt={director.name}
-          className={`
-            w-full h-full transition-all duration-300
-            ${hasError 
-              ? 'object-contain p-1' 
-              : 'object-cover'
-            }
-          `}
-          style={{
-            objectPosition: size === 'large' ? 'center 30%' : 'center top',
-          }}
-          loading="lazy"
-          onError={(e) => handleImageError(director.id, e)}
-        />
-      </div>
-    );
-  };
+  const { imagePaths, fallbackUrl } = getDirectorImage(selectedDirector, selectedDirectorData.name);
 
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 min-h-screen py-20 px-4 md:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full px-6 py-3 mb-6 animate-bobble">
-            <Crown className="w-5 h-5 text-white" />
-            <span className="font-bold text-white">DISTINGUISHED BOARD OF DIRECTORS</span>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full px-4 py-2 md:px-6 md:py-3 mb-6">
+            <Crown className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <span className="font-bold text-white text-sm md:text-base">DISTINGUISHED BOARD OF DIRECTORS</span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Governance & Strategic Leadership
@@ -225,6 +224,7 @@ const BoardOfDirectorsDetails = () => {
         <div className="mb-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {boardMembers.map((director) => {
+              const { imagePaths: paths } = getDirectorImage(director.id, director.name);
               const hasError = imageErrors[director.id];
               
               return (
@@ -242,8 +242,25 @@ const BoardOfDirectorsDetails = () => {
                 >
                   <div className="p-4 md:p-6">
                     <div className="flex items-center gap-3 md:gap-4">
-                      {/* Director Image */}
-                      {renderDirectorImage(director)}
+                      {/* Director Image - Full image visible, no cropping */}
+                      <div className={`
+                        relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 flex-shrink-0 
+                        ${selectedDirector === director.id ? 'border-white' : 'border-gray-200'}
+                        ${hasError ? 'bg-gray-100' : 'bg-gradient-to-br from-gray-50 to-gray-100'}
+                      `}>
+                        <img
+                          src={hasError ? fallbackUrl : paths[0]}
+                          alt={director.name}
+                          className="w-full h-full object-contain p-0.5"
+                          loading="lazy"
+                          onError={(e) => handleImageError(director.id, e, director.name, paths)}
+                          onLoad={() => handleImageLoad(director.id)}
+                        />
+                        {/* Loading overlay */}
+                        {!imageLoaded[director.id] && !hasError && (
+                          <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-full"></div>
+                        )}
+                      </div>
                       
                       <div className="text-left flex-1 min-w-0">
                         <div className={`
@@ -284,11 +301,29 @@ const BoardOfDirectorsDetails = () => {
           {/* Left - Director Overview */}
           <div className="lg:col-span-2">
             {/* Director Card */}
-            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8 animate-bobble`}>
+            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-2xl md:rounded-3xl overflow-hidden shadow-xl md:shadow-2xl mb-6 md:mb-8`}>
               <div className="p-6 md:p-8 text-white">
                 <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
-                  {/* Director Image */}
-                  {renderDirectorImage(selectedDirectorData, 'large')}
+                  {/* Director Image - Full image visible, no cropping */}
+                  <div className="
+                    relative w-48 h-64 md:w-56 md:h-72 rounded-xl md:rounded-2xl overflow-hidden 
+                    border-4 border-white shadow-lg md:shadow-xl flex-shrink-0 mx-auto md:mx-0
+                    bg-gradient-to-br from-white to-gray-50
+                  ">
+                    <img
+                      src={imagePaths[0]}
+                      alt={selectedDirectorData.name}
+                      className="w-full h-full object-contain p-1"
+                      loading="lazy"
+                      onError={(e) => handleImageError(selectedDirector, e, selectedDirectorData.name, imagePaths)}
+                      onLoad={() => handleImageLoad(selectedDirector)}
+                    />
+                    
+                    {/* Loading overlay */}
+                    {!imageLoaded[selectedDirector] && !imageErrors[selectedDirector] && (
+                      <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl md:rounded-2xl"></div>
+                    )}
+                  </div>
                   
                   {/* Director Info */}
                   <div className="flex-1 text-center md:text-left">
@@ -336,8 +371,7 @@ const BoardOfDirectorsDetails = () => {
             {/* Responsibilities & Achievements */}
             <div className="grid md:grid-cols-2 gap-6 md:gap-8">
               {/* Key Responsibilities */}
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble" 
-                style={{ animationDelay: '0.2s' }}>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300">
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
                   <Target className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                   Board Responsibilities
@@ -353,8 +387,7 @@ const BoardOfDirectorsDetails = () => {
               </div>
 
               {/* Major Achievements */}
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-                style={{ animationDelay: '0.4s' }}>
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300">
                 <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
                   <Star className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
                   Key Achievements
@@ -374,8 +407,7 @@ const BoardOfDirectorsDetails = () => {
           {/* Right - Expertise & Contact */}
           <div className="space-y-6 md:space-y-8">
             {/* Expertise & Education */}
-            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-              style={{ animationDelay: '0.6s' }}>
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-6 md:p-8 border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300">
               <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6">Expertise & Education</h3>
               <div className="space-y-4 md:space-y-6">
                 {/* Education */}
@@ -418,8 +450,7 @@ const BoardOfDirectorsDetails = () => {
             </div>
 
             {/* Contact & Network */}
-            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble`}
-              style={{ animationDelay: '0.8s' }}>
+            <div className={`bg-gradient-to-r ${selectedDirectorData.color} rounded-xl md:rounded-2xl p-6 md:p-8 text-white hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300`}>
               <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4">Contact & Network</h3>
               <div className="space-y-3 md:space-y-4">
                 <button className="w-full flex items-center gap-2 md:gap-3 p-3 md:p-4 bg-white/10 backdrop-blur-sm rounded-lg md:rounded-xl hover:bg-white/20 transition-colors group">
@@ -441,8 +472,7 @@ const BoardOfDirectorsDetails = () => {
             </div>
 
             {/* Board Impact */}
-            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300 animate-bobble"
-              style={{ animationDelay: '1s' }}>
+            <div className="bg-white rounded-xl md:rounded-2xl p-5 md:p-6 shadow-lg border border-gray-200 hover:shadow-xl md:hover:shadow-2xl transition-shadow duration-300">
               <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">Board Impact</h3>
               <div className="space-y-2 md:space-y-3">
                 <div className="flex justify-between items-center">
@@ -494,7 +524,7 @@ const BoardOfDirectorsDetails = () => {
                 icon: '🎯'
               }
             ].map((item, index) => (
-              <div key={index} className="text-center animate-bobble" style={{ animationDelay: `${index * 0.2}s` }}>
+              <div key={index} className="text-center">
                 <div className="text-3xl md:text-4xl mb-3 md:mb-4">{item.icon}</div>
                 <div className="text-2xl md:text-3xl font-bold text-blue-600 mb-1 md:mb-2">{item.value}</div>
                 <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">{item.category}</h4>
@@ -561,8 +591,7 @@ const BoardOfDirectorsDetails = () => {
                   icon: '⚡'
                 }
               ].map((item, index) => (
-                <div key={index} className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-md hover:shadow-lg transition-shadow animate-bobble"
-                  style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={index} className="bg-white rounded-lg md:rounded-xl p-4 md:p-6 shadow-md hover:shadow-lg transition-shadow">
                   <div className="text-xl md:text-2xl mb-2 md:mb-3">{item.icon}</div>
                   <div className="font-bold text-gray-900 text-sm md:text-base mb-1 md:mb-2">{item.committee}</div>
                   <div className="text-xs md:text-sm text-gray-600 mb-2 md:mb-3">{item.role}</div>
@@ -575,7 +604,7 @@ const BoardOfDirectorsDetails = () => {
 
         {/* Contact Board */}
         <div className="mt-12 md:mt-20 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl md:rounded-3xl px-6 md:px-8 py-6 md:py-8 shadow-xl animate-bobble">
+          <div className="inline-flex flex-col md:flex-row items-center gap-6 md:gap-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl md:rounded-3xl px-6 md:px-8 py-6 md:py-8 shadow-xl">
             <div className="text-center md:text-left text-white">
               <div className="flex items-center gap-2 md:gap-3 mb-2 justify-center md:justify-start">
                 <Crown className="w-5 h-5 md:w-6 md:h-6" />
@@ -603,19 +632,6 @@ const BoardOfDirectorsDetails = () => {
           </div>
         </div>
       </div>
-
-      {/* Custom animation styles */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes bobble {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-          }
-          .animate-bobble {
-            animation: bobble 3s ease-in-out infinite;
-          }
-        `
-      }} />
     </div>
   );
 };
