@@ -357,7 +357,7 @@ const FinancialProductsSite = () => {
             <div className="md:w-1/2 relative">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-xl">
                 <img
-                  src="lady.png"  // ✅ put sme.png in /public folder, or import from /src/assets
+                  src="New SME Loan.png"  // ✅ put sme.png in /public folder, or import from /src/assets
                   alt="SME Loan Illustration"
                   className="w-full h-full object-cover"
                 />
