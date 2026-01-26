@@ -93,8 +93,13 @@ const LeadershipOwnershipDetails = () => {
       experience:
         "Collective 100+ years in global investment and business development",
       icon: <Building2 className="w-8 h-8" />,
+<<<<<<< HEAD
       color: "from-slate-700 to-slate-800",
       profileImage: null,
+=======
+      color: 'from-slate-700 to-slate-800',
+      profileImage:'/loggg.jpeg',
+>>>>>>> 3f1453b99c03230c5223f89d2743d35a9e9f4208
       responsibilities: [
         "Provide strategic capital",
         "Support regional expansion",

@@ -368,9 +368,9 @@ const NewsletterWidget = () => {
 
 const SocialWidget = () => {
   const socialLinks = [
-    { icon: Twitter, url: '#', label: 'Twitter', color: 'hover:bg-blue-500', bg: 'bg-blue-500/10', text: 'text-blue-600' },
+    { icon: Twitter, url: 'https://x.com/CapitalEme21146', label: 'Twitter', color: 'hover:bg-blue-500', bg: 'bg-blue-500/10', text: 'text-blue-600' },
     { icon: Facebook, url: '#', label: 'Facebook', color: 'hover:bg-blue-600', bg: 'bg-blue-600/10', text: 'text-blue-700' },
-    { icon: Instagram, url: '#', label: 'Instagram', color: 'hover:bg-pink-500', bg: 'bg-pink-500/10', text: 'text-pink-600' },
+    { icon: Instagram, url: 'https://www.instagram.com/emeraldcapitalgh/', label: 'Instagram', color: 'hover:bg-pink-500', bg: 'bg-pink-500/10', text: 'text-pink-600' },
     { icon: Linkedin, url: '#', label: 'LinkedIn', color: 'hover:bg-blue-700', bg: 'bg-blue-700/10', text: 'text-blue-800' }
   ];
 

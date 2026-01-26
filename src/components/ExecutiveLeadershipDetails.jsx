@@ -18,12 +18,12 @@ const ExecutiveLeadershipDetails = () => {
     const imageMap = {
       'ceo': 'MRS. GERTRUDE ASAMOAH.jpg',
       'coo': 'MR. SOLOMON AMANKWAH.jpg',
-      'cfo': 'MR. ALBERT KWAME ACHIIFU.jpg',
+      'cfo': 'MR. EMMANUEL OSEI MENSAH.jpg',
       'cro': 'MR. ALBERT KWAME ACHIIFU.jpg',
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
       'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
-      'cio': 'MISS. ANNA FRIMPONG.jpg',
+      'cio': 'Audery.jpeg',
       'chro': 'MISS. ANNA FRIMPONG.jpg',
       'cino': 'MR. CHRISTIAN YAW BOATENG.jpg'
     };
@@ -262,7 +262,7 @@ const ExecutiveLeadershipDetails = () => {
     },
     {
       id: 'cio',
-      name: 'Miss Anna Frimpong',
+      name: 'Miss Audrey Owusu-Ansah',
       title: 'Chief Investment Officer',
       subtitle: 'Investment Strategy & Portfolio Leader',
       role: 'Manages investments, asset allocation, and portfolio performance with sustainable strategies.',
