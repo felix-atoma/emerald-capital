@@ -86,7 +86,7 @@ const SavingsProductsHero = () => {
             <div className="relative">
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-8 border-yellow-300 shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1620075267033-09d12ec75b40?w=800&h=800&fit=crop"
+                  src="/wfw.jpg"
                   alt="Person organizing savings and financial planning"
                   className="w-full h-full object-cover"
                 />
