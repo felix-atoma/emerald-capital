@@ -85,7 +85,7 @@ const Navbar = () => {
       dropdown: [
         { label: "Emerald Business", link: true },
         { label: "Insurance Products", link: true },
-        { label: "Hire Purchase", link: true },
+        { label: "Buy Now Pay Later", link: true },
         { label: "Emerald Pay", link: true },
       ],
     },

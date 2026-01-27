@@ -115,7 +115,7 @@ const BoardOfDirectorsDetails = () => {
     },
     {
       id: 'nonexecutive1',
-      name: 'Dr. Mrs. Ophilia Osei Ulzen',
+      name: 'Dr. Mrs. Ophelia Osei Ulzen',
       title: 'Non-Executive Director',
       subtitle: 'Governance & Compliance Expert',
       role: 'Advises on governance, strategic investments, and regulatory compliance; mentor for women in finance.',

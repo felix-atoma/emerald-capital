@@ -498,7 +498,7 @@ const Footer = () => {
                     <div>
                       <p className="text-xs text-gray-400">Executive Line</p>
                       <p className="text-base font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                        0531929712 
+                        0208070000 
                       </p>
                     </div>
                   </motion.a>
