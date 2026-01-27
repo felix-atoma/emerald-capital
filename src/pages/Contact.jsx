@@ -675,7 +675,7 @@ const Contact = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-24"
         >
-          <div className="text-center mb-16">
+          {/* <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
               <MapPin className="w-4 h-4 text-emerald-600" />
               <span className="text-emerald-700 font-semibold text-sm">REGIONAL OFFICES</span>
@@ -686,50 +686,50 @@ const Contact = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Access our services across Ghana through our regional offices
             </p>
-          </div>
+          </div> */}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <OfficeCard
+            {/* <OfficeCard
               region="Greater Accra"
               manager="Mr. Martin Jones-Arthur"
               phone="+233 20 807 0000"
               email="accra@emeraldcapitalgh.com"
-            />
+            /> */}
 
-            <OfficeCard
+            {/* <OfficeCard
               region="Ashanti Region"
               manager="Mr. Christian Yaw Boateng"
               phone="+233 24 459 5808"
               email="ashanti@emeraldcapitalgh.com"
-            />
+            /> */}
 
-            <OfficeCard
+            {/* <OfficeCard
               region="Eastern Region"
               manager="Mr. Emmanuel Osei Mensah"
               phone="+233 53 742 0472"
               email="eastern@emeraldcapitalgh.com"
-            />
+            /> */}
 
-            <OfficeCard
+            {/* <OfficeCard
               region="Western Region"
               manager="Miss. Mercy Ahianor"
               phone="+233 20 820 3653"
               email="western@emeraldcapitalgh.com"
-            />
+            /> */}
 
-            <OfficeCard
+            {/* <OfficeCard
               region="Central Region"
               manager="Miss. Amazing N. Ekua Abbey"
               phone="+233 20 987 7171"
               email="central@emeraldcapitalgh.com"
-            />
+            /> */}
 
-            <OfficeCard
+            {/* <OfficeCard
               region="Northern Region"
               manager="Mrs. Salma Adams"
               phone="+233 24 077 6444"
               email="northern@emeraldcapitalgh.com"
-            />
+            /> */}
           </div>
         </motion.section>
 
