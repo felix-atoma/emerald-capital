@@ -1,5 +1,6 @@
 import React from 'react';
 import { Leaf, Zap, Globe, Recycle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const GreenSustainableLoanHero = () => {
   return (
@@ -65,9 +66,11 @@ const GreenSustainableLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-yellow-400 text-emerald-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Green Loan
-          </button>
+          <Link to="/applyforloanpage">
+            <button className="bg-yellow-400 text-emerald-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              Apply for Green Loan
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}

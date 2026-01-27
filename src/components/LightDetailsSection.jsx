@@ -1,5 +1,6 @@
 import React from "react";
 import { Check } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const LightDetailsSection = () => {
   return (
@@ -51,9 +52,14 @@ const LightDetailsSection = () => {
               </ul>
             </div>
 
-            <button className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-full transition-colors duration-300">
-              Apply For SME Loan
-            </button>
+            <Link 
+              to="/applyforloanpage"
+              aria-label="Apply for SME Loan"
+            >
+              <button className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-red-500/50">
+                Apply For SME Loan
+              </button>
+            </Link>
           </div>
         </div>
       </div>

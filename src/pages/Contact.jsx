@@ -35,7 +35,8 @@ import {
   FileText,
   Users as UsersIcon,
   HelpCircle,
-  LifeBuoy
+  LifeBuoy,
+  Music
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Particles from 'react-particles';
@@ -218,64 +219,6 @@ const Contact = () => {
             </div>
           </div>
         )}
-      </div>
-    </motion.div>
-  );
-
-  const OfficeCard = ({ region, manager, phone, email, color }) => (
-    <motion.div
-      whileHover={{ y: -8 }}
-      className="relative group"
-    >
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-emerald-500/0 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-      <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/60 backdrop-blur-sm rounded-2xl p-8 border border-emerald-100/50 hover:border-emerald-200/70 transition-all duration-300">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <h4 className="text-xl font-bold text-gray-900 mb-2">{region}</h4>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-              <UsersIcon className="w-4 h-4" />
-              {manager}
-            </div>
-          </div>
-          <div className="relative">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
-              <Building2 className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white"></div>
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          <a href={`tel:${phone.replace(/\s/g, '')}`} className="flex items-start gap-4 p-4 rounded-xl bg-emerald-50/50 hover:bg-emerald-100/50 transition-colors group/link">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 group-hover/link:bg-emerald-200 transition-colors">
-              <PhoneCall className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 font-medium mb-1">Phone</p>
-              <p className="text-gray-900 font-semibold">{phone}</p>
-            </div>
-          </a>
-          
-          <a href={`mailto:${email}`} className="flex items-start gap-4 p-4 rounded-xl bg-emerald-50/50 hover:bg-emerald-100/50 transition-colors group/link">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 group-hover/link:bg-emerald-200 transition-colors">
-              <Mail className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 font-medium mb-1">Email</p>
-              <p className="text-gray-900 font-semibold">{email}</p>
-            </div>
-          </a>
-        </div>
-        
-        <div className="mt-8 pt-6 border-t border-emerald-100/50">
-          <a 
-            href={`mailto:${email}`}
-            className="w-full py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 flex items-center justify-center gap-3 hover:shadow-lg"
-          >
-            <Mail className="w-5 h-5" />
-            Email {region.split('–')[0]} Office
-          </a>
-        </div>
       </div>
     </motion.div>
   );
@@ -559,7 +502,7 @@ const Contact = () => {
           </div>
         </motion.section>
 
-        {/* Customer Support - UPDATED SECTION */}
+        {/* Customer Support */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -667,78 +610,12 @@ const Contact = () => {
           </motion.div>
         </motion.section>
 
-        {/* Regional Offices */}
-        <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mb-24"
-        >
-          {/* <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/50 mb-4">
-              <MapPin className="w-4 h-4 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold text-sm">REGIONAL OFFICES</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Nationwide <span className="text-transparent bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text">Presence</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Access our services across Ghana through our regional offices
-            </p>
-          </div> */}
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* <OfficeCard
-              region="Greater Accra"
-              manager="Mr. Martin Jones-Arthur"
-              phone="+233 20 807 0000"
-              email="accra@emeraldcapitalgh.com"
-            /> */}
-
-            {/* <OfficeCard
-              region="Ashanti Region"
-              manager="Mr. Christian Yaw Boateng"
-              phone="+233 24 459 5808"
-              email="ashanti@emeraldcapitalgh.com"
-            /> */}
-
-            {/* <OfficeCard
-              region="Eastern Region"
-              manager="Mr. Emmanuel Osei Mensah"
-              phone="+233 53 742 0472"
-              email="eastern@emeraldcapitalgh.com"
-            /> */}
-
-            {/* <OfficeCard
-              region="Western Region"
-              manager="Miss. Mercy Ahianor"
-              phone="+233 20 820 3653"
-              email="western@emeraldcapitalgh.com"
-            /> */}
-
-            {/* <OfficeCard
-              region="Central Region"
-              manager="Miss. Amazing N. Ekua Abbey"
-              phone="+233 20 987 7171"
-              email="central@emeraldcapitalgh.com"
-            /> */}
-
-            {/* <OfficeCard
-              region="Northern Region"
-              manager="Mrs. Salma Adams"
-              phone="+233 24 077 6444"
-              email="northern@emeraldcapitalgh.com"
-            /> */}
-          </div>
-        </motion.section>
-
         {/* Key Departments */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="mb-24"
         >
           <div className="text-center mb-16">
@@ -799,7 +676,7 @@ const Contact = () => {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="mb-24"
         >
           <div className="text-center mb-16">
@@ -812,7 +689,7 @@ const Contact = () => {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             <SocialCard
               platform="Facebook"
               handle="@EmeraldCapitalGH"
@@ -844,6 +721,14 @@ const Contact = () => {
               color="bg-gradient-to-br from-blue-700 to-blue-800"
               link="https://linkedin.com/company/EmeraldCapitalGH"
             />
+
+            <SocialCard
+              platform="TikTok"
+              handle="@EmeraldCapitalGH"
+              icon={Music}
+              color="bg-gradient-to-br from-gray-900 to-gray-800"
+              link="https://tiktok.com/@EmeraldCapitalGH"
+            />
           </div>
         </motion.section>
 
@@ -852,7 +737,7 @@ const Contact = () => {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
         >
           <div className="relative rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-500"></div>
@@ -935,7 +820,7 @@ const Contact = () => {
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl font-bold text-white">"Nyimpa nyinaa yɛ wo yɔnko"</p>
+                    <p className="text-xl font-bold text-white">"Nipa nyinaa yɛ wo yɔnko"</p>
                     <p className="text-emerald-300">Every person is your neighbor</p>
                   </div>
                 </div>

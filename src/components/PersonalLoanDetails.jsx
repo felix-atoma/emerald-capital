@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, User, Target, Award, BookOpen, Heart, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const PersonalLoanDetails = () => {
   return (
@@ -173,9 +174,15 @@ const PersonalLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-sky-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Personal Loan
-            </button>
+            <Link 
+              to="/applyforloanpage"
+              className="block"
+              aria-label="Apply for Personal Loan"
+            >
+              <button className="w-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-sky-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-500/50">
+                Apply for Personal Loan
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -377,17 +384,18 @@ const PersonalLoanDetails = () => {
               <p className="text-sky-100">Get started with your personal loan today</p>
             </div>
             <div className="flex items-center gap-4">
-              <a 
-                href="tel:+233208070000" 
+              <Link 
+                to="/applyforloanpage"
                 className="bg-white text-sky-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                aria-label="Apply for Personal Loan - Call to Action"
               >
-                Call Personal Loans
-              </a>
+                Apply for Personal Loan
+              </Link>
               <a 
                 href="mailto:personal@emeraldcapitalgh.com" 
                 className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
               >
-                Apply Online
+                Get Quote
               </a>
             </div>
           </div>

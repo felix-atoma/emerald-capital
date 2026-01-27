@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, TrendingUp, Briefcase, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MicroEnterpriseExpansionLoanHero = () => {
   return (
@@ -65,9 +66,11 @@ const MicroEnterpriseExpansionLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-cyan-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Expansion Loan
-          </button>
+          <Link to="/applyforloanpage">
+            <button className="bg-cyan-400 text-blue-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
+              Apply for Expansion Loan
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}

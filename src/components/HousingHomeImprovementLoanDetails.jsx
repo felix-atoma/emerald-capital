@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Home, Hammer, TrendingUp, Shield, Ruler, PaintBucket, Wrench, Key, Building } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HousingHomeImprovementLoanDetails = () => {
   return (
@@ -82,7 +83,7 @@ const HousingHomeImprovementLoanDetails = () => {
                   {
                     icon: <Key className="w-5 h-5" />,
                     title: "Ownership Documentation",
-                    assistance: "Help with title searches and documentation"
+                    description: "Help with title searches and documentation"
                   }
                 ].map((benefit, index) => (
                   <div key={index} className="flex items-start gap-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm">
@@ -174,9 +175,11 @@ const HousingHomeImprovementLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-amber-700 hover:to-orange-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Home Improvement Loan
-            </button>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-amber-700 hover:to-orange-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Apply for Home Improvement Loan
+              </button>
+            </Link>
           </div>
         </div>
 

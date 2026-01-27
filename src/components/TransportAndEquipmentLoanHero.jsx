@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, TrendingUp, Truck, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const TransportAndEquipmentLoanHero = () => {
   return (
@@ -65,9 +66,15 @@ const TransportAndEquipmentLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-yellow-400 text-orange-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Asset Loan
-          </button>
+          <Link 
+            to="/applyforloanpage"
+            className="block w-full max-w-md"
+            aria-label="Apply for Transport and Equipment Loan"
+          >
+            <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+              Apply for Asset Loan
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}

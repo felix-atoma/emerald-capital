@@ -142,7 +142,7 @@ function App() {
                 <Route path="emeraldpay" element={<EmeraldPayPage/>} />
                 <Route path="insuranceproducts" element={<InsuranceProductsPage/>} />
                 <Route path="/digital-banking" element={<DigitalBankingPage />} />
-                <Route path="/hirepurchase" element={<PurchasePage />} />
+                <Route path="/buynowpaylater" element={<PurchasePage />} />
                 <Route path="/careers" element={<CareersPage />} />
                 <Route path="/loans" element={<LoansPage />} />
                 <Route path="/investments" element={<InvestmentsPage />} />

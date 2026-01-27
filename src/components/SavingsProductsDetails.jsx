@@ -4,6 +4,7 @@ import {
   Users, Globe, PiggyBank, DollarSign, Calendar, Percent,
   Calculator, ArrowRight, RotateCcw, Save
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SavingsProductsDetails = () => {
   // Calculator states
@@ -389,20 +390,22 @@ const SavingsProductsDetails = () => {
             {/* Calculator */}
          
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-purple-600 to-yellow-500 text-white font-bold text-lg py-5 rounded-2xl hover:from-purple-700 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3">
-              {calculatorType === 'savings' ? (
-                <>
-                  <Save className="w-5 h-5" />
-                  Open Savings Account
-                </>
-              ) : (
-                <>
-                  <DollarSign className="w-5 h-5" />
-                  Apply for Loan
-                </>
-              )}
-              <ArrowRight className="w-5 h-5" />
-            </button>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-gradient-to-r from-purple-600 to-yellow-500 text-white font-bold text-lg py-5 rounded-2xl hover:from-purple-700 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                {calculatorType === 'savings' ? (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Open Savings Account
+                  </>
+                ) : (
+                  <>
+                    <DollarSign className="w-5 h-5" />
+                    Apply for Loan
+                  </>
+                )}
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </Link>
           </div>
         </div>
 

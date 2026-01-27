@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, Calendar, Target, Award, BookOpen, Sun, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SeasonalBusinessLoanDetails = () => {
   return (
@@ -174,9 +175,15 @@ const SeasonalBusinessLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Seasonal Loan
-            </button>
+            <Link 
+              to="/applyforloanpage"
+              className="block"
+              aria-label="Apply for Seasonal Business Loan"
+            >
+              <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+                Apply for Seasonal Loan
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -378,17 +385,18 @@ const SeasonalBusinessLoanDetails = () => {
               <p className="text-green-100">Get your seasonal financing approved quickly</p>
             </div>
             <div className="flex items-center gap-4">
-              <a 
-                href="tel:+233208070000" 
+              <Link 
+                to="/applyforloanpage"
                 className="bg-white text-green-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                aria-label="Apply for Seasonal Business Loan - Call to Action"
               >
-                Call Seasonal Desk
-              </a>
+                Apply for Seasonal Loan
+              </Link>
               <a 
                 href="mailto:seasonal@emeraldcapitalgh.com" 
                 className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
               >
-                Apply Now
+                Get Quote
               </a>
             </div>
           </div>

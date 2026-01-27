@@ -1,5 +1,6 @@
 import React from "react";
 import { Check } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const DarkHeroSection = () => {
   return (
@@ -32,6 +33,15 @@ const DarkHeroSection = () => {
             <p className="text-xl text-gray-300 mt-8">
               Empower your business with our SME Loans
             </p>
+            <Link 
+              to="/applyforloanpage"
+              className="inline-block mt-8"
+              aria-label="Apply for SME Loan"
+            >
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
+                Apply For SME Loan
+              </button>
+            </Link>
           </div>
 
           {/* Right image */}

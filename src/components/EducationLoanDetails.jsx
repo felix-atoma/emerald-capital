@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, GraduationCap, Target, Award, BookOpen, Book, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const EducationLoanDetails = () => {
   return (
@@ -174,9 +175,15 @@ const EducationLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Education Loan
-            </button>
+            <Link 
+              to="/applyforloanpage"
+              className="block"
+              aria-label="Apply for Education Loan"
+            >
+              <button className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-emerald-500/50">
+                Apply for Education Loan
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -378,17 +385,18 @@ const EducationLoanDetails = () => {
               <p className="text-emerald-100">Connect with our education loan specialists today</p>
             </div>
             <div className="flex items-center gap-4">
-              <a 
-                href="tel:+233208070000" 
+              <Link 
+                to="/applyforloanpage"
                 className="bg-white text-emerald-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                aria-label="Apply for Education Loan - Call to Action"
               >
-                Call Education Desk
-              </a>
+                Apply for Education Loan
+              </Link>
               <a 
                 href="mailto:education@emeraldcapitalgh.com" 
                 className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"
               >
-                Apply Now
+                Get Quote
               </a>
             </div>
           </div>

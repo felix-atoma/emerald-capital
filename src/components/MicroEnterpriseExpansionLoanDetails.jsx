@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, Briefcase, Target, Award, BookOpen, BarChart, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MicroEnterpriseExpansionLoanDetails = () => {
   return (
@@ -174,9 +175,11 @@ const MicroEnterpriseExpansionLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Apply for Expansion Loan
-            </button>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Apply for Expansion Loan
+              </button>
+            </Link>
           </div>
         </div>
 

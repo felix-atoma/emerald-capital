@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, Handshake, Target, Shield, Award, TrendingUp, Calendar, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const GroupCommunityLoanDetails = () => {
   return (
@@ -159,9 +160,11 @@ const GroupCommunityLoanDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-teal-600 to-green-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-teal-700 hover:to-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Start Group Application
-            </button>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-gradient-to-r from-teal-600 to-green-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-teal-700 hover:to-green-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Start Group Application
+              </button>
+            </Link>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, TrendingUp, User, Target } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const PersonalLoanHero = () => {
   return (
@@ -65,9 +66,15 @@ const PersonalLoanHero = () => {
           </div>
 
           {/* CTA Button */}
-          <button className="bg-cyan-400 text-sky-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-cyan-300 transition-all duration-300 shadow-xl hover:shadow-2xl">
-            Apply for Personal Loan
-          </button>
+          <Link 
+            to="/applyforloanpage"
+            className="block w-full max-w-md"
+            aria-label="Apply for Personal Loan"
+          >
+            <button className="w-full bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-sky-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-sky-500/50">
+              Apply for Personal Loan
+            </button>
+          </Link>
         </div>
 
         {/* Right Content - Image with Badge */}
@@ -89,16 +96,15 @@ const PersonalLoanHero = () => {
                 {/* Main Image with precise positioning */}
                 <div className="relative w-full h-full">
                   <img
-  src="/personal.jpg"
-  alt="Happy person achieving personal goals with financial support"
-  className="absolute inset-0 w-full h-full object-contain bg-white"
-  onError={(e) => {
-    e.target.onerror = null;
-    e.target.src =
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=800&fit=contain";
-  }}
-/>
-
+                    src="/personal.jpg"
+                    alt="Happy person achieving personal goals with financial support"
+                    className="absolute inset-0 w-full h-full object-contain bg-white"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=800&fit=contain";
+                    }}
+                  />
                   
                   {/* Overlay to ensure face is visible */}
                   <div className="absolute inset-0 flex items-center justify-center">

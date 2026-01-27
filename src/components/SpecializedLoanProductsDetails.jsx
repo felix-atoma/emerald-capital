@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Users, TrendingUp, Sparkles, Target, Award, BookOpen, Briefcase, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SpecializedLoanProductsDetails = () => {
   return (
@@ -172,7 +173,15 @@ const SpecializedLoanProductsDetails = () => {
             </div>
 
             {/* CTA Button */}
-           
+            <Link 
+              to="/applyforloanpage"
+              className="block"
+              aria-label="Apply for Specialized Loan"
+            >
+              <button className="w-full bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-rose-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-rose-500/50">
+                Apply for Specialized Loan
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -263,12 +272,13 @@ const SpecializedLoanProductsDetails = () => {
               <p className="text-rose-100">Connect with our specialized loan experts</p>
             </div>
             <div className="flex items-center gap-4">
-              <a 
-                href="tel:+233208070000" 
+              <Link 
+                to="/applyforloanpage"
                 className="bg-white text-rose-700 px-6 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                aria-label="Apply for Specialized Loan - Call to Action"
               >
-                Call Specialist Desk
-              </a>
+                Apply for Specialized Loan
+              </Link>
               <a 
                 href="mailto:specialized@emeraldcapitalgh.com" 
                 className="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full font-bold hover:bg-white/10 transition-colors"

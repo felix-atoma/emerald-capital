@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, Globe, Shield, Clock, DollarSign, Headphones } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const RemittanceDetails = () => {
   return (
@@ -172,9 +173,11 @@ const RemittanceDetails = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
-              Start Your Transfer Now
-            </button>
+            <Link to="/applyforloanpage">
+              <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold text-lg py-5 rounded-2xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                Start Your Transfer Now
+              </button>
+            </Link>
           </div>
         </div>
 
