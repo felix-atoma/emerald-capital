@@ -64,7 +64,7 @@ const LeadershipOwnershipDetails = () => {
         "Extensive experience in banking, fintech, and sustainable finance",
       icon: <Briefcase className="w-8 h-8" />,
       color: "from-teal-600 to-emerald-500",
-      profileImage: "/MRS. ABENA KONADU ASAMOAH-KORANTENG.jpg.jpeg",
+      profileImage: "/MRS. ABENA KONADU ASAMOAH-KORANTENG.jpeg",
       responsibilities: [
         "Lead day-to-day operations",
         "Execute strategic initiatives",
