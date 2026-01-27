@@ -23,7 +23,11 @@ const BoardAndExecutiveLeadershipDetails = () => {
       'cto': 'MR. MARTIN JONES-ARTHUR.jpg',
       'cmo': 'MISS. GLADYS ABENA YEBOAH.jpg',
       'cco': 'MR. CHARLES BINNEY ESQ.jpg',
+<<<<<<< HEAD
+      'cio': 'Audrey Owusu-Ansah.jpg',
+=======
       'cio': 'Audery.jpeg',
+>>>>>>> 8dfa59994a5e78212cee48508d0132aaf8b7e43c
       'cino': 'MR. CHRISTIAN YAW BOATENG.jpg',
       'chro': 'MISS. ANNA FRIMPONG.jpg'
     };
