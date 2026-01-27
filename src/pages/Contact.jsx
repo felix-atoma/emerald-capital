@@ -26,7 +26,6 @@ import {
   ExternalLink,
   MessageSquare,
   Facebook,
-  Twitter,
   Instagram,
   Linkedin,
   Globe as GlobeIcon,
@@ -42,6 +41,13 @@ import {
 const TikTokIcon = ({ className = "w-6 h-6" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+  </svg>
+);
+
+// X (Twitter) SVG Icon Component
+const XIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
   </svg>
 );
 
@@ -112,7 +118,7 @@ const Contact = () => {
               {isEmail ? (
                 <a 
                   href={`mailto:${contact}`}
-                  className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent hover:underline transition-all duration-300"
+                  className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent hover:underline transition-all duration-300 break-all"
                 >
                   {contact}
                 </a>
@@ -192,7 +198,7 @@ const Contact = () => {
                 <a 
                   key={index}
                   href={`mailto:${email}`}
-                  className="block text-gray-700 hover:text-emerald-600 hover:underline transition-colors font-medium hover:translate-x-1 duration-300"
+                  className="block text-sm text-gray-700 hover:text-emerald-600 hover:underline transition-colors font-medium hover:translate-x-1 duration-300 break-all"
                 >
                   {email}
                 </a>
@@ -220,7 +226,7 @@ const Contact = () => {
     </div>
   );
 
-  const SocialCard = ({ platform, handle, icon: Icon, color, link, isTikTok = false }) => (
+  const SocialCard = ({ platform, handle, icon: Icon, color, link, isTikTok = false, isX = false }) => (
     <a
       href={link}
       target="_blank"
@@ -230,14 +236,20 @@ const Contact = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
       <div className="relative bg-gradient-to-br from-white/90 via-white/80 to-white/60 backdrop-blur-sm rounded-2xl p-6 border border-emerald-100/50 hover:border-emerald-200/70 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
         <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-            {isTikTok ? <TikTokIcon className="w-6 h-6 text-white" /> : <Icon className="w-6 h-6 text-white" />}
+          <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg flex-shrink-0`}>
+            {isTikTok ? (
+              <TikTokIcon className="w-6 h-6 text-white" />
+            ) : isX ? (
+              <XIcon className="w-5 h-5 text-white" />
+            ) : (
+              <Icon className="w-6 h-6 text-white" />
+            )}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <h4 className="font-bold text-gray-900 mb-1 group-hover:text-emerald-600 transition-colors duration-300">{platform}</h4>
             <p className="text-sm text-gray-600 truncate">{handle}</p>
           </div>
-          <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-emerald-600 transition-colors duration-300" />
+          <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-emerald-600 transition-colors duration-300 flex-shrink-0" />
         </div>
       </div>
     </a>
@@ -566,11 +578,12 @@ const Contact = () => {
             />
 
             <SocialCard
-              platform="Twitter"
+              platform="X"
               handle="@EmeraldCapitalGH"
-              icon={Twitter}
-              color="bg-gradient-to-br from-sky-500 to-blue-600"
-              link="https://twitter.com/EmeraldCapitalGH"
+              icon={null}
+              color="bg-gradient-to-br from-gray-900 to-black"
+              link="https://x.com/EmeraldCapitalGH"
+              isX={true}
             />
 
             <SocialCard
