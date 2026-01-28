@@ -310,12 +310,13 @@ const DigitalBankingPage = () => {
             <p className="text-xl text-emerald-100 mb-10">We're available through multiple channels for your convenience</p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-4">
             <ContactCard
               icon={Mail}
               title="Email Application"
-              description="Send us an email with your digital banking request and requirements"
-              contact="digitalbanking@emeraldcapitalgh.com"
+              description={<>Send us an email with your digital <br />banking request</>}
+              // contact="digitalbanking@emeraldcapitalgh.com"
+              contact={<span style={{ fontSize: "15px" }}>digitalbanking@emeraldcapitalgh.com</span>}
               color="from-emerald-500 to-teal-500"
               actionText="Send Email"
               isEmail={true}
@@ -324,11 +325,12 @@ const DigitalBankingPage = () => {
             <ContactCard
               icon={Phone}
               title="Phone Support"
-              description="Call our dedicated digital banking support team"
+              description="Call or WhatsApp our dedicated digital banking support team"
               contact="+233 20 8070000"
               color="from-teal-500 to-cyan-500"
               actionText="Call Now"
               isPhone={true}
+              actionLink="https://wa.me/233208070000"
             />
 
             <ContactCard
