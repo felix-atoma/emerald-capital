@@ -13,7 +13,6 @@ import {
   Lock,
   CheckCircle,
   AlertCircle,
-  Twitter,
   Facebook,
   Instagram,
   Linkedin,
@@ -63,6 +62,20 @@ import { newsletterAPI } from '../services/api';
 import { useToast } from '../components/CustomToast';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// X (Twitter) SVG Icon Component
+const XIcon = ({ className = "w-4 h-4" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+);
+
+// TikTok SVG Icon Component
+const TikTokIcon = ({ className = "w-4 h-4" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+  </svg>
+);
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -158,7 +171,7 @@ const Footer = () => {
     </motion.li>
   );
 
-  const SocialIcon = ({ href, icon: Icon, label, color }) => (
+  const SocialIcon = ({ href, icon: Icon, label, color, isCustomIcon = false }) => (
     <motion.a
       href={href}
       target="_blank"
@@ -171,7 +184,11 @@ const Footer = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/30 to-cyan-500/30 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100"></div>
       <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700/50 flex items-center justify-center group-hover:border-emerald-500/50 transition-all duration-500 backdrop-blur-sm overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-        <Icon className={`w-4 h-4 ${color} transition-colors relative z-10`} />
+        {isCustomIcon ? (
+          <Icon className={`${color} transition-colors relative z-10`} />
+        ) : (
+          <Icon className={`w-4 h-4 ${color} transition-colors relative z-10`} />
+        )}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -424,10 +441,11 @@ const Footer = () => {
                 </p>
 
                 <div className="flex gap-3 mb-4">
-                  <SocialIcon href="https://x.com/CapitalEme21146" icon={Twitter} label="X" color="text-sky-400" />
-                  <SocialIcon href="#" icon={Facebook} label="Facebook" color="text-blue-500" />
-                  <SocialIcon href="https://www.instagram.com/emeraldcapitalgh/" icon={Instagram} label="Instagram" color="text-pink-500" />
-                  <SocialIcon href="#" icon={Linkedin} label="LinkedIn" color="text-blue-400" />
+                  <SocialIcon href="https://x.com/CapitalEme21146" icon={XIcon} label="X" color="text-gray-200" isCustomIcon={true} />
+                  <SocialIcon href="#" icon={Facebook} label="Facebook" color="text-blue-500" isCustomIcon={false} />
+                  <SocialIcon href="https://instagram.com/EmeraldCapitalGH" icon={Instagram} label="Instagram" color="text-pink-500" isCustomIcon={false} />
+                  <SocialIcon href="#" icon={Linkedin} label="LinkedIn" color="text-blue-400" isCustomIcon={false} />
+                  <SocialIcon href="https://tiktok.com/@EmeraldCapitalGH" icon={TikTokIcon} label="TikTok" color="text-gray-200" isCustomIcon={true} />
                 </div>
               </motion.div>
             </div>
