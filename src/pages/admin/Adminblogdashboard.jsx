@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { blogAPI, adminAPI, uploadAPI } from '../../services/api';
+import { blogAPI, adminAPI, uploadAPI, apiUtils } from '../../services/api';
 import {
   Plus, Edit, Trash2, Eye, Search, Filter, Calendar,
   User, Tag, FileText, Image as ImageIcon, Save,
   X, Upload, AlertCircle, CheckCircle, Loader,
   MoreVertical, LogOut, Settings, BarChart, RefreshCw,
   Link, Globe, CloudUpload, TrendingUp, Users, MessageSquare,
-  Bookmark, Heart, Eye as EyeIcon, Sparkles, Zap
+  Bookmark, Heart, Eye as EyeIcon, Sparkles, Zap,
+  Cloud, Shield, Download, ExternalLink, Copy
 } from 'lucide-react';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://emerald-capital-backend.onrender.com";
 
 export default function AdminBlogDashboard() {
   const navigate = useNavigate();
@@ -23,6 +22,7 @@ export default function AdminBlogDashboard() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [stats, setStats] = useState({
     totalBlogs: 0,
     publishedBlogs: 0,
@@ -35,6 +35,8 @@ export default function AdminBlogDashboard() {
   const [fetchingStats, setFetchingStats] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [dashboardStats, setDashboardStats] = useState(null);
+  const [cloudinaryConfig, setCloudinaryConfig] = useState(null);
+  const [selectedImageData, setSelectedImageData] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -44,12 +46,15 @@ export default function AdminBlogDashboard() {
     content: '',
     category: '',
     featuredImage: '',
+    imagePublicId: '',
     isPublished: true,
     isFeatured: false,
     tags: '',
     readTime: 5,
     metaTitle: '',
-    metaDescription: ''
+    metaDescription: '',
+    author: '',
+    authorBio: ''
   });
 
   // Categories
@@ -60,7 +65,17 @@ export default function AdminBlogDashboard() {
     'Investment',
     'Digital Banking',
     'Agriculture',
+    'Technology',
     'General'
+  ];
+
+  // Authors
+  const authors = [
+    'Admin User',
+    'John Doe',
+    'Jane Smith',
+    'Financial Expert',
+    'Guest Writer'
   ];
 
   // Check admin authentication and load data
@@ -77,6 +92,7 @@ export default function AdminBlogDashboard() {
       const parsedUser = JSON.parse(storedAdminUser);
       setAdminUser(parsedUser);
       loadDashboardData();
+      checkCloudinaryConfig();
     } catch (err) {
       console.error('Error parsing admin user:', err);
       navigate('/admin/blog/login');
@@ -102,53 +118,104 @@ export default function AdminBlogDashboard() {
     }
   };
 
-  // Fix image URLs
-  const fixImageUrl = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    if (url.startsWith('file://')) {
-      const fileName = url.split('/').pop();
-      return `${API_BASE_URL}/uploads/blog-images/${fileName}`;
+  // Check Cloudinary configuration
+  const checkCloudinaryConfig = async () => {
+    try {
+      const response = await uploadAPI.getConfig();
+      if (response.data.success) {
+        setCloudinaryConfig(response.data.data);
+        console.log('✅ Cloudinary Config:', response.data.data);
+      }
+    } catch (err) {
+      console.error('❌ Cloudinary config check failed:', err);
+      setCloudinaryConfig({ configured: false, message: 'Cloudinary not configured' });
     }
-    if (url.startsWith('/uploads/')) return `${API_BASE_URL}${url}`;
-    if (url.includes('.')) return `${API_BASE_URL}/uploads/blog-images/${url}`;
-    return url;
   };
 
-  // Upload image file
+  // Upload image to Cloudinary
   const handleImageUpload = async (file) => {
     setUploadingImage(true);
+    setUploadProgress(0);
+    
     try {
-      const formData = new FormData();
-      formData.append('image', file);
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 15, 85));
+      }, 300);
       
-      const response = await uploadAPI.uploadImage(formData, 'blog');
+      // Upload to Cloudinary
+      const response = await uploadAPI.uploadImage(file, 'blog');
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
       
       if (response.data.success) {
-        const imageUrl = response.data.data?.url || response.data.data?.path;
-        const fixedUrl = fixImageUrl(imageUrl);
+        const cloudinaryData = response.data.data;
+        
+        setSelectedImageData({
+          url: cloudinaryData.url,
+          publicId: cloudinaryData.public_id,
+          thumbnailUrl: cloudinaryData.thumbnail_url || cloudinaryData.url,
+          mediumUrl: cloudinaryData.medium_url || cloudinaryData.url,
+          optimizedUrls: cloudinaryData.optimized_urls || {},
+          width: cloudinaryData.width,
+          height: cloudinaryData.height,
+          bytes: cloudinaryData.bytes,
+          format: cloudinaryData.format
+        });
         
         setFormData(prev => ({
           ...prev,
-          featuredImage: fixedUrl
+          featuredImage: cloudinaryData.url,
+          imagePublicId: cloudinaryData.public_id
         }));
         
-        return fixedUrl;
+        return cloudinaryData;
       } else {
         throw new Error(response.data.message || 'Upload failed');
       }
     } catch (err) {
-      console.error('❌ Image upload error:', err);
-      const placeholderUrl = 'https://placehold.co/600x400/10b981/ffffff?text=Blog+Image';
-      setFormData(prev => ({ ...prev, featuredImage: placeholderUrl }));
-      alert('Upload failed. Using placeholder image.');
-      return placeholderUrl;
+      console.error('❌ Cloudinary upload error:', err);
+      
+      // Fallback placeholder
+      const placeholderData = {
+        url: 'https://placehold.co/1200x630/10b981/ffffff?text=Blog+Image&font=montserrat',
+        publicId: null,
+        thumbnailUrl: 'https://placehold.co/400x300/10b981/ffffff?text=Thumbnail',
+        width: 1200,
+        height: 630
+      };
+      
+      setSelectedImageData(placeholderData);
+      setFormData(prev => ({ 
+        ...prev, 
+        featuredImage: placeholderData.url,
+        imagePublicId: '' 
+      }));
+      
+      alert('⚠️ Upload failed. Using placeholder image.');
+      return placeholderData;
     } finally {
       setUploadingImage(false);
+      setTimeout(() => setUploadProgress(0), 1000);
     }
   };
 
-  // Fetch blogs
+  // Delete image from Cloudinary
+  const deleteCloudinaryImage = async (publicId) => {
+    if (!publicId || !publicId.includes('/')) return;
+    
+    try {
+      await uploadAPI.deleteImage(publicId);
+      console.log('✅ Image deleted from Cloudinary');
+      return true;
+    } catch (err) {
+      console.error('❌ Failed to delete from Cloudinary:', err);
+      return false;
+    }
+  };
+
+  // Fetch blogs with Cloudinary optimization
   const fetchBlogs = async () => {
     try {
       const params = { 
@@ -162,15 +229,38 @@ export default function AdminBlogDashboard() {
       
       if (response.data.success) {
         const blogData = response.data.data?.blogs || response.data.data || [];
-        const fixedBlogs = blogData.map(blog => ({
-          ...blog,
-          featuredImage: fixImageUrl(blog.featuredImage)
-        }));
-        setBlogs(fixedBlogs);
+        
+        const processedBlogs = blogData.map(blog => {
+          let featuredImage = blog.featuredImage || blog.image;
+          
+          // Check if it's a Cloudinary URL
+          const isCloudinaryUrl = featuredImage && featuredImage.includes('cloudinary.com');
+          
+          // If it's not Cloudinary and we have a public ID, generate Cloudinary URL
+          if (!isCloudinaryUrl && blog.imagePublicId) {
+            featuredImage = apiUtils.getCloudinaryUrl(blog.imagePublicId, {
+              width: 800,
+              height: 450,
+              crop: 'fill',
+              quality: 'auto'
+            });
+          } else if (!isCloudinaryUrl && !blog.imagePublicId) {
+            // Use a nice placeholder
+            featuredImage = `https://placehold.co/800x450/0f766e/ffffff?text=${encodeURIComponent(blog.title || 'Blog')}&font=montserrat`;
+          }
+          
+          return {
+            ...blog,
+            featuredImage,
+            imagePublicId: blog.imagePublicId || apiUtils.extractPublicId(featuredImage)
+          };
+        });
+        
+        setBlogs(processedBlogs);
       }
     } catch (err) {
       console.error('❌ Fetch blogs error:', err);
-      setError(err.message || 'Failed to load blogs');
+      setError(err.response?.data?.message || err.message || 'Failed to load blogs');
     }
   };
 
@@ -226,8 +316,10 @@ export default function AdminBlogDashboard() {
   const generateSlug = (title) => {
     return title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
   };
 
   // Handle form input change
@@ -235,10 +327,19 @@ export default function AdminBlogDashboard() {
     const { name, value, type, checked } = e.target;
     
     if (name === 'title') {
+      const newSlug = generateSlug(value);
       setFormData({
         ...formData,
         [name]: value,
-        slug: generateSlug(value)
+        slug: newSlug,
+        metaTitle: value || formData.metaTitle,
+        metaDescription: value ? `${value.substring(0, 150)}...` : formData.metaDescription
+      });
+    } else if (name === 'excerpt') {
+      setFormData({
+        ...formData,
+        [name]: value,
+        metaDescription: value || formData.metaDescription
       });
     } else {
       setFormData({
@@ -253,13 +354,16 @@ export default function AdminBlogDashboard() {
     const file = e.target.files[0];
     if (!file) return;
     
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Please select a valid image file (JPG, PNG, GIF, WebP)');
       return;
     }
     
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be less than 5MB');
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB');
       return;
     }
     
@@ -267,28 +371,43 @@ export default function AdminBlogDashboard() {
     e.target.value = '';
   };
 
-  // Create new blog
+  // Create new blog with Cloudinary image
   const handleCreateBlog = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const blogData = {
-        ...formData,
+        title: formData.title,
+        slug: formData.slug || generateSlug(formData.title),
+        excerpt: formData.excerpt,
+        content: formData.content,
+        category: formData.category,
+        featuredImage: formData.featuredImage,
+        imagePublicId: formData.imagePublicId,
+        isPublished: formData.isPublished,
+        isFeatured: formData.isFeatured,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        readTime: parseInt(formData.readTime) || 5
+        readTime: parseInt(formData.readTime) || 5,
+        metaTitle: formData.metaTitle || formData.title,
+        metaDescription: formData.metaDescription || formData.excerpt?.substring(0, 150),
+        author: formData.author || adminUser?.username || 'Admin',
+        authorBio: formData.authorBio || ''
       };
 
       const response = await blogAPI.createBlog(blogData);
       
       if (response.data.success) {
-        alert('Blog post created successfully!');
+        alert('✅ Blog post created successfully!');
         setShowCreateModal(false);
         resetForm();
         loadDashboardData();
+      } else {
+        throw new Error(response.data.message || 'Failed to create blog');
       }
     } catch (err) {
-      alert(err.message || 'Failed to create blog');
+      console.error('❌ Create blog error:', err);
+      alert(`❌ ${err.message || 'Failed to create blog. Please try again.'}`);
     } finally {
       setLoading(false);
     }
@@ -301,38 +420,126 @@ export default function AdminBlogDashboard() {
 
     try {
       const blogData = {
-        ...formData,
+        title: formData.title,
+        slug: formData.slug || generateSlug(formData.title),
+        excerpt: formData.excerpt,
+        content: formData.content,
+        category: formData.category,
+        featuredImage: formData.featuredImage,
+        imagePublicId: formData.imagePublicId,
+        isPublished: formData.isPublished,
+        isFeatured: formData.isFeatured,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        readTime: parseInt(formData.readTime) || 5
+        readTime: parseInt(formData.readTime) || 5,
+        metaTitle: formData.metaTitle || formData.title,
+        metaDescription: formData.metaDescription || formData.excerpt?.substring(0, 150),
+        author: formData.author || currentBlog?.author || 'Admin',
+        authorBio: formData.authorBio || currentBlog?.authorBio || ''
       };
 
       const response = await blogAPI.updateBlog(currentBlog._id, blogData);
       
       if (response.data.success) {
-        alert('Blog updated successfully!');
+        alert('✅ Blog updated successfully!');
         setShowEditModal(false);
         setCurrentBlog(null);
         resetForm();
         loadDashboardData();
+      } else {
+        throw new Error(response.data.message || 'Failed to update blog');
       }
     } catch (err) {
-      alert(err.message || 'Failed to update blog');
+      console.error('❌ Update blog error:', err);
+      alert(`❌ ${err.message || 'Failed to update blog. Please try again.'}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete blog
-  const handleDeleteBlog = async (blogId, blogTitle) => {
-    if (!window.confirm(`Delete "${blogTitle}"?`)) return;
-
+  // Delete blog with Cloudinary image cleanup
+  const handleDeleteBlog = async (blogId, blogTitle, imagePublicId) => {
+    const confirmed = await new Promise(resolve => {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4';
+      modal.innerHTML = `
+        <div class="bg-gradient-to-br from-emerald-950 to-emerald-900 rounded-2xl p-6 max-w-md w-full border border-red-500/30">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-white">Delete Blog Post</h3>
+              <p class="text-emerald-300 text-sm">This action cannot be undone</p>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="p-3 bg-emerald-900/30 rounded-lg">
+              <p class="text-emerald-200 font-medium">"${blogTitle}"</p>
+              ${imagePublicId ? '<p class="text-emerald-400 text-sm mt-1">⚠️ This will also delete the image from Cloudinary</p>' : ''}
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+              <button id="cancel-btn" class="flex-1 px-4 py-3 border border-emerald-700 text-emerald-300 rounded-xl hover:bg-emerald-900/50 transition-all font-medium">
+                Cancel
+              </button>
+              <button id="delete-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:shadow-lg hover:shadow-red-500/30 transition-all font-bold">
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      document.getElementById('cancel-btn').onclick = () => {
+        document.body.removeChild(modal);
+        resolve(false);
+      };
+      
+      document.getElementById('delete-btn').onclick = () => {
+        document.body.removeChild(modal);
+        resolve(true);
+      };
+    });
+    
+    if (!confirmed) return;
+    
     setLoading(true);
     try {
+      // Delete blog first
       await blogAPI.deleteBlog(blogId);
-      alert('Blog deleted!');
+      
+      // Then delete image from Cloudinary if it exists
+      if (imagePublicId) {
+        await deleteCloudinaryImage(imagePublicId);
+      }
+      
+      // Show success message
+      const successMsg = document.createElement('div');
+      successMsg.className = 'fixed top-4 right-4 z-[100] animate-slide-in';
+      successMsg.innerHTML = `
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <div>
+            <p class="font-bold">Blog Deleted</p>
+            <p class="text-sm opacity-90">"${blogTitle.substring(0, 30)}..." has been removed</p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(successMsg);
+      setTimeout(() => successMsg.remove(), 3000);
+      
+      // Refresh data
       loadDashboardData();
     } catch (err) {
-      alert(err.message || 'Failed to delete');
+      console.error('❌ Delete blog error:', err);
+      alert(`❌ ${err.message || 'Failed to delete blog. Please try again.'}`);
     } finally {
       setLoading(false);
     }
@@ -341,20 +548,29 @@ export default function AdminBlogDashboard() {
   // Open edit modal
   const handleEditClick = (blog) => {
     setCurrentBlog(blog);
+    setSelectedImageData({
+      url: blog.featuredImage,
+      publicId: blog.imagePublicId
+    });
+    
     setFormData({
-      title: blog.title,
-      slug: blog.slug || generateSlug(blog.title),
+      title: blog.title || '',
+      slug: blog.slug || generateSlug(blog.title || ''),
       excerpt: blog.excerpt || '',
       content: blog.content || '',
       category: blog.category || '',
       featuredImage: blog.featuredImage || '',
+      imagePublicId: blog.imagePublicId || '',
       isPublished: blog.isPublished !== undefined ? blog.isPublished : true,
       isFeatured: blog.isFeatured || false,
       tags: Array.isArray(blog.tags) ? blog.tags.join(', ') : (blog.tags || ''),
       readTime: blog.readTime || 5,
-      metaTitle: blog.metaTitle || '',
-      metaDescription: blog.metaDescription || ''
+      metaTitle: blog.metaTitle || blog.title || '',
+      metaDescription: blog.metaDescription || blog.excerpt?.substring(0, 150) || '',
+      author: blog.author || 'Admin',
+      authorBio: blog.authorBio || ''
     });
+    
     setShowEditModal(true);
   };
 
@@ -367,21 +583,40 @@ export default function AdminBlogDashboard() {
       content: '',
       category: '',
       featuredImage: '',
+      imagePublicId: '',
       isPublished: true,
       isFeatured: false,
       tags: '',
       readTime: 5,
       metaTitle: '',
-      metaDescription: ''
+      metaDescription: '',
+      author: adminUser?.username || 'Admin',
+      authorBio: ''
     });
+    setSelectedImageData(null);
+  };
+
+  // Handle image URL input
+  const handleImageUrlChange = (e) => {
+    const url = e.target.value;
+    setFormData(prev => ({ ...prev, featuredImage: url }));
+    
+    // Try to extract public ID from Cloudinary URL
+    if (url.includes('cloudinary.com')) {
+      const publicId = apiUtils.extractPublicId(url);
+      if (publicId) {
+        setFormData(prev => ({ ...prev, imagePublicId: publicId }));
+      }
+    }
   };
 
   // Handle logout
   const handleLogout = () => {
-    if (window.confirm('Logout?')) {
+    const confirmed = window.confirm('Are you sure you want to logout?');
+    if (confirmed) {
       localStorage.removeItem('adminAuthToken');
       localStorage.removeItem('adminUser');
-      navigate('/admin/blog/login');
+      navigate('/admin/login');
     }
   };
 
@@ -390,19 +625,65 @@ export default function AdminBlogDashboard() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
+  // Copy Cloudinary URL to clipboard
+  const copyCloudinaryUrl = (url) => {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.createElement('div');
+      btn.className = 'fixed top-4 right-4 z-[100] animate-slide-in';
+      btn.innerHTML = `
+        <div class="bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          <span class="text-sm font-medium">✓ URL Copied!</span>
+        </div>
+      `;
+      document.body.appendChild(btn);
+      setTimeout(() => btn.remove(), 2000);
+    });
+  };
+
+  // Generate optimized image URL
+  const getOptimizedImageUrl = (url, options = {}) => {
+    if (!url) {
+      return `https://placehold.co/${options.width || 800}x${options.height || 450}/0f766e/ffffff?text=Blog+Image`;
+    }
+    
+    // If it's a Cloudinary URL, optimize it
+    if (url.includes('cloudinary.com')) {
+      const publicId = apiUtils.extractPublicId(url);
+      if (publicId) {
+        return apiUtils.getCloudinaryUrl(publicId, {
+          width: options.width || 800,
+          height: options.height || 450,
+          crop: options.crop || 'fill',
+          quality: 'auto',
+          fetch_format: 'auto'
+        });
+      }
+    }
+    
+    return url;
+  };
+
+  // Render loading state
   if (loading && !blogs.length) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-emerald-200/20 border-t-emerald-400 rounded-full animate-spin mx-auto mb-6"></div>
-            <Sparkles className="w-8 h-8 text-emerald-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+          <div className="relative mb-8">
+            <div className="w-24 h-24 border-4 border-emerald-200/10 border-t-emerald-400 rounded-full animate-spin mx-auto"></div>
+            <Cloud className="w-12 h-12 text-emerald-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
           </div>
-          <p className="text-emerald-100 text-lg font-medium">Loading Dashboard...</p>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent mb-2">
+            Loading Dashboard
+          </h2>
+          <p className="text-emerald-400">
+            {cloudinaryConfig?.configured ? 'Connected to Cloudinary ✓' : 'Connecting to Cloudinary...'}
+          </p>
         </div>
       </div>
     );
@@ -411,36 +692,35 @@ export default function AdminBlogDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900">
       {/* Decorative Background */}
-      <div className="fixed inset-0 opacity-10 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.3) 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }}></div>
-      </div>
-
-      {/* Animated Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-500/5 rounded-full blur-3xl"></div>
       </div>
 
       {/* Header */}
-      <header className="relative border-b border-emerald-800/30 backdrop-blur-xl bg-emerald-950/50 sticky top-0 z-40 shadow-2xl shadow-emerald-950/50">
-        <div className="max-w-7xl mx-auto px-6 py-5">
+      <header className="relative border-b border-emerald-800/30 backdrop-blur-xl bg-emerald-950/70 sticky top-0 z-40 shadow-2xl shadow-emerald-950/30">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-lg opacity-50 animate-pulse"></div>
-                <div className="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                  <FileText className="w-7 h-7 text-white" />
-                  <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-emerald-300 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-lg opacity-30 animate-pulse"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <FileText className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 bg-clip-text text-transparent">
-                  Blog Management
+                <h1 className="text-2xl font-black bg-gradient-to-r from-emerald-200 via-teal-200 to-cyan-200 bg-clip-text text-transparent">
+                  Blog Dashboard
                 </h1>
-                <p className="text-sm text-emerald-400 font-medium">Emerald Capital CMS</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-emerald-400 font-medium">Emerald Capital CMS</span>
+                  {cloudinaryConfig?.configured && (
+                    <span className="flex items-center gap-1 text-xs px-2 py-1 bg-emerald-500/20 border border-emerald-600/30 rounded-full">
+                      <Cloud className="w-3 h-3" />
+                      Cloudinary Active
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -452,22 +732,24 @@ export default function AdminBlogDashboard() {
                   </div>
                   <div className="text-sm">
                     <p className="text-emerald-200 font-bold">{adminUser.username}</p>
-                    <p className="text-emerald-400 text-xs">{adminUser.role}</p>
+                    <p className="text-emerald-400 text-xs">{adminUser.role || 'Administrator'}</p>
                   </div>
                 </div>
               )}
+              
               <button
                 onClick={loadDashboardData}
                 disabled={loading || fetchingStats}
-                className="p-3 bg-emerald-900/30 border border-emerald-700/30 hover:bg-emerald-800/40 rounded-xl transition-all duration-300 disabled:opacity-50 group backdrop-blur-sm"
+                className="p-2.5 bg-emerald-900/30 border border-emerald-700/30 hover:bg-emerald-800/40 rounded-xl transition-all duration-300 disabled:opacity-50 backdrop-blur-sm group"
               >
                 <RefreshCw className={`w-5 h-5 text-emerald-300 group-hover:text-emerald-200 transition-colors ${loading || fetchingStats ? 'animate-spin' : ''}`} />
               </button>
+              
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-5 py-3 bg-red-900/30 border border-red-700/30 text-red-200 rounded-xl hover:bg-red-800/40 transition-all duration-300 font-semibold backdrop-blur-sm"
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-900/30 border border-red-700/30 text-red-200 rounded-xl hover:bg-red-800/40 transition-all duration-300 font-semibold backdrop-blur-sm group"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
                 Logout
               </button>
             </div>
@@ -475,18 +757,46 @@ export default function AdminBlogDashboard() {
         </div>
       </header>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Cloudinary Status Banner */}
+        {cloudinaryConfig && (
+          <div className={`mb-6 p-4 rounded-2xl backdrop-blur-sm border ${cloudinaryConfig.configured ? 'bg-emerald-900/20 border-emerald-700/30' : 'bg-amber-900/20 border-amber-700/30'}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-xl ${cloudinaryConfig.configured ? 'bg-emerald-500/20' : 'bg-amber-500/20'}`}>
+                <Cloud className={`w-6 h-6 ${cloudinaryConfig.configured ? 'text-emerald-400' : 'text-amber-400'}`} />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className={`font-bold ${cloudinaryConfig.configured ? 'text-emerald-200' : 'text-amber-200'}`}>
+                    Cloudinary {cloudinaryConfig.configured ? 'Connected ✓' : 'Not Configured'}
+                  </h3>
+                  {cloudinaryConfig.cloudinary?.cloud_name && (
+                    <span className="text-xs px-2 py-1 bg-emerald-900/50 rounded-full text-emerald-300">
+                      {cloudinaryConfig.cloudinary.cloud_name}
+                    </span>
+                  )}
+                </div>
+                <p className={`text-sm ${cloudinaryConfig.configured ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {cloudinaryConfig.configured 
+                    ? 'Images are uploaded to Cloudinary CDN for optimal performance' 
+                    : 'Configure Cloudinary in your .env file for image uploads'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-5 bg-red-900/20 border-2 border-red-700/50 rounded-2xl backdrop-blur-sm">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
+          <div className="mb-6 p-4 bg-red-900/20 border-2 border-red-700/50 rounded-2xl backdrop-blur-sm animate-slide-in">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-bold text-red-200 mb-2 text-lg">Error</h4>
-                <p className="text-red-300">{error}</p>
+                <h4 className="font-bold text-red-200 mb-1">Error Loading Data</h4>
+                <p className="text-red-300 text-sm">{error}</p>
                 <button
                   onClick={loadDashboardData}
-                  className="mt-3 text-sm text-red-200 hover:text-white font-semibold underline"
+                  className="mt-2 text-sm text-red-200 hover:text-white font-medium underline"
                 >
                   Try Again
                 </button>
@@ -496,305 +806,299 @@ export default function AdminBlogDashboard() {
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl p-6 rounded-2xl border border-emerald-700/30 hover:border-emerald-600/50 transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-emerald-400 text-sm font-medium mb-2">Total Posts</p>
-                  <p className="text-5xl font-black bg-gradient-to-br from-white to-emerald-200 bg-clip-text text-transparent">
-                    {stats.totalBlogs}
-                  </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {[
+            { 
+              label: 'Total Posts', 
+              value: stats.totalBlogs, 
+              icon: FileText, 
+              color: 'blue',
+              subtext: `${stats.publishedBlogs} published`
+            },
+            { 
+              label: 'Total Views', 
+              value: stats.totalViews.toLocaleString(), 
+              icon: EyeIcon, 
+              color: 'emerald',
+              subtext: `${stats.totalLikes} likes`
+            },
+            { 
+              label: 'Comments', 
+              value: stats.totalComments, 
+              icon: MessageSquare, 
+              color: 'purple',
+              subtext: `${stats.totalBookmarks} bookmarks`
+            },
+            { 
+              label: 'Drafts', 
+              value: stats.draftBlogs, 
+              icon: FileText, 
+              color: 'amber',
+              subtext: `${Math.round((stats.draftBlogs / stats.totalBlogs) * 100) || 0}%`
+            }
+          ].map((stat, index) => (
+            <div key={index} className="group relative">
+              <div className={`absolute inset-0 bg-gradient-to-br from-${stat.color}-500/10 to-${stat.color}-600/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+              <div className="relative bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 backdrop-blur-xl p-5 rounded-2xl border border-emerald-700/20 hover:border-emerald-600/40 transition-all duration-300">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-emerald-400 text-sm font-medium mb-1">{stat.label}</p>
+                    <p className="text-3xl font-black bg-gradient-to-br from-white to-emerald-200 bg-clip-text text-transparent">
+                      {stat.value}
+                    </p>
+                  </div>
+                  <div className={`p-2.5 bg-${stat.color}-500/10 rounded-xl backdrop-blur-sm`}>
+                    <stat.icon className={`w-6 h-6 text-${stat.color}-400`} />
+                  </div>
                 </div>
-                <div className="p-3 bg-blue-500/20 rounded-xl backdrop-blur-sm">
-                  <FileText className="w-8 h-8 text-blue-400" />
-                </div>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <span className="flex items-center gap-1 text-green-400 font-medium">
-                  <Zap className="w-4 h-4" />
-                  {stats.publishedBlogs} live
-                </span>
-                <span className="text-emerald-600">•</span>
-                <span className="text-yellow-400 font-medium">{stats.draftBlogs} drafts</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl p-6 rounded-2xl border border-emerald-700/30 hover:border-emerald-600/50 transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-emerald-400 text-sm font-medium mb-2">Total Views</p>
-                  <p className="text-5xl font-black bg-gradient-to-br from-emerald-300 to-teal-300 bg-clip-text text-transparent">
-                    {stats.totalViews}
-                  </p>
-                </div>
-                <div className="p-3 bg-emerald-500/20 rounded-xl backdrop-blur-sm">
-                  <EyeIcon className="w-8 h-8 text-emerald-400" />
-                </div>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <span className="flex items-center gap-1 text-red-300">
-                  <Heart className="w-4 h-4" />
-                  {stats.totalLikes}
-                </span>
-                <span className="text-emerald-600">•</span>
-                <span className="flex items-center gap-1 text-blue-300">
-                  <MessageSquare className="w-4 h-4" />
-                  {stats.totalComments}
-                </span>
+                <p className="text-emerald-500 text-sm">{stat.subtext}</p>
               </div>
             </div>
-          </div>
-          
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl p-6 rounded-2xl border border-emerald-700/30 hover:border-emerald-600/50 transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-emerald-400 text-sm font-medium mb-2">Bookmarks</p>
-                  <p className="text-5xl font-black bg-gradient-to-br from-purple-300 to-pink-300 bg-clip-text text-transparent">
-                    {stats.totalBookmarks}
-                  </p>
-                </div>
-                <div className="p-3 bg-purple-500/20 rounded-xl backdrop-blur-sm">
-                  <Bookmark className="w-8 h-8 text-purple-400" />
-                </div>
-              </div>
-              <p className="text-emerald-300 text-sm">Total saved posts</p>
-            </div>
-          </div>
-          
-          <div className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl p-6 rounded-2xl border border-emerald-700/30 hover:border-emerald-600/50 transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-emerald-400 text-sm font-medium mb-2">Avg. Read</p>
-                  <p className="text-5xl font-black bg-gradient-to-br from-orange-300 to-red-300 bg-clip-text text-transparent">
-                    5<span className="text-2xl">min</span>
-                  </p>
-                </div>
-                <div className="p-3 bg-orange-500/20 rounded-xl backdrop-blur-sm">
-                  <TrendingUp className="w-8 h-8 text-orange-400" />
-                </div>
-              </div>
-              <p className="text-emerald-300 text-sm">Per blog post</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Actions Bar */}
-        <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl rounded-2xl p-6 border border-emerald-700/30 mb-8 shadow-2xl">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-              <div className="relative flex-1 lg:w-96">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-400" />
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500 backdrop-blur-sm transition-all"
-                />
+        <div className="mb-6">
+          <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 backdrop-blur-xl rounded-2xl p-4 border border-emerald-700/20">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div className="relative flex-1 md:w-80">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
+                  <input
+                    type="text"
+                    placeholder="Search posts by title or content..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all text-sm"
+                  />
+                </div>
+                
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="px-4 py-2.5 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all text-sm min-w-[180px]"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
               </div>
               
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
+              <button
+                onClick={() => {
+                  resetForm();
+                  setFormData(prev => ({ ...prev, author: adminUser?.username || 'Admin' }));
+                  setShowCreateModal(true);
+                }}
+                className="relative group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden w-full md:w-auto justify-center"
               >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Plus className="w-4 h-4 relative z-10" />
+                <span className="relative z-10 text-sm">New Post</span>
+                <Sparkles className="w-3 h-3 relative z-10 group-hover:animate-pulse" />
+              </button>
             </div>
-            
-            <button
-              onClick={() => {
-                resetForm();
-                setShowCreateModal(true);
-              }}
-              className="relative group flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Plus className="w-5 h-5 relative z-10" />
-              <span className="relative z-10">Create Post</span>
-              <Sparkles className="w-4 h-4 relative z-10 group-hover:animate-pulse" />
-            </button>
           </div>
         </div>
 
         {/* Blog Posts Grid */}
-        <div className="relative bg-gradient-to-br from-emerald-900/50 to-emerald-800/30 backdrop-blur-xl rounded-2xl border border-emerald-700/30 overflow-hidden shadow-2xl">
-          <div className="px-6 py-5 border-b border-emerald-700/30 bg-emerald-950/30">
+        <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 backdrop-blur-xl rounded-2xl border border-emerald-700/20 overflow-hidden">
+          <div className="px-5 py-4 border-b border-emerald-700/20 bg-emerald-950/30">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent">
-                Blog Posts ({blogs.length})
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-bold text-emerald-100">Blog Posts</h2>
+                <span className="px-2.5 py-0.5 bg-emerald-500/20 border border-emerald-600/30 rounded-full text-xs font-semibold text-emerald-300">
+                  {blogs.length} posts
+                </span>
+              </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-sm text-emerald-300">Live</span>
+                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-xs text-emerald-300">Live</span>
               </div>
             </div>
           </div>
           
           {blogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24">
+            <div className="flex flex-col items-center justify-center py-16 px-4">
               <div className="relative mb-6">
-                <div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-2xl"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-emerald-700/30">
-                  <FileText className="w-10 h-10 text-emerald-400" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-emerald-700/30">
+                  <FileText className="w-8 h-8 text-emerald-400" />
                 </div>
               </div>
-              <p className="text-emerald-300 font-bold text-lg mb-2">No posts yet</p>
-              <p className="text-emerald-500 mb-6">Start creating amazing content</p>
+              <p className="text-emerald-200 font-bold text-lg mb-2">No blog posts found</p>
+              <p className="text-emerald-500 text-center mb-6 max-w-md">
+                {searchTerm || filterCategory 
+                  ? 'Try changing your search or filter criteria' 
+                  : 'Start creating amazing content for your audience'}
+              </p>
               <button
                 onClick={() => {
                   resetForm();
+                  setFormData(prev => ({ ...prev, author: adminUser?.username || 'Admin' }));
                   setShowCreateModal(true);
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/50 transition-all duration-300"
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 text-sm"
               >
-                Create First Post
+                Create Your First Post
               </button>
             </div>
           ) : (
-            <div className="p-6">
-              <div className="grid gap-6">
-                {blogs.map((blog) => (
-                  <div 
-                    key={blog._id} 
-                    className="group relative bg-gradient-to-br from-emerald-950/50 to-emerald-900/30 backdrop-blur-sm rounded-2xl border border-emerald-700/30 hover:border-emerald-600/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/20"
-                  >
-                    <div className="flex gap-6">
-                      {/* Image */}
-                      <div className="relative w-48 h-32 rounded-xl overflow-hidden flex-shrink-0 border border-emerald-700/30">
-                        {blog.featuredImage ? (
+            <div className="p-4">
+              <div className="space-y-4">
+                {blogs.map((blog) => {
+                  const optimizedImage = getOptimizedImageUrl(blog.featuredImage, { 
+                    width: 400, 
+                    height: 225, 
+                    crop: 'fill' 
+                  });
+                  
+                  return (
+                    <div 
+                      key={blog._id} 
+                      className="group bg-gradient-to-br from-emerald-950/40 to-emerald-900/20 backdrop-blur-sm rounded-xl border border-emerald-700/20 hover:border-emerald-600/40 p-4 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10"
+                    >
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Image */}
+                        <div className="relative w-full sm:w-48 h-48 sm:h-32 rounded-lg overflow-hidden flex-shrink-0 border border-emerald-700/30 group-hover:border-emerald-600/50 transition-colors">
                           <img
-                            src={fixImageUrl(blog.featuredImage)}
+                            src={optimizedImage}
                             alt={blog.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             onError={(e) => {
-                              e.target.src = 'https://placehold.co/400x300/10b981/ffffff?text=Blog';
+                              e.target.src = `https://placehold.co/400x225/0f766e/ffffff?text=${encodeURIComponent(blog.title.substring(0, 20))}`;
                             }}
                           />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-emerald-900/50 to-teal-900/50 flex items-center justify-center">
-                            <ImageIcon className="w-12 h-12 text-emerald-600" />
-                          </div>
-                        )}
-                        {blog.isFeatured && (
-                          <div className="absolute top-2 left-2 px-2 py-1 bg-purple-500/90 backdrop-blur-sm rounded-lg flex items-center gap-1">
-                            <Sparkles className="w-3 h-3 text-white" />
-                            <span className="text-xs font-bold text-white">Featured</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-bold text-emerald-100 mb-2 line-clamp-1 group-hover:text-emerald-200 transition-colors">
-                              {blog.title}
-                            </h3>
-                            <p className="text-emerald-400 text-sm line-clamp-2 mb-3">
-                              {blog.excerpt}
-                            </p>
-                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          
+                          {blog.isFeatured && (
+                            <div className="absolute top-2 left-2 px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 backdrop-blur-sm rounded-md flex items-center gap-1">
+                              <Sparkles className="w-3 h-3 text-white" />
+                              <span className="text-xs font-bold text-white">Featured</span>
+                            </div>
+                          )}
+                          
+                          {blog.imagePublicId && (
+                            <div className="absolute bottom-2 right-2">
+                              <div className="px-1.5 py-0.5 bg-emerald-900/90 backdrop-blur-sm rounded flex items-center gap-1">
+                                <Cloud className="w-3 h-3 text-emerald-300" />
+                                <span className="text-xs font-bold text-emerald-200">CDN</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 mb-4">
-                          <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-600/30 rounded-full text-xs font-semibold text-emerald-300">
-                            {blog.category || 'Uncategorized'}
-                          </span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-                            blog.isPublished 
-                              ? 'bg-green-500/20 border-green-600/30 text-green-300' 
-                              : 'bg-yellow-500/20 border-yellow-600/30 text-yellow-300'
-                          }`}>
-                            {blog.isPublished ? 'Published' : 'Draft'}
-                          </span>
-                          <span className="text-emerald-500 text-sm">{blog.readTime || 5} min</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-sm">
-                            <span className="flex items-center gap-1 text-emerald-300">
-                              <EyeIcon className="w-4 h-4" />
-                              {blog.views || 0}
-                            </span>
-                            <span className="flex items-center gap-1 text-red-300">
-                              <Heart className="w-4 h-4" />
-                              {blog.likes?.length || 0}
-                            </span>
-                            <span className="flex items-center gap-1 text-blue-300">
-                              <MessageSquare className="w-4 h-4" />
-                              {blog.comments?.length || 0}
-                            </span>
-                            <span className="text-emerald-500 text-xs">
-                              {formatDate(blog.createdAt)}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => window.open(`/blog/${blog.slug || blog._id}`, '_blank')}
-                              className="p-2 bg-emerald-900/50 border border-emerald-700/30 hover:bg-emerald-800/50 rounded-lg transition-all group/btn"
-                            >
-                              <Eye className="w-4 h-4 text-emerald-300 group-hover/btn:text-emerald-200" />
-                            </button>
-                            <button
-                              onClick={() => handleEditClick(blog)}
-                              className="p-2 bg-blue-900/50 border border-blue-700/30 hover:bg-blue-800/50 rounded-lg transition-all group/btn"
-                            >
-                              <Edit className="w-4 h-4 text-blue-300 group-hover/btn:text-blue-200" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBlog(blog._id, blog.title)}
-                              className="p-2 bg-red-900/50 border border-red-700/30 hover:bg-red-800/50 rounded-lg transition-all group/btn"
-                            >
-                              <Trash2 className="w-4 h-4 text-red-300 group-hover/btn:text-red-200" />
-                            </button>
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col h-full">
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <h3 className="text-lg font-bold text-emerald-100 line-clamp-2 group-hover:text-emerald-50 transition-colors">
+                                  {blog.title}
+                                </h3>
+                              </div>
+                              
+                              <p className="text-emerald-400 text-sm line-clamp-2 mb-3">
+                                {blog.excerpt || 'No excerpt provided'}
+                              </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                              <span className="px-2 py-1 bg-emerald-500/20 border border-emerald-600/30 rounded text-xs font-semibold text-emerald-300">
+                                {blog.category || 'Uncategorized'}
+                              </span>
+                              <span className={`px-2 py-1 rounded text-xs font-semibold border ${
+                                blog.isPublished 
+                                  ? 'bg-green-500/20 border-green-600/30 text-green-300' 
+                                  : 'bg-amber-500/20 border-amber-600/30 text-amber-300'
+                              }`}>
+                                {blog.isPublished ? 'Published' : 'Draft'}
+                              </span>
+                              <span className="text-emerald-500 text-xs">•</span>
+                              <span className="text-emerald-500 text-xs">{blog.readTime || 5} min read</span>
+                              <span className="text-emerald-500 text-xs">•</span>
+                              <span className="text-emerald-500 text-xs">{formatDate(blog.createdAt)}</span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4 text-sm">
+                                <span className="flex items-center gap-1 text-emerald-300">
+                                  <EyeIcon className="w-4 h-4" />
+                                  {blog.views || 0}
+                                </span>
+                                <span className="flex items-center gap-1 text-red-300">
+                                  <Heart className="w-4 h-4" />
+                                  {blog.likes?.length || 0}
+                                </span>
+                                <span className="flex items-center gap-1 text-blue-300">
+                                  <MessageSquare className="w-4 h-4" />
+                                  {blog.comments?.length || 0}
+                                </span>
+                              </div>
+                              
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => window.open(`/blog/${blog.slug || blog._id}`, '_blank')}
+                                  className="p-1.5 bg-emerald-900/50 border border-emerald-700/30 hover:bg-emerald-800/50 rounded-lg transition-all group/btn"
+                                  title="View post"
+                                >
+                                  <Eye className="w-4 h-4 text-emerald-300 group-hover/btn:text-emerald-200" />
+                                </button>
+                                <button
+                                  onClick={() => handleEditClick(blog)}
+                                  className="p-1.5 bg-blue-900/50 border border-blue-700/30 hover:bg-blue-800/50 rounded-lg transition-all group/btn"
+                                  title="Edit post"
+                                >
+                                  <Edit className="w-4 h-4 text-blue-300 group-hover/btn:text-blue-200" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteBlog(blog._id, blog.title, blog.imagePublicId)}
+                                  className="p-1.5 bg-red-900/50 border border-red-700/30 hover:bg-red-800/50 rounded-lg transition-all group/btn"
+                                  title="Delete post"
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-300 group-hover/btn:text-red-200" />
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
-
-        {/* Create/Edit Modal */}
-        {(showCreateModal || showEditModal) && (
-          <BlogEditorModal
-            isOpen={showCreateModal || showEditModal}
-            onClose={() => {
-              setShowCreateModal(false);
-              setShowEditModal(false);
-              setCurrentBlog(null);
-              resetForm();
-            }}
-            formData={formData}
-            handleInputChange={handleInputChange}
-            handleFileInputChange={handleFileInputChange}
-            handleSubmit={showCreateModal ? handleCreateBlog : handleUpdateBlog}
-            categories={categories}
-            isEditing={showEditModal}
-            loading={loading}
-            uploadingImage={uploadingImage}
-            API_BASE_URL={API_BASE_URL}
-            fixImageUrl={fixImageUrl}
-          />
-        )}
       </div>
+
+      {/* Create/Edit Modal */}
+      {(showCreateModal || showEditModal) && (
+        <BlogEditorModal
+          isOpen={showCreateModal || showEditModal}
+          onClose={() => {
+            setShowCreateModal(false);
+            setShowEditModal(false);
+            setCurrentBlog(null);
+            resetForm();
+          }}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleFileInputChange={handleFileInputChange}
+          handleImageUrlChange={handleImageUrlChange}
+          handleSubmit={showCreateModal ? handleCreateBlog : handleUpdateBlog}
+          categories={categories}
+          authors={authors}
+          isEditing={showEditModal}
+          loading={loading}
+          uploadingImage={uploadingImage}
+          uploadProgress={uploadProgress}
+          selectedImageData={selectedImageData}
+          cloudinaryConfig={cloudinaryConfig}
+          copyCloudinaryUrl={copyCloudinaryUrl}
+        />
+      )}
     </div>
   );
 }
@@ -806,47 +1110,49 @@ function BlogEditorModal({
   formData, 
   handleInputChange, 
   handleFileInputChange,
+  handleImageUrlChange,
   handleSubmit, 
   categories,
+  authors,
   isEditing,
   loading,
   uploadingImage,
-  fixImageUrl
+  uploadProgress,
+  selectedImageData,
+  cloudinaryConfig,
+  copyCloudinaryUrl
 }) {
   if (!isOpen) return null;
 
-  const imagePreview = fixImageUrl(formData.featuredImage);
-
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto border-2 border-emerald-700/30 shadow-2xl">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"></div>
-
+      <div className="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-emerald-700/30 shadow-2xl">
         {/* Modal Header */}
-        <div className="relative sticky top-0 bg-emerald-950/90 backdrop-blur-xl border-b border-emerald-700/30 px-8 py-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-emerald-950/90 backdrop-blur-xl border-b border-emerald-700/30 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-              {isEditing ? <Edit className="w-5 h-5 text-white" /> : <Plus className="w-5 h-5 text-white" />}
+            <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+              {isEditing ? <Edit className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white" />}
             </div>
-            <h2 className="text-3xl font-black bg-gradient-to-r from-emerald-200 to-teal-200 bg-clip-text text-transparent">
-              {isEditing ? 'Edit Post' : 'Create New Post'}
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-emerald-100">
+                {isEditing ? 'Edit Blog Post' : 'Create New Blog Post'}
+              </h2>
+              <p className="text-emerald-400 text-sm">All fields marked with * are required</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-emerald-800/50 rounded-xl transition-all group"
+            className="p-2 hover:bg-emerald-800/50 rounded-lg transition-all group"
           >
-            <X className="w-6 h-6 text-emerald-400 group-hover:text-emerald-200" />
+            <X className="w-5 h-5 text-emerald-400 group-hover:text-emerald-200" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="relative p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-bold text-emerald-300 mb-2">
+            <label className="block text-sm font-semibold text-emerald-300 mb-2">
               Title *
             </label>
             <input
@@ -855,14 +1161,14 @@ function BlogEditorModal({
               value={formData.title}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-600 backdrop-blur-sm transition-all"
-              placeholder="Enter an awesome title"
+              className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+              placeholder="Enter a compelling title"
             />
           </div>
 
           {/* Excerpt */}
           <div>
-            <label className="block text-sm font-bold text-emerald-300 mb-2">
+            <label className="block text-sm font-semibold text-emerald-300 mb-2">
               Excerpt *
             </label>
             <textarea
@@ -871,18 +1177,23 @@ function BlogEditorModal({
               onChange={handleInputChange}
               required
               rows="3"
-              className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-600 backdrop-blur-sm transition-all"
-              placeholder="Brief summary"
+              className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+              placeholder="Write a brief summary (150-300 characters)"
               maxLength="300"
             />
-            <p className="text-xs text-emerald-500 mt-2">
-              {formData.excerpt.length}/300
-            </p>
+            <div className="flex justify-between mt-2">
+              <p className="text-xs text-emerald-500">
+                {formData.excerpt.length}/300 characters
+              </p>
+              <p className="text-xs text-emerald-500">
+                Used for SEO meta description
+              </p>
+            </div>
           </div>
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-bold text-emerald-300 mb-2">
+            <label className="block text-sm font-semibold text-emerald-300 mb-2">
               Content *
             </label>
             <textarea
@@ -891,15 +1202,18 @@ function BlogEditorModal({
               onChange={handleInputChange}
               required
               rows="12"
-              className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-600 backdrop-blur-sm transition-all font-mono text-sm"
-              placeholder="Write amazing content (HTML supported)"
+              className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all font-mono text-sm"
+              placeholder="Write your blog content here (HTML supported)..."
             />
+            <p className="text-xs text-emerald-500 mt-2">
+              Supports HTML tags for formatting
+            </p>
           </div>
 
-          {/* Category & Read Time */}
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* Grid: Category, Read Time, Author */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-bold text-emerald-300 mb-2">
+              <label className="block text-sm font-semibold text-emerald-300 mb-2">
                 Category *
               </label>
               <select
@@ -907,9 +1221,9 @@ function BlogEditorModal({
                 value={formData.category}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
+                className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
               >
-                <option value="">Select category</option>
+                <option value="">Select a category</option>
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
@@ -917,8 +1231,8 @@ function BlogEditorModal({
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-emerald-300 mb-2">
-                Read Time (min)
+              <label className="block text-sm font-semibold text-emerald-300 mb-2">
+                Read Time (minutes)
               </label>
               <input
                 type="number"
@@ -927,45 +1241,113 @@ function BlogEditorModal({
                 onChange={handleInputChange}
                 min="1"
                 max="60"
-                className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
+                className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-emerald-300 mb-2">
+                Author
+              </label>
+              <select
+                name="author"
+                value={formData.author}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 backdrop-blur-sm transition-all"
+              >
+                <option value="">Select author</option>
+                {authors.map((author) => (
+                  <option key={author} value={author}>{author}</option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Featured Image */}
-          <div>
-            <label className="block text-sm font-bold text-emerald-300 mb-2">
+          {/* Featured Image Section */}
+          <div className="space-y-4">
+            <label className="block text-sm font-semibold text-emerald-300">
               Featured Image
             </label>
             
-            {imagePreview && (
+            {/* Image Preview */}
+            {formData.featuredImage && (
               <div className="mb-4">
-                <div className="relative w-48 h-32 rounded-xl overflow-hidden border-2 border-emerald-700/30">
+                <div className="relative w-full max-w-md h-48 rounded-lg overflow-hidden border border-emerald-700/30">
                   <img
-                    src={imagePreview}
+                    src={formData.featuredImage}
                     alt="Preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.target.src = 'https://placehold.co/400x300/10b981/ffffff?text=Blog';
+                      e.target.src = 'https://placehold.co/800x450/0f766e/ffffff?text=Image+Error';
                     }}
                   />
+                  {formData.featuredImage.includes('cloudinary.com') && (
+                    <div className="absolute top-2 left-2 px-2 py-1 bg-emerald-900/90 backdrop-blur-sm rounded flex items-center gap-1.5">
+                      <Cloud className="w-3 h-3 text-emerald-300" />
+                      <span className="text-xs font-bold text-emerald-200">Cloudinary</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Cloudinary Info */}
+                {selectedImageData && selectedImageData.publicId && (
+                  <div className="mt-3 p-3 bg-emerald-900/30 border border-emerald-700/30 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Cloud className="w-4 h-4 text-emerald-400" />
+                        <span className="text-sm font-medium text-emerald-300">Cloudinary Details</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copyCloudinaryUrl(selectedImageData.publicId)}
+                        className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+                      >
+                        <Copy className="w-3 h-3" />
+                        Copy ID
+                      </button>
+                    </div>
+                    <p className="text-xs text-emerald-500 break-all">
+                      {selectedImageData.publicId.substring(0, 60)}...
+                    </p>
+                    {selectedImageData.width && selectedImageData.height && (
+                      <p className="text-xs text-emerald-500 mt-1">
+                        {selectedImageData.width} × {selectedImageData.height} • {selectedImageData.format} • {(selectedImageData.bytes / 1024).toFixed(1)}KB
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Upload Progress */}
+            {uploadingImage && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="text-emerald-300 font-medium">Uploading to Cloudinary...</span>
+                  <span className="text-emerald-400">{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-emerald-900/50 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
                 </div>
               </div>
             )}
             
+            {/* Upload Options */}
             <div className="space-y-4">
+              {/* Upload Button */}
               <div>
-                <label className="block text-sm font-medium text-emerald-400 mb-2">
-                  Upload Image
-                </label>
-                <label className="cursor-pointer">
+                <label className="cursor-pointer block">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileInputChange}
                     className="hidden"
+                    disabled={uploadingImage}
                   />
-                  <div className="flex items-center justify-center gap-3 px-6 py-4 border-2 border-dashed border-emerald-700/30 rounded-xl hover:border-emerald-500/50 hover:bg-emerald-900/20 transition-all">
+                  <div className={`flex items-center justify-center gap-3 px-4 py-3 border-2 border-dashed ${uploadingImage ? 'border-emerald-500/50 bg-emerald-900/30' : 'border-emerald-700/30 hover:border-emerald-500/50 hover:bg-emerald-900/20'} rounded-xl transition-all`}>
                     {uploadingImage ? (
                       <>
                         <Loader className="w-5 h-5 animate-spin text-emerald-400" />
@@ -973,14 +1355,23 @@ function BlogEditorModal({
                       </>
                     ) : (
                       <>
-                        <CloudUpload className="w-6 h-6 text-emerald-400" />
-                        <span className="text-emerald-300 font-medium">Choose File</span>
+                        <CloudUpload className="w-5 h-5 text-emerald-400" />
+                        <div>
+                          <span className="text-emerald-300 font-medium">Upload to Cloudinary</span>
+                          <p className="text-emerald-500 text-xs mt-0.5">JPG, PNG, GIF, WebP • Max 10MB</p>
+                        </div>
                       </>
                     )}
                   </div>
                 </label>
+                {!cloudinaryConfig?.configured && (
+                  <p className="text-xs text-amber-500 mt-2">
+                    ⚠️ Cloudinary not configured. Uploads may fail.
+                  </p>
+                )}
               </div>
               
+              {/* OR Separator */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-emerald-700/30"></div>
@@ -990,28 +1381,29 @@ function BlogEditorModal({
                 </div>
               </div>
               
+              {/* URL Input */}
               <div>
-                <label className="block text-sm font-medium text-emerald-400 mb-2">
-                  Image URL
-                </label>
                 <div className="relative">
-                  <Link className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-500" />
+                  <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
                   <input
                     type="url"
                     name="featuredImage"
                     value={formData.featuredImage}
-                    onChange={handleInputChange}
-                    className="w-full pl-12 pr-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-600 backdrop-blur-sm transition-all"
-                    placeholder="https://example.com/image.jpg"
+                    onChange={handleImageUrlChange}
+                    className="w-full pl-10 pr-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+                    placeholder="https://res.cloudinary.com/.../image.jpg"
                   />
                 </div>
+                <p className="text-xs text-emerald-500 mt-2">
+                  Enter a Cloudinary URL for optimal performance
+                </p>
               </div>
             </div>
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-bold text-emerald-300 mb-2">
+            <label className="block text-sm font-semibold text-emerald-300 mb-2">
               Tags
             </label>
             <input
@@ -1019,37 +1411,83 @@ function BlogEditorModal({
               name="tags"
               value={formData.tags}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-emerald-950/50 border-2 border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-600 backdrop-blur-sm transition-all"
-              placeholder="finance, investment, banking"
+              className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+              placeholder="finance, investment, banking (comma separated)"
             />
           </div>
 
+          {/* SEO Fields */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              SEO Optimization
+            </h3>
+            
+            <div>
+              <label className="block text-sm text-emerald-400 mb-2">
+                Meta Title
+              </label>
+              <input
+                type="text"
+                name="metaTitle"
+                value={formData.metaTitle}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+                placeholder="Optimized title for search engines"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm text-emerald-400 mb-2">
+                Meta Description
+              </label>
+              <textarea
+                name="metaDescription"
+                value={formData.metaDescription}
+                onChange={handleInputChange}
+                rows="3"
+                className="w-full px-4 py-3 bg-emerald-950/40 border border-emerald-700/30 rounded-xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 text-emerald-100 placeholder-emerald-500/70 backdrop-blur-sm transition-all"
+                placeholder="Brief description for search results"
+                maxLength="160"
+              />
+              <p className="text-xs text-emerald-500 mt-2">
+                {formData.metaDescription.length}/160 characters (optimal for SEO)
+              </p>
+            </div>
+          </div>
+
           {/* Checkboxes */}
-          <div className="flex gap-6">
-            <label className="flex items-center gap-2 cursor-pointer group">
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-3 cursor-pointer group">
               <div className="relative">
                 <input
                   type="checkbox"
                   name="isPublished"
                   checked={formData.isPublished}
                   onChange={handleInputChange}
-                  className="w-5 h-5 text-emerald-600 border-emerald-700/30 rounded bg-emerald-950/50 focus:ring-emerald-500/50"
+                  className="w-5 h-5 text-emerald-600 border-emerald-700/30 rounded bg-emerald-950/40 focus:ring-emerald-500/50"
                 />
               </div>
-              <span className="font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">Publish</span>
+              <div>
+                <span className="font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">Publish</span>
+                <p className="text-xs text-emerald-500">Make this post publicly visible</p>
+              </div>
             </label>
 
-            <label className="flex items-center gap-2 cursor-pointer group">
+            <label className="flex items-center gap-3 cursor-pointer group">
               <div className="relative">
                 <input
                   type="checkbox"
                   name="isFeatured"
                   checked={formData.isFeatured}
                   onChange={handleInputChange}
-                  className="w-5 h-5 text-emerald-600 border-emerald-700/30 rounded bg-emerald-950/50 focus:ring-emerald-500/50"
+                  className="w-5 h-5 text-emerald-600 border-emerald-700/30 rounded bg-emerald-950/40 focus:ring-emerald-500/50"
                 />
               </div>
-              <span className="font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">Featured</span>
+              <div>
+                <span className="font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors">Featured</span>
+                <p className="text-xs text-emerald-500">Highlight this post on the homepage</p>
+              </div>
             </label>
           </div>
 
@@ -1058,26 +1496,25 @@ function BlogEditorModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border-2 border-emerald-700/30 rounded-xl font-semibold text-emerald-300 hover:bg-emerald-900/30 transition-all"
+              className="px-5 py-2.5 border border-emerald-700/30 text-emerald-300 rounded-xl font-semibold hover:bg-emerald-900/30 transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || uploadingImage}
-              className="relative flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-2xl hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+              className="relative flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-xl hover:shadow-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               {loading ? (
                 <>
-                  <Loader className="w-5 h-5 animate-spin relative z-10" />
-                  <span className="relative z-10">{isEditing ? 'Updating...' : 'Creating...'}</span>
+                  <Loader className="w-4 h-4 animate-spin relative z-10" />
+                  <span className="relative z-10 text-sm">{isEditing ? 'Updating...' : 'Creating...'}</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-5 h-5 relative z-10" />
-                  <span className="relative z-10">{isEditing ? 'Update' : 'Create'}</span>
-                  <Sparkles className="w-4 h-4 relative z-10 group-hover:animate-pulse" />
+                  <Save className="w-4 h-4 relative z-10" />
+                  <span className="relative z-10 text-sm">{isEditing ? 'Update Post' : 'Create Post'}</span>
                 </>
               )}
             </button>

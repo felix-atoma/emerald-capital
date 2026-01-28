@@ -1,4 +1,5 @@
 import axios from "axios";
+
 /* ===============================
    API CONFIG
 ================================ */
@@ -79,11 +80,7 @@ api.interceptors.response.use(
       console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url}: ${response.status}`);
     }
     
-    // Always return response.data for consistency
-    return {
-      ...response,
-      data: response.data
-    };
+    return response;
   },
   (error) => {
     console.error(`❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}: ${error.response?.status || 'Network Error'}`);
@@ -118,13 +115,7 @@ api.interceptors.response.use(
       console.error("❌ Request setup error:", error.message);
     }
     
-    // Return a consistent error structure
-    return Promise.reject({
-      success: false,
-      message: error.response?.data?.message || error.message || "Network Error",
-      status: error.response?.status,
-      data: error.response?.data
-    });
+    return Promise.reject(error);
   }
 );
 
@@ -135,10 +126,7 @@ adminApi.interceptors.response.use(
       console.log(`👑 ${response.config.method?.toUpperCase()} ${response.config.url}: ${response.status}`);
     }
     
-    return {
-      ...response,
-      data: response.data
-    };
+    return response;
   },
   (error) => {
     console.error(`👑❌ ${error.config?.method?.toUpperCase()} ${error.config?.url}: ${error.response?.status || 'Network Error'}`);
@@ -149,27 +137,24 @@ adminApi.interceptors.response.use(
       window.location.href = "/admin/login";
     }
     
-    return Promise.reject({
-      success: false,
-      message: error.response?.data?.message || error.message || "Network Error",
-      status: error.response?.status,
-      data: error.response?.data
-    });
+    return Promise.reject(error);
   }
 );
 
 /* ===============================
    HEALTH CHECK
 ================================ */
-export const healthAPI = {
+const healthAPI = {
   check: () => api.get("/api/health"),
   systemInfo: () => api.get("/api/system-info"),
+  corsDebug: () => api.get("/api/cors-debug"),
+  uploadsCheck: () => api.get("/api/uploads-check"),
 };
 
 /* ===============================
    AUTH API
 ================================ */
-export const authAPI = {
+const authAPI = {
   login: (data) => api.post("/api/auth/login", data),
   register: (data) => api.post("/api/auth/register", data),
   getProfile: () => api.get("/api/auth/profile"),
@@ -177,12 +162,16 @@ export const authAPI = {
   changePassword: (data) => api.put("/api/auth/change-password", data),
   forgotPassword: (data) => api.post("/api/auth/forgot-password", data),
   resetPassword: (data) => api.post("/api/auth/reset-password", data),
+  logout: () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
 };
 
 /* ===============================
    ADMIN AUTH API
 ================================ */
-export const adminAuthAPI = {
+const adminAuthAPI = {
   login: (data) => adminApi.post("/api/admin/login", data),
   getProfile: () => adminApi.get("/api/admin/profile"),
   changePassword: (data) => adminApi.put("/api/admin/change-password", data),
@@ -195,16 +184,12 @@ export const adminAuthAPI = {
 /* ===============================
    LOAN API
 ================================ */
-export const loanAPI = {
+const loanAPI = {
   // User loan applications
-  createApplication: (data) => api.post("/api/loans/applications", data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  }),
+  createApplication: (data) => api.post("/api/loans/applications", data),
   getMyApplications: (params = {}) => api.get("/api/loans/applications", { params }),
   getApplication: (id) => api.get(`/api/loans/applications/${id}`),
-  updateApplication: (id, data) => api.put(`/api/loans/applications/${id}`, data, {
-    headers: { "Content-Type": "multipart/form-data" },
-  }),
+  updateApplication: (id, data) => api.put(`/api/loans/applications/${id}`, data),
   deleteApplication: (id) => api.delete(`/api/loans/applications/${id}`),
   
   // Admin loan management
@@ -216,7 +201,7 @@ export const loanAPI = {
 /* ===============================
    CONTACT API
 ================================ */
-export const contactAPI = {
+const contactAPI = {
   // Public contact form
   submitMessage: (data) => api.post("/api/contact", data),
   
@@ -231,7 +216,7 @@ export const contactAPI = {
 /* ===============================
    NEWSLETTER API
 ================================ */
-export const newsletterAPI = {
+const newsletterAPI = {
   // Public subscription
   subscribe: (data) => api.post("/api/newsletter/subscribe", data),
   unsubscribe: (data) => api.post("/api/newsletter/unsubscribe", data),
@@ -252,7 +237,7 @@ export const newsletterAPI = {
 /* ===============================
    ACCOUNT API
 ================================ */
-export const accountAPI = {
+const accountAPI = {
   // User account operations
   getBalance: () => api.get("/api/account/balance"),
   getDetails: () => api.get("/api/account/details"),
@@ -269,9 +254,9 @@ export const accountAPI = {
 };
 
 /* ===============================
-   BLOG API - UPDATED WITH CORRECT RESPONSE HANDLING
+   BLOG API - UPDATED FOR CLOUDINARY
 ================================ */
-export const blogAPI = {
+const blogAPI = {
   // Public blog access
   getBlogs: (params = {}) => api.get("/api/blogs", { 
     params,
@@ -294,75 +279,123 @@ export const blogAPI = {
   getMyBookmarks: () => api.get("/api/blogs/bookmarks/my"),
   getMyLikes: () => api.get("/api/blogs/likes/my"),
   
-  // Admin blog management - FIXED: Use adminApi with correct endpoints
+  // Admin blog management
   createBlog: (data) => adminApi.post("/api/blogs", data),
   updateBlog: (id, data) => adminApi.put(`/api/blogs/${id}`, data),
   deleteBlog: (id) => adminApi.delete(`/api/blogs/${id}`),
   
   // Blog statistics
-  getBlogStats: () => {
-    // Try admin endpoint first, fallback to calculating from public data
-    return adminApi.get("/api/blogs/stats/summary").catch(() => {
-      return blogAPI.getBlogs({ limit: 100 }).then(response => {
-        const blogs = response.data.data?.blogs || response.data.blogs || [];
-        const stats = {
-          totalBlogs: blogs.length,
-          publishedBlogs: blogs.filter(b => b.isPublished).length,
-          draftBlogs: blogs.filter(b => !b.isPublished).length,
-          totalViews: blogs.reduce((sum, b) => sum + (b.views || 0), 0),
-          totalComments: blogs.reduce((sum, b) => sum + (b.comments?.length || 0), 0),
-          blogsByCategory: blogs.reduce((acc, blog) => {
-            const category = blog.category || 'Uncategorized';
-            acc[category] = (acc[category] || 0) + 1;
-            return acc;
-          }, {})
-        };
-        return { 
-          data: { 
-            success: true, 
-            data: { stats } 
-          } 
-        };
-      });
+  getBlogStats: () => adminApi.get("/api/admin/blogs/stats").catch(() => {
+    return api.get("/api/blogs", { params: { limit: 100 } }).then(response => {
+      const blogs = response.data.data?.blogs || response.data.blogs || [];
+      const stats = {
+        totalBlogs: blogs.length,
+        publishedBlogs: blogs.filter(b => b.isPublished).length,
+        draftBlogs: blogs.filter(b => !b.isPublished).length,
+        totalViews: blogs.reduce((sum, b) => sum + (b.views || 0), 0),
+        totalComments: blogs.reduce((sum, b) => sum + (b.comments?.length || 0), 0),
+        blogsByCategory: blogs.reduce((acc, blog) => {
+          const category = blog.category || 'Uncategorized';
+          acc[category] = (acc[category] || 0) + 1;
+          return acc;
+        }, {})
+      };
+      return { data: { success: true, data: { stats } } };
     });
-  },
+  }),
 };
 
 /* ===============================
-   UPLOAD API
+   UPLOAD API - UPDATED FOR CLOUDINARY
 ================================ */
-export const uploadAPI = {
+const uploadAPI = {
+  // Get upload configuration
+  getConfig: () => api.get("/api/upload/config"),
+  
   // File uploads with FormData
-  uploadImage: (formData, type = 'blog') => {
+  uploadImage: (file, type = 'blog') => {
+    const formData = new FormData();
+    formData.append('image', file);
+    
     const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
     return api.post(`/api/upload/image?type=${type}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         ...(token && { Authorization: `Bearer ${token}` })
-      }
+      },
+      timeout: 60000 // Longer timeout for uploads
     });
   },
   
-  uploadFile: (formData, type = 'general') => {
+  uploadMultipleImages: (files, type = 'blog') => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+    
     const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
-    return api.post(`/api/upload/file?type=${type}`, formData, {
+    return api.post(`/api/upload/images?type=${type}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
+        ...(token && { Authorization: `Bearer ${token}` })
+      },
+      timeout: 60000
+    });
+  },
+  
+  // Delete uploaded file
+  deleteImage: (publicId) => {
+    const token = localStorage.getItem("adminAuthToken") || localStorage.getItem("token");
+    return api.delete(`/api/upload/${publicId}`, {
+      headers: {
         ...(token && { Authorization: `Bearer ${token}` })
       }
     });
   },
   
-  // Get upload info
-  getUploadInfo: () => api.get("/api/upload/info"),
+  // Test helper for creating blogs with images
+  createBlogWithImage: async (blogData, imageFile) => {
+    try {
+      // First upload image
+      const uploadResponse = await uploadAPI.uploadImage(imageFile, 'blog');
+      
+      if (uploadResponse.data.success) {
+        // Create blog with Cloudinary URL
+        const blogWithImage = {
+          ...blogData,
+          image: uploadResponse.data.data.url,
+          imagePublicId: uploadResponse.data.data.public_id
+        };
+        
+        // Create blog post
+        return await blogAPI.createBlog(blogWithImage);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
+/* ===============================
+   CATEGORY API
+================================ */
+const categoryAPI = {
+  // Public category access
+  getCategories: () => api.get("/api/categories"),
+  getCategory: (id) => api.get(`/api/categories/${id}`),
+  
+  // Admin category management
+  createCategory: (data) => adminApi.post("/api/categories", data),
+  updateCategory: (id, data) => adminApi.put(`/api/categories/${id}`, data),
+  deleteCategory: (id) => adminApi.delete(`/api/categories/${id}`),
 };
 
 /* ===============================
    ADMIN DASHBOARD API
 ================================ */
-export const adminAPI = {
+const adminAPI = {
   // Dashboard statistics
-  getDashboardStats: () => adminApi.get("/api/admin/dashboard"),
+  getDashboardStats: () => adminApi.get("/api/admin/dashboard", { timeout: 15000 }),
   
   // User management
   getUsers: (params = {}) => adminApi.get("/api/admin/users", { params }),
@@ -379,7 +412,81 @@ export const adminAPI = {
 };
 
 /* ===============================
+   UTILITY FUNCTIONS
+================================ */
+const apiUtils = {
+  // Handle Cloudinary URL generation
+  getCloudinaryUrl: (publicId, options = {}) => {
+    if (!publicId) return null;
+    
+    const { width, height, crop = 'fill', quality = 'auto' } = options;
+    let url = `https://res.cloudinary.com/dbjjbxazd/image/upload`;
+    
+    if (width || height || crop !== 'fill' || quality !== 'auto') {
+      const transformations = [];
+      if (width) transformations.push(`w_${width}`);
+      if (height) transformations.push(`h_${height}`);
+      if (crop) transformations.push(`c_${crop}`);
+      if (quality) transformations.push(`q_${quality}`);
+      
+      url += `/${transformations.join(',')}`;
+    }
+    
+    url += `/${publicId}`;
+    return url;
+  },
+  
+  // Extract public ID from Cloudinary URL
+  extractPublicId: (cloudinaryUrl) => {
+    if (!cloudinaryUrl || !cloudinaryUrl.includes('cloudinary.com')) return null;
+    
+    try {
+      const url = new URL(cloudinaryUrl);
+      const pathParts = url.pathname.split('/');
+      const uploadIndex = pathParts.indexOf('upload');
+      
+      if (uploadIndex !== -1) {
+        return pathParts.slice(uploadIndex + 2).join('/').replace(/\.[^/.]+$/, '');
+      }
+    } catch (error) {
+      console.error('Error extracting public ID:', error);
+    }
+    
+    return null;
+  },
+  
+  // Create FormData from object
+  createFormData: (data) => {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => {
+      if (Array.isArray(data[key])) {
+        data[key].forEach(item => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+    return formData;
+  }
+};
+
+/* ===============================
    EXPORTS
 ================================ */
 export default api;
-export { adminApi };
+export {
+  adminApi,
+  apiUtils,
+  healthAPI,
+  authAPI,
+  adminAuthAPI,
+  loanAPI,
+  contactAPI,
+  newsletterAPI,
+  accountAPI,
+  blogAPI,
+  uploadAPI,
+  categoryAPI,
+  adminAPI
+};
