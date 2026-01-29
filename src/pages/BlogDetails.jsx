@@ -20,44 +20,34 @@ export function BlogDetailPage() {
   const [commentText, setCommentText] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [comments, setComments] = useState([]);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  // Fetch blog details
-  useEffect(() => {
-    const fetchBlogDetail = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await blogAPI.getBlog(slug);
-        
-        if (response.data.success) {
-          const blogData = response.data.data;
-          setBlog(blogData);
-          setIsLiked(blogData.isLiked || false);
-          setIsBookmarked(blogData.isBookmarked || false);
-          setLikesCount(blogData.likes?.length || 0);
-          setComments(blogData.comments || []);
-        } else {
-          throw new Error('Blog not found');
-        }
-      } catch (err) {
-        console.error('Error fetching blog:', err);
-        setError(err.response?.data?.message || 'Failed to load blog. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Check if user is authenticated
+  const checkAuth = () => {
+    const token = localStorage.getItem('token');
+    return !!token;
+  };
 
-    if (slug) {
-      fetchBlogDetail();
-    }
-  }, [slug]);
+  // Redirect to login with return URL and action message
+  const redirectToLogin = (action = 'perform this action') => {
+    // Store the current URL to return after login
+    const returnUrl = window.location.pathname + window.location.search;
+    localStorage.setItem('returnUrl', returnUrl);
+    
+    // Navigate to login with message
+    navigate('/login', { 
+      state: { 
+        message: `Please login to ${action}`,
+        from: 'blog-detail',
+        action: action
+      } 
+    });
+  };
 
   // Handle like
   const handleLike = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Please login to like posts');
+    if (!checkAuth()) {
+      redirectToLogin('like this post');
       return;
     }
 
@@ -67,15 +57,18 @@ export function BlogDetailPage() {
       setLikesCount(response.data.likesCount);
     } catch (error) {
       console.error('Error liking blog:', error);
-      alert('Failed to like post. Please try again.');
+      if (error.response?.status === 401) {
+        redirectToLogin('like this post');
+      } else {
+        alert('Failed to like post. Please try again.');
+      }
     }
   };
 
   // Handle bookmark
   const handleBookmark = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Please login to bookmark posts');
+    if (!checkAuth()) {
+      redirectToLogin('bookmark this post');
       return;
     }
 
@@ -84,7 +77,11 @@ export function BlogDetailPage() {
       setIsBookmarked(response.data.isBookmarked);
     } catch (error) {
       console.error('Error bookmarking blog:', error);
-      alert('Failed to bookmark post. Please try again.');
+      if (error.response?.status === 401) {
+        redirectToLogin('bookmark this post');
+      } else {
+        alert('Failed to bookmark post. Please try again.');
+      }
     }
   };
 
@@ -92,12 +89,13 @@ export function BlogDetailPage() {
   const handleSubmitComment = async (e) => {
     e.preventDefault();
     
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Please login to comment');
+    // Check authentication first
+    if (!checkAuth()) {
+      redirectToLogin('comment on this post');
       return;
     }
 
+    // Check if comment is not empty
     if (!commentText.trim()) {
       alert('Please enter a comment');
       return;
@@ -111,13 +109,26 @@ export function BlogDetailPage() {
       if (response.data.success) {
         setComments(response.data.data.comments);
         setCommentText('');
-        alert('Comment added successfully!');
+        // Success - no need for alert, the comment appears instantly
       }
     } catch (error) {
       console.error('Error adding comment:', error);
-      alert('Failed to add comment. Please try again.');
+      if (error.response?.status === 401) {
+        // Token might be expired
+        localStorage.removeItem('token');
+        redirectToLogin('comment on this post');
+      } else {
+        alert('Failed to add comment. Please try again.');
+      }
     } finally {
       setIsSubmittingComment(false);
+    }
+  };
+
+  // Handle clicking on comment textarea when not logged in
+  const handleCommentBoxClick = () => {
+    if (!checkAuth()) {
+      redirectToLogin('comment on this post');
     }
   };
 
@@ -152,6 +163,41 @@ export function BlogDetailPage() {
       window.open(shareUrls[platform], '_blank', 'width=600,height=400');
     }
   };
+
+  // Fetch blog details
+  useEffect(() => {
+    const fetchBlogDetail = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await blogAPI.getBlog(slug);
+        
+        if (response.data.success) {
+          const blogData = response.data.data;
+          setBlog(blogData);
+          setIsLiked(blogData.isLiked || false);
+          setIsBookmarked(blogData.isBookmarked || false);
+          setLikesCount(blogData.likes?.length || 0);
+          setComments(blogData.comments || []);
+        } else {
+          throw new Error('Blog not found');
+        }
+      } catch (err) {
+        console.error('Error fetching blog:', err);
+        setError(err.response?.data?.message || 'Failed to load blog. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchBlogDetail();
+    }
+  }, [slug]);
+
+  // Check auth status for UI updates
+  const isLoggedIn = checkAuth();
 
   if (loading) {
     return (
@@ -333,29 +379,55 @@ export function BlogDetailPage() {
 
               {/* Comment Form */}
               <form onSubmit={handleSubmitComment} className="mb-8">
-                <textarea
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  rows="4"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-none"
-                />
+                <div 
+                  className={`relative ${!isLoggedIn ? 'cursor-pointer' : ''}`}
+                  onClick={!isLoggedIn ? handleCommentBoxClick : undefined}
+                >
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => isLoggedIn && setCommentText(e.target.value)}
+                    placeholder={isLoggedIn ? "Share your thoughts..." : "Click here to login and comment..."}
+                    rows="4"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all resize-none ${
+                      isLoggedIn 
+                        ? 'border-gray-200 focus:border-emerald-400 focus:ring-emerald-500/20 cursor-text' 
+                        : 'border-gray-300 bg-gray-50/50 cursor-pointer'
+                    }`}
+                    readOnly={!isLoggedIn}
+                  />
+                  {!isLoggedIn && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] rounded-xl">
+                      <div className="text-center p-4">
+                        <MessageCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-gray-600 font-medium">Login to comment</p>
+                        <p className="text-sm text-gray-500 mt-1">Click anywhere to login</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
                 <div className="flex justify-end mt-3">
                   <button
                     type="submit"
-                    disabled={isSubmittingComment || !commentText.trim()}
-                    className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    disabled={isSubmittingComment || !commentText.trim() || !isLoggedIn}
+                    className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all ${
+                      isLoggedIn && commentText.trim()
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:shadow-lg hover:from-emerald-700 hover:to-teal-700'
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    } ${isSubmittingComment ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     {isSubmittingComment ? (
                       <>
                         <Loader className="w-4 h-4 animate-spin" />
                         Posting...
                       </>
-                    ) : (
+                    ) : isLoggedIn ? (
                       <>
                         Post Comment
                         <Send className="w-4 h-4" />
                       </>
+                    ) : (
+                      'Login to Comment'
                     )}
                   </button>
                 </div>
@@ -392,7 +464,19 @@ export function BlogDetailPage() {
                 {comments.length === 0 && (
                   <div className="text-center py-12 bg-gray-50 rounded-xl">
                     <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600">No comments yet. Be the first to share your thoughts!</p>
+                    <p className="text-gray-600">
+                      {isLoggedIn 
+                        ? 'No comments yet. Be the first to share your thoughts!' 
+                        : 'No comments yet. Login to be the first to comment!'}
+                    </p>
+                    {!isLoggedIn && (
+                      <button
+                        onClick={() => redirectToLogin('comment')}
+                        className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                      >
+                        Login to Comment
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -400,6 +484,30 @@ export function BlogDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Login Prompt Modal */}
+      {showLoginPrompt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Login Required</h3>
+            <p className="text-gray-600 mb-6">You need to login to comment on this post.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => redirectToLogin('comment')}
+                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
