@@ -119,18 +119,85 @@ export default function AdminBlogDashboard() {
   };
 
   // Check Cloudinary configuration
-  const checkCloudinaryConfig = async () => {
-    try {
-      const response = await uploadAPI.getConfig();
-      if (response.data.success) {
-        setCloudinaryConfig(response.data.data);
-        console.log('✅ Cloudinary Config:', response.data.data);
-      }
-    } catch (err) {
-      console.error('❌ Cloudinary config check failed:', err);
-      setCloudinaryConfig({ configured: false, message: 'Cloudinary not configured' });
+  // Update the checkCloudinaryConfig function
+const checkCloudinaryConfig = async () => {
+  try {
+    // Get config from backend first
+    const response = await uploadAPI.getConfig();
+    
+    if (response.data.success) {
+      const config = response.data.data;
+      
+      // Check if config is from backend or fallback
+      const fromBackend = !config.cloudinary?.from_env;
+      
+      const cloudinaryConfig = {
+        // Backend config
+        configured: config.cloudinary?.configured || apiUtils.isCloudinaryConfigured(),
+        cloudName: config.cloudinary?.cloud_name || apiUtils.cloudinaryConfig.cloudName,
+        uploadPreset: config.cloudinary?.upload_preset || apiUtils.cloudinaryConfig.uploadPreset,
+        apiUrl: config.endpoints?.direct_upload || apiUtils.cloudinaryConfig.apiUrl,
+        
+        // Source info
+        source: fromBackend ? 'backend' : 'env-fallback',
+        backendAvailable: fromBackend,
+        frontendConfigured: apiUtils.isCloudinaryConfigured(),
+        
+        // Limits
+        maxFileSize: config.limits?.max_file_size || apiUtils.cloudinaryConfig.maxFileSize,
+        allowedTypes: config.limits?.allowed_types || apiUtils.cloudinaryConfig.allowedTypes,
+        
+        // Status message
+        message: fromBackend 
+          ? 'Backend Cloudinary configured ✓' 
+          : apiUtils.isCloudinaryConfigured()
+            ? 'Frontend Cloudinary configured (direct uploads) ✓'
+            : 'Cloudinary not configured'
+      };
+      
+      setCloudinaryConfig(cloudinaryConfig);
+      console.log('✅ Cloudinary Config:', cloudinaryConfig);
+      
+    } else {
+      // Use frontend-only config
+      const frontendConfig = {
+        configured: apiUtils.isCloudinaryConfigured(),
+        cloudName: apiUtils.cloudinaryConfig.cloudName,
+        uploadPreset: apiUtils.cloudinaryConfig.uploadPreset,
+        apiUrl: apiUtils.cloudinaryConfig.apiUrl,
+        source: 'env-only',
+        backendAvailable: false,
+        frontendConfigured: apiUtils.isCloudinaryConfigured(),
+        maxFileSize: apiUtils.cloudinaryConfig.maxFileSize,
+        allowedTypes: apiUtils.cloudinaryConfig.allowedTypes,
+        message: apiUtils.isCloudinaryConfigured()
+          ? 'Frontend Cloudinary configured (backend unreachable)'
+          : 'Cloudinary not configured in .env'
+      };
+      
+      setCloudinaryConfig(frontendConfig);
+      console.log('⚠️ Using frontend-only Cloudinary config:', frontendConfig);
     }
-  };
+    
+  } catch (err) {
+    console.error('❌ Cloudinary config check failed:', err);
+    
+    // Fallback to checking environment variables only
+    const envConfig = {
+      configured: apiUtils.isCloudinaryConfigured(),
+      cloudName: apiUtils.cloudinaryConfig.cloudName,
+      uploadPreset: apiUtils.cloudinaryConfig.uploadPreset,
+      source: 'env-fallback',
+      backendAvailable: false,
+      frontendConfigured: apiUtils.isCloudinaryConfigured(),
+      message: apiUtils.isCloudinaryConfigured()
+        ? 'Using frontend Cloudinary config'
+        : 'Cloudinary not configured. Check your .env file.'
+    };
+    
+    setCloudinaryConfig(envConfig);
+  }
+};
 
   // Upload image to Cloudinary
   const handleImageUpload = async (file) => {
@@ -616,7 +683,7 @@ export default function AdminBlogDashboard() {
     if (confirmed) {
       localStorage.removeItem('adminAuthToken');
       localStorage.removeItem('adminUser');
-      navigate('/admin/login');
+      navigate('/admin/blog/login');
     }
   };
 
